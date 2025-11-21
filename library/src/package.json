@@ -1,0 +1,23 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "description": "chess library",
+  "keywords": [
+    "chess"
+  ],
+  "homepage": "https://github.com/Andriy8075/chessLibrary#readme",
+  "bugs": {
+    "url": "https://github.com/Andriy8075/chessLibrary/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andriy8075/chessLibrary.git"
+  },
+  "license": "ISC",
+  "author": "Andriy8075",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  }
+}
