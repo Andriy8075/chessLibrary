@@ -16,6 +16,13 @@ function validateMoveRequest(request) {
         };
     }
 
+    if (cellsEqual(cellFrom, cellTo)) {
+        return {
+            valid: false,
+            error: 'From and to cells are the same'
+        };
+    }
+
     if (Object.keys(request).length !== 2) {
         return {
             valid: false,

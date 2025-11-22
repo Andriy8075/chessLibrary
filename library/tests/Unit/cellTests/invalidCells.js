@@ -1,0 +1,30 @@
+const invalidCells = [
+    { row: 5, col: 0 },
+    { row: 5, col: 9 },
+    { row: 0, col: 5 },
+    { row: 9, col: 5 },
+    { row: 5, col: -1 },
+    { row: -1, col: 5 },
+    { row: 5, col: 'a' },
+    { row: 'a', col: 5 },
+    { row: 5, col: { row: 1, col: 1 } },
+    { row: { row: 1, col: 1 }, col: 5 },
+    { row: 5, col: null },
+    { row: null, col: 5 },
+    { row: 5, col: undefined },
+    { row: undefined, col: 5 },
+    { row: 5, col: NaN },
+    { row: NaN, col: 5 },
+    { row: 5, col: Infinity },
+    { row: Infinity, col: 5 },
+    { row: 5, col: -Infinity },
+    { row: -Infinity, col: 5 },
+    { row: 5, col: 5, invalidParameter: 1 },
+    { row: 5, col: 5, invalidParameter: 'a' },
+    { row: 5, col: 5, invalidParameter: { row: 1, col: 1 } },
+    { row: 5, col: 5, invalidParameter: { row: 1, col: 1 } },
+    { row: 5},
+    { col: 5}
+]
+
+module.exports = invalidCells;
