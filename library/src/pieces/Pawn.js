@@ -2,22 +2,31 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Pawn extends Piece {
-    canMoveToCellOnEmptyBoard(cellTo) {
+    canMove(cellTo, board) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
         const { rowDiff, colDiff } = getDistance(this.cell, cellTo);
+        const targetPiece = board.getPieceOnCell(cellTo);
 
-        if (this.color === 'white') {
-            if (rowDiff <= 0) return false;
-            if (colDiff !== 0) return false;
-            if (rowDiff > 2) return false;
-            if (rowDiff === 2 && this.cell.row !== 2) return false;
+        if (colDiff === 0) {
+            if (this.color === 'white') {
+                if (rowDiff <= 0 || rowDiff > 2) return false;
+                if (rowDiff === 2 && this.cell.row !== 2) return false;
+            } else {
+                if (rowDiff >= 0 || Math.abs(rowDiff) > 2) return false;
+                if (Math.abs(rowDiff) === 2 && this.cell.row !== 7) return false;
+            }
+            if (targetPiece) return false;
+            if (Math.abs(rowDiff) === 2) {
+                const intermediateRow = this.color === 'white' ? this.cell.row + 1 : this.cell.row - 1;
+                const intermediateCell = { row: intermediateRow, col: this.cell.col };
+                if (board.getPieceOnCell(intermediateCell)) return false;
+            }
         } else {
-            if (rowDiff >= 0) return false;
-            if (colDiff !== 0) return false;
-            if (Math.abs(rowDiff) > 2) return false;
-            if (Math.abs(rowDiff) === 2 && this.cell.row !== 7) return false;
+            if (!this.canCaptureAt(cellTo)) return false;
+            if (!targetPiece && !this.canEnPassant(cellTo, board)) return false;
+            if (targetPiece && targetPiece.color === this.color) return false;
         }
 
         return true;

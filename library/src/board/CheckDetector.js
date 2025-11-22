@@ -8,21 +8,8 @@ class CheckDetector {
                 if (piece && piece.color === attackingColor) {
                     const pieceType = piece.constructor.name;
                     
-                    if (pieceType === 'Pawn') {
-                        if (piece.canCaptureAt && piece.canCaptureAt(cell)) {
-                            return true;
-                        }
-                        continue;
-                    }
-                    
-                    if (piece.canMoveToCellOnEmptyBoard && piece.canMoveToCellOnEmptyBoard(cell)) {
-                        if (pieceType === 'Bishop' || pieceType === 'Rook' || pieceType === 'Queen') {
-                            if (board.isPathClear(piece.cell, cell)) {
-                                return true;
-                            }
-                        } else {
-                            return true;
-                        }
+                    if (piece.canMove && piece.canMove(cell, board)) {
+                        return true;
                     }
                 }
             }

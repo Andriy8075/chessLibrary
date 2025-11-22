@@ -3,7 +3,7 @@ const { getDistance, isValidCell, cellsEqual } = require('../utils/Cell');
 const Rook = require('./Rook');
 
 class King extends Piece {
-    canMoveToCellOnEmptyBoard(cellTo) {
+    canMove(cellTo, board) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
@@ -11,7 +11,12 @@ class King extends Piece {
         const absRowDiff = Math.abs(rowDiff);
         const absColDiff = Math.abs(colDiff);
 
-        return absRowDiff <= 1 && absColDiff <= 1 && (absRowDiff !== 0 || absColDiff !== 0);
+        if (!(absRowDiff <= 1 && absColDiff <= 1 && (absRowDiff !== 0 || absColDiff !== 0))) return false;
+
+        const targetPiece = board.getPieceOnCell(cellTo);
+        if (targetPiece && targetPiece.color === this.color) return false;
+
+        return true;
     }
 
     tryCastle(cellTo, board) {

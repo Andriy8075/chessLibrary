@@ -2,7 +2,7 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Queen extends Piece {
-    canMoveToCellOnEmptyBoard(cellTo) {
+    canMove(cellTo, board) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
@@ -10,18 +10,23 @@ class Queen extends Piece {
         const absRowDiff = Math.abs(rowDiff);
         const absColDiff = Math.abs(colDiff);
 
-        return (absRowDiff === 0 && absColDiff !== 0) ||
+        if (!((absRowDiff === 0 && absColDiff !== 0) ||
                (absRowDiff !== 0 && absColDiff === 0) ||
-               (absRowDiff === absColDiff);
+               (absRowDiff === absColDiff))) return false;
+
+        if (!board.isPathClear(this.cell, cellTo)) return false;
+
+        const targetPiece = board.getPieceOnCell(cellTo);
+        if (targetPiece && targetPiece.color === this.color) return false;
+
+        return true;
     }
 
     doesCheckToKing(board) {
         const enemyKing = board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
-        if (!this.canMoveToCellOnEmptyBoard(enemyKing.cell)) return false;
-
-        return board.isPathClear(this.cell, enemyKing.cell);
+        return this.canMove(enemyKing.cell, board);
     }
 
     findAllPossibleMoves(board) {

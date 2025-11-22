@@ -18,8 +18,8 @@ class Piece {
         return this.color === 'white' ? 'black' : 'white';
     }
 
-    canMoveToCellOnEmptyBoard(cellTo) {
-        throw new NotImplementedMethodError('canMoveToCellOnEmptyBoard must be implemented by subclass');
+    canMove(cellTo, board) {
+        throw new NotImplementedMethodError('canMove must be implemented by subclass');
     }
 
     doesCheckToKing(board) {

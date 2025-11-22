@@ -11,21 +11,8 @@ class MoveValidator {
             return { valid: false, error: 'No piece at source cell' };
         }
 
-        if (!piece.canMoveToCellOnEmptyBoard(cellTo)) {
+        if (!piece.canMove(cellTo, board)) {
             return { valid: false, error: 'Piece cannot move to target cell' };
-        }
-
-        if (piece.constructor.name === 'Bishop' || 
-            piece.constructor.name === 'Rook' || 
-            piece.constructor.name === 'Queen') {
-            if (!board.isPathClear(cellFrom, cellTo)) {
-                return { valid: false, error: 'Path is not clear' };
-            }
-        }
-
-        const targetPiece = board.getPieceOnCell(cellTo);
-        if (targetPiece && targetPiece.color === piece.color) {
-            return { valid: false, error: 'Cannot capture own piece' };
         }
 
         if (piece instanceof Pawn) {

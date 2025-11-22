@@ -2,21 +2,26 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Rook extends Piece {
-    canMoveToCellOnEmptyBoard(cellTo) {
+    canMove(cellTo, board) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
         const { rowDiff, colDiff } = getDistance(this.cell, cellTo);
-        return (rowDiff === 0 && colDiff !== 0) || (rowDiff !== 0 && colDiff === 0);
+        if (!((rowDiff === 0 && colDiff !== 0) || (rowDiff !== 0 && colDiff === 0))) return false;
+
+        if (!board.isPathClear(this.cell, cellTo)) return false;
+
+        const targetPiece = board.getPieceOnCell(cellTo);
+        if (targetPiece && targetPiece.color === this.color) return false;
+
+        return true;
     }
 
     doesCheckToKing(board) {
         const enemyKing = board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
-        if (!this.canMoveToCellOnEmptyBoard(enemyKing.cell)) return false;
-
-        return board.isPathClear(this.cell, enemyKing.cell);
+        return this.canMove(enemyKing.cell, board);
     }
 
     findAllPossibleMoves(board) {

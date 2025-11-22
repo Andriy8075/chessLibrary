@@ -2,21 +2,26 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Bishop extends Piece {
-    canMoveToCellOnEmptyBoard(cellTo) {
+    canMove(cellTo, board) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
         const { rowDiff, colDiff } = getDistance(this.cell, cellTo);
-        return Math.abs(rowDiff) === Math.abs(colDiff);
+        if (Math.abs(rowDiff) !== Math.abs(colDiff)) return false;
+
+        if (!board.isPathClear(this.cell, cellTo)) return false;
+
+        const targetPiece = board.getPieceOnCell(cellTo);
+        if (targetPiece && targetPiece.color === this.color) return false;
+
+        return true;
     }
 
     doesCheckToKing(board) {
         const enemyKing = board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
-        if (!this.canMoveToCellOnEmptyBoard(enemyKing.cell)) return false;
-
-        return board.isPathClear(this.cell, enemyKing.cell);
+        return this.canMove(enemyKing.cell, board);
     }
 
     findAllPossibleMoves(board) {
