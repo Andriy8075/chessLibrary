@@ -2,12 +2,12 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Pawn extends Piece {
-    canMove(cellTo, board) {
+    canMove(cellTo) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
         const { rowDiff, colDiff } = getDistance(this.cell, cellTo);
-        const targetPiece = board.getPieceOnCell(cellTo);
+        const targetPiece = this.board.getPieceOnCell(cellTo);
 
         if (colDiff === 0) {
             if (this.color === 'white') {
@@ -21,11 +21,11 @@ class Pawn extends Piece {
             if (Math.abs(rowDiff) === 2) {
                 const intermediateRow = this.color === 'white' ? this.cell.row + 1 : this.cell.row - 1;
                 const intermediateCell = { row: intermediateRow, col: this.cell.col };
-                if (board.getPieceOnCell(intermediateCell)) return false;
+                if (this.board.getPieceOnCell(intermediateCell)) return false;
             }
         } else {
             if (!this.canCaptureAt(cellTo)) return false;
-            if (!targetPiece && !this.canEnPassant(cellTo, board)) return false;
+            if (!targetPiece && !this.canEnPassant(cellTo)) return false;
             if (targetPiece && targetPiece.color === this.color) return false;
         }
 
@@ -44,10 +44,10 @@ class Pawn extends Piece {
         }
     }
 
-    canEnPassant(cellTo, board) {
+    canEnPassant(cellTo) {
         if (!this.canCaptureAt(cellTo)) return false;
 
-        const enPassantTarget = board.getEnPassantTarget();
+        const enPassantTarget = this.board.getEnPassantTarget();
         if (!enPassantTarget) return false;
 
         const enPassantRow = this.color === 'white' ? this.cell.row + 1 : this.cell.row - 1;
@@ -64,20 +64,20 @@ class Pawn extends Piece {
         }
     }
 
-    doesCheckToKing(board) {
-        const enemyKing = board.getKing(this.getOppositeColor());
+    doesCheckToKing() {
+        const enemyKing = this.board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
         return this.canCaptureAt(enemyKing.cell);
     }
 
-    findAllPossibleMoves(board) {
+    findAllPossibleMoves() {
         const possibleMoves = [];
 
         const forwardDirection = this.color === 'white' ? 1 : -1;
         
         const oneSquareForward = { row: this.cell.row + forwardDirection, col: this.cell.col };
-        if (isValidCell(oneSquareForward) && !board.getPieceOnCell(oneSquareForward)) {
+        if (isValidCell(oneSquareForward) && !this.board.getPieceOnCell(oneSquareForward)) {
             possibleMoves.push(oneSquareForward);
         }
 
@@ -85,8 +85,8 @@ class Pawn extends Piece {
             (this.color === 'black' && this.cell.row === 7)) {
             const twoSquaresForward = { row: this.cell.row + 2 * forwardDirection, col: this.cell.col };
             if (isValidCell(twoSquaresForward) && 
-                !board.getPieceOnCell(twoSquaresForward) &&
-                !board.getPieceOnCell(oneSquareForward)) {
+                !this.board.getPieceOnCell(twoSquaresForward) &&
+                !this.board.getPieceOnCell(oneSquareForward)) {
                 possibleMoves.push(twoSquaresForward);
             }
         }
@@ -99,7 +99,7 @@ class Pawn extends Piece {
         for (const dir of captureDirections) {
             const captureCell = { row: this.cell.row + dir.row, col: this.cell.col + dir.col };
             if (isValidCell(captureCell)) {
-                const pieceOnTarget = board.getPieceOnCell(captureCell);
+                const pieceOnTarget = this.board.getPieceOnCell(captureCell);
                 if (pieceOnTarget && pieceOnTarget.color !== this.color) {
                     possibleMoves.push(captureCell);
                 }
@@ -113,7 +113,7 @@ class Pawn extends Piece {
 
         for (const dir of enPassantDirections) {
             const enPassantCell = { row: this.cell.row + dir.row, col: this.cell.col + dir.col };
-            if (this.canEnPassant(enPassantCell, board)) {
+            if (this.canEnPassant(enPassantCell)) {
                 possibleMoves.push(enPassantCell);
             }
         }

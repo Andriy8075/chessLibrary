@@ -2,29 +2,29 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Rook extends Piece {
-    canMove(cellTo, board) {
+    canMove(cellTo) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
         const { rowDiff, colDiff } = getDistance(this.cell, cellTo);
         if (!((rowDiff === 0 && colDiff !== 0) || (rowDiff !== 0 && colDiff === 0))) return false;
 
-        if (!board.isPathClear(this.cell, cellTo)) return false;
+        if (!this.board.isPathClear(this.cell, cellTo)) return false;
 
-        const targetPiece = board.getPieceOnCell(cellTo);
+        const targetPiece = this.board.getPieceOnCell(cellTo);
         if (targetPiece && targetPiece.color === this.color) return false;
 
         return true;
     }
 
-    doesCheckToKing(board) {
-        const enemyKing = board.getKing(this.getOppositeColor());
+    doesCheckToKing() {
+        const enemyKing = this.board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
-        return this.canMove(enemyKing.cell, board);
+        return this.canMove(enemyKing.cell);
     }
 
-    findAllPossibleMoves(board) {
+    findAllPossibleMoves() {
         const possibleMoves = [];
         const directions = [
             { row: 1, col: 0 },
@@ -41,7 +41,7 @@ class Rook extends Piece {
                 if (newRow < 1 || newRow > 8 || newCol < 1 || newCol > 8) break;
 
                 const targetCell = { row: newRow, col: newCol };
-                const pieceOnTarget = board.getPieceOnCell(targetCell);
+                const pieceOnTarget = this.board.getPieceOnCell(targetCell);
 
                 if (!pieceOnTarget) {
                     possibleMoves.push(targetCell);

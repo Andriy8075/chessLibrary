@@ -2,7 +2,7 @@ const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
 class Knight extends Piece {
-    canMove(cellTo, board) {
+    canMove(cellTo) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
 
@@ -12,19 +12,19 @@ class Knight extends Piece {
 
         if (!((absRowDiff === 2 && absColDiff === 1) || (absRowDiff === 1 && absColDiff === 2))) return false;
 
-        const targetPiece = board.getPieceOnCell(cellTo);
+        const targetPiece = this.board.getPieceOnCell(cellTo);
         if (targetPiece && targetPiece.color === this.color) return false;
 
         return true;
     }
 
-    doesCheckToKing(board) {
-        const enemyKing = board.getKing(this.getOppositeColor());
+    doesCheckToKing() {
+        const enemyKing = this.board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
-        return this.canMove(enemyKing.cell, board);
+        return this.canMove(enemyKing.cell);
     }
 
-    findAllPossibleMoves(board) {
+    findAllPossibleMoves() {
         const possibleMoves = [];
         const directions = [
             { row: 2, col: 1 }, { row: 2, col: -1 },
@@ -39,7 +39,7 @@ class Knight extends Piece {
 
             if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8) {
                 const targetCell = { row: newRow, col: newCol };
-                const pieceOnTarget = board.getPieceOnCell(targetCell);
+                const pieceOnTarget = this.board.getPieceOnCell(targetCell);
 
                 if (!pieceOnTarget || pieceOnTarget.color !== this.color) {
                     possibleMoves.push(targetCell);

@@ -3,7 +3,7 @@ const { InvalidColorError, InvalidCellError, NotImplementedMethodError } = requi
 
 
 class Piece {
-    constructor(color, cell) {
+    constructor(color, cell, board) {
         if (color !== 'white' && color !== 'black') {
             throw new InvalidColorError(`Invalid color: ${color}. Must be 'white' or 'black'`);
         }
@@ -12,21 +12,22 @@ class Piece {
         }
         this.color = color;
         this.cell = cell;
+        this.board = board;
     }
 
     getOppositeColor() {
         return this.color === 'white' ? 'black' : 'white';
     }
 
-    canMove(cellTo, board) {
+    canMove(cellTo) {
         throw new NotImplementedMethodError('canMove must be implemented by subclass');
     }
 
-    doesCheckToKing(board) {
+    doesCheckToKing() {
         throw new NotImplementedMethodError('doesCheckToKing must be implemented by subclass');
     }
 
-    findAllPossibleMoves(board) {
+    findAllPossibleMoves() {
         throw new NotImplementedMethodError('findAllPossibleMoves must be implemented by subclass');
     }
 

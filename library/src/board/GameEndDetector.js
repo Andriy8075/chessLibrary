@@ -8,7 +8,7 @@ class GameEndDetector {
             for (let col = 1; col <= 8; col++) {
                 const piece = arrangement[row - 1][col - 1];
                 if (piece && piece.color === color) {
-                    const possibleMoves = piece.findAllPossibleMoves(board);
+                    const possibleMoves = piece.findAllPossibleMoves();
                     for (const move of possibleMoves) {
                         const MoveValidator = require('./MoveValidator');
                         if (!MoveValidator.wouldMoveCauseCheck(piece.cell, move, color, board)) {

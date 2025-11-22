@@ -11,7 +11,7 @@ class MoveValidator {
             return { valid: false, error: 'No piece at source cell' };
         }
 
-        if (!piece.canMove(cellTo, board)) {
+        if (!piece.canMove(cellTo)) {
             return { valid: false, error: 'Piece cannot move to target cell' };
         }
 
@@ -19,12 +19,13 @@ class MoveValidator {
             const { rowDiff } = this._getDistance(cellFrom, cellTo);
             const isForwardMove = piece.color === 'white' ? rowDiff > 0 : rowDiff < 0;
             const isSameColumn = cellFrom.col === cellTo.col;
+            const targetPiece = board.getPieceOnCell(cellTo);
             
             if (isForwardMove && isSameColumn && targetPiece) {
                 return { valid: false, error: 'Pawn cannot move forward to occupied square' };
             }
             
-            if (!isSameColumn && !targetPiece && !piece.canEnPassant(cellTo, board)) {
+            if (!isSameColumn && !targetPiece && !piece.canEnPassant(cellTo)) {
                 return { valid: false, error: 'Pawn can only move diagonally to capture' };
             }
         }
@@ -58,7 +59,7 @@ class MoveValidator {
             return { valid: false, error: 'Only king can castle' };
         }
 
-        if (!king.tryCastle(cellTo, board)) {
+        if (!king.tryCastle(cellTo)) {
             return { valid: false, error: 'Castling is not allowed' };
         }
 
@@ -71,7 +72,7 @@ class MoveValidator {
             return { valid: false, error: 'Only pawn can perform en passant' };
         }
 
-        if (!pawn.canEnPassant(cellTo, board)) {
+        if (!pawn.canEnPassant(cellTo)) {
             return { valid: false, error: 'En passant is not possible' };
         }
 

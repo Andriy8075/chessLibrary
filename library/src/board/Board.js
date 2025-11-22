@@ -30,30 +30,30 @@ class Board {
 
     _initializeBoard() {
         for (let col = 1; col <= 8; col++) {
-            this._placePiece(new Pawn('white', { row: 2, col }), { row: 2, col });
-            this._placePiece(new Pawn('black', { row: 7, col }), { row: 7, col });
+            this._placePiece(new Pawn('white', { row: 2, col }, this), { row: 2, col });
+            this._placePiece(new Pawn('black', { row: 7, col }, this), { row: 7, col });
         }
 
-        this._placePiece(new Rook('white', { row: 1, col: 1 }), { row: 1, col: 1 });
-        this._placePiece(new Rook('white', { row: 1, col: 8 }), { row: 1, col: 8 });
-        this._placePiece(new Rook('black', { row: 8, col: 1 }), { row: 8, col: 1 });
-        this._placePiece(new Rook('black', { row: 8, col: 8 }), { row: 8, col: 8 });
+        this._placePiece(new Rook('white', { row: 1, col: 1 }, this), { row: 1, col: 1 });
+        this._placePiece(new Rook('white', { row: 1, col: 8 }, this), { row: 1, col: 8 });
+        this._placePiece(new Rook('black', { row: 8, col: 1 }, this), { row: 8, col: 1 });
+        this._placePiece(new Rook('black', { row: 8, col: 8 }, this), { row: 8, col: 8 });
 
-        this._placePiece(new Knight('white', { row: 1, col: 2 }), { row: 1, col: 2 });
-        this._placePiece(new Knight('white', { row: 1, col: 7 }), { row: 1, col: 7 });
-        this._placePiece(new Knight('black', { row: 8, col: 2 }), { row: 8, col: 2 });
-        this._placePiece(new Knight('black', { row: 8, col: 7 }), { row: 8, col: 7 });
+        this._placePiece(new Knight('white', { row: 1, col: 2 }, this), { row: 1, col: 2 });
+        this._placePiece(new Knight('white', { row: 1, col: 7 }, this), { row: 1, col: 7 });
+        this._placePiece(new Knight('black', { row: 8, col: 2 }, this), { row: 8, col: 2 });
+        this._placePiece(new Knight('black', { row: 8, col: 7 }, this), { row: 8, col: 7 });
 
-        this._placePiece(new Bishop('white', { row: 1, col: 3 }), { row: 1, col: 3 });
-        this._placePiece(new Bishop('white', { row: 1, col: 6 }), { row: 1, col: 6 });
-        this._placePiece(new Bishop('black', { row: 8, col: 3 }), { row: 8, col: 3 });
-        this._placePiece(new Bishop('black', { row: 8, col: 6 }), { row: 8, col: 6 });
+        this._placePiece(new Bishop('white', { row: 1, col: 3 }, this), { row: 1, col: 3 });
+        this._placePiece(new Bishop('white', { row: 1, col: 6 }, this), { row: 1, col: 6 });
+        this._placePiece(new Bishop('black', { row: 8, col: 3 }, this), { row: 8, col: 3 });
+        this._placePiece(new Bishop('black', { row: 8, col: 6 }, this), { row: 8, col: 6 });
 
-        this._placePiece(new Queen('white', { row: 1, col: 4 }), { row: 1, col: 4 });
-        this._placePiece(new Queen('black', { row: 8, col: 4 }), { row: 8, col: 4 });
+        this._placePiece(new Queen('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
+        this._placePiece(new Queen('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
 
-        this._placePiece(new King('white', { row: 1, col: 5 }), { row: 1, col: 5 });
-        this._placePiece(new King('black', { row: 8, col: 5 }), { row: 8, col: 5 });
+        this._placePiece(new King('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
+        this._placePiece(new King('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
     }
 
     getArrangement() {
@@ -139,7 +139,7 @@ class Board {
             return true;
         }
 
-        if (piece instanceof Pawn && piece.canEnPassant(cellTo, this)) {
+        if (piece instanceof Pawn && piece.canEnPassant(cellTo)) {
             const validation = MoveValidator.validateEnPassant(cellFrom, cellTo, this);
             if (!validation.valid) return false;
 
@@ -190,19 +190,19 @@ class Board {
         let newPiece;
         switch (promotionPiece.toLowerCase()) {
             case 'queen':
-                newPiece = new Queen(color, cellTo);
+                newPiece = new Queen(color, cellTo, this);
                 break;
             case 'rook':
-                newPiece = new Rook(color, cellTo);
+                newPiece = new Rook(color, cellTo, this);
                 break;
             case 'bishop':
-                newPiece = new Bishop(color, cellTo);
+                newPiece = new Bishop(color, cellTo, this);
                 break;
             case 'knight':
-                newPiece = new Knight(color, cellTo);
+                newPiece = new Knight(color, cellTo, this);
                 break;
             default:
-                newPiece = new Queen(color, cellTo);
+                newPiece = new Queen(color, cellTo, this);
         }
 
         this._placePiece(newPiece, cellTo);
