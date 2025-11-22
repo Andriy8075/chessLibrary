@@ -21,7 +21,8 @@ function isValidCell(cell) {
            typeof cell.row === 'number' && 
            typeof cell.col === 'number' &&
            cell.row >= 1 && cell.row <= 8 &&
-           cell.col >= 1 && cell.col <= 8;
+           cell.col >= 1 && cell.col <= 8 &&
+           Object.keys(cell).length === 2;
 }
 
 module.exports = {

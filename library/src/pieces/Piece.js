@@ -1,12 +1,14 @@
 const { isValidCell } = require('../utils/Cell');
+const { InvalidColorError, InvalidCellError, NotImplementedMethodError } = require('../Errors');
+
 
 class Piece {
     constructor(color, cell) {
         if (color !== 'white' && color !== 'black') {
-            throw new Error(`Invalid color: ${color}. Must be 'white' or 'black'`);
+            throw new InvalidColorError(`Invalid color: ${color}. Must be 'white' or 'black'`);
         }
         if (!isValidCell(cell)) {
-            throw new Error(`Invalid cell: ${JSON.stringify(cell)}`);
+            throw new InvalidCellError(`Invalid cell: ${JSON.stringify(cell)}`);
         }
         this.color = color;
         this.cell = cell;
@@ -17,20 +19,20 @@ class Piece {
     }
 
     canMoveToCellOnEmptyBoard(cellTo) {
-        throw new Error('canMoveToCellOnEmptyBoard must be implemented by subclass');
+        throw new NotImplementedMethodError('canMoveToCellOnEmptyBoard must be implemented by subclass');
     }
 
     doesCheckToKing(board) {
-        throw new Error('doesCheckToKing must be implemented by subclass');
+        throw new NotImplementedMethodError('doesCheckToKing must be implemented by subclass');
     }
 
     findAllPossibleMoves(board) {
-        throw new Error('findAllPossibleMoves must be implemented by subclass');
+        throw new NotImplementedMethodError('findAllPossibleMoves must be implemented by subclass');
     }
 
     updatePosition(newCell) {
         if (!isValidCell(newCell)) {
-            throw new Error(`Invalid cell: ${JSON.stringify(newCell)}`);
+            throw new InvalidCellError(`Invalid cell: ${JSON.stringify(newCell)}`);
         }
         this.cell = newCell;
     }

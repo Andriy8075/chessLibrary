@@ -1,0 +1,1 @@
+class InvalidColorError extends Error {}

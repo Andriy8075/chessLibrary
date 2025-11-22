@@ -51,16 +51,14 @@ class Game {
     }
 
     _processMove(request) {
-        if (!request.from || !request.to) {
-            return {
+        const { valid, error } = validateMoveRequest(request);
+        if (!valid) {
+                return {
                 success: false,
-                error: 'Move request must include from and to cells',
+                error,
                 state: this.state
             };
         }
-
-        const cellFrom = createCell(request.from.row, request.from.col);
-        const cellTo = createCell(request.to.row, request.to.col);
 
         if (this.state.gameStatus !== 'active') {
             return {

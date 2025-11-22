@@ -1,0 +1,1 @@
+class InvalidCellError extends Error {}
