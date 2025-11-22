@@ -1,5 +1,4 @@
 const Board = require('./board/Board');
-const { isValidCell, createCell } = require('./utils/Cell');
 
 class Game {
     constructor() {

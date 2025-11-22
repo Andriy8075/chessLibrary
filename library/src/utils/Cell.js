@@ -1,10 +1,3 @@
-function createCell(row, col) {
-    if (row < 1 || row > 8 || col < 1 || col > 8) {
-        throw new Error(`Invalid cell coordinates: row=${row}, col=${col}`);
-    }
-    return { row, col };
-}
-
 function cellsEqual(cell1, cell2) {
     return cell1.row === cell2.row && cell1.col === cell2.col;
 }
@@ -26,7 +19,6 @@ function isValidCell(cell) {
 }
 
 module.exports = {
-    createCell,
     cellsEqual,
     getDistance,
     isValidCell
