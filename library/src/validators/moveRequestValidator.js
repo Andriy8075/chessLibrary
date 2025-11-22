@@ -1,3 +1,6 @@
+const { isValidCell } = require('../utils/Cell');
+const { cellsEqual } = require('../utils/Cell');
+
 function validateMoveRequest(request) {
     if (!request.from || !request.to) {
         return {

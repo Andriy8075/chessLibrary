@@ -1,0 +1,15 @@
+{
+  "name": "chess-web",
+  "version": "1.0.0",
+  "description": "Chess web application using chess library",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "chess": "file:../library"
+  },
+  "devDependencies": {}
+}
+
