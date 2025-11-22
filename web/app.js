@@ -34,21 +34,3 @@ function setupSocketHandlers() {
 }
 
 connectWebSocket();
-
-socket.onopen = function(event) {
-    console.log('Connected to WebSocket server');
-    // Example: send a message
-    socket.send('Hello Server!');
-};
-
-socket.onmessage = function(event) {
-    console.log('Message from server:', event.data);
-};
-
-socket.onclose = function(event) {
-    console.log('WebSocket connection closed');
-};
-
-socket.onerror = function(error) {
-    console.error('WebSocket error:', error);
-};
