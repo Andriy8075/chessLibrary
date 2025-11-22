@@ -6,3 +6,5 @@ const validCells = [
     { row: 5, col: 5 },
     { row: 3, col: 4 },
 ]
+
+module.exports = validCells;
