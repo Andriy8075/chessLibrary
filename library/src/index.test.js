@@ -1,14 +1,3 @@
-/**
- * Test exports for the chess library
- * 
- * This file exports all classes needed for testing:
- * - Game class
- * - Board class
- * - All piece classes
- * 
- * Tests should import from this file to access internal classes.
- */
-
 const Game = require('./Game');
 const Board = require('./board/Board');
 const Piece = require('./pieces/Piece');
@@ -30,4 +19,3 @@ module.exports = {
     Knight,
     Pawn
 };
-

@@ -1,13 +1,7 @@
 const Board = require('./board/Board');
 const { isValidCell, createCell } = require('./utils/Cell');
 
-/**
- * Main Game class that manages chess game state and processes requests
- */
 class Game {
-    /**
-     * Creates a new chess game with standard starting position
-     */
     constructor() {
         this.state = {
             board: new Board(),
@@ -18,30 +12,17 @@ class Game {
                 black: { kingSide: true, queenSide: true }
             },
             enPassantTarget: null,
-            gameStatus: 'active', // 'active', 'checkmate', 'stalemate', 'draw', 'resigned'
-            winner: null, // 'white', 'black', or null
-            drawProposed: null, // 'white', 'black', or null
+            gameStatus: 'active',
+            winner: null,
+            drawProposed: null,
             moveHistory: []
         };
     }
 
-    /**
-     * Gets the current game state
-     * @returns {Object} Current game state
-     */
     getState() {
         return this.state;
     }
 
-    /**
-     * Processes a game request (move, draw proposal, resign, etc.)
-     * @param {Object} request - Request object
-     * @param {string} request.type - Request type: 'move', 'proposeDraw', 'acceptDraw', 'resign'
-     * @param {{row: number, col: number}} [request.from] - Source cell for moves
-     * @param {{row: number, col: number}} [request.to] - Target cell for moves
-     * @param {string} [request.promotion] - Promotion piece for pawn promotion: 'queen', 'rook', 'bishop', 'knight'
-     * @returns {Object} Result object with success status and updated state
-     */
     processRequest(request) {
         if (!request || !request.type) {
             return {
@@ -51,7 +32,6 @@ class Game {
             };
         }
 
-        // Handle different request types
         switch (request.type) {
             case 'move':
                 return this._processMove(request);
@@ -70,13 +50,7 @@ class Game {
         }
     }
 
-    /**
-     * Processes a move request
-     * @param {Object} request - Move request
-     * @private
-     */
     _processMove(request) {
-        // Validate request
         if (!request.from || !request.to) {
             return {
                 success: false,
@@ -88,7 +62,6 @@ class Game {
         const cellFrom = createCell(request.from.row, request.from.col);
         const cellTo = createCell(request.to.row, request.to.col);
 
-        // Check if game is still active
         if (this.state.gameStatus !== 'active') {
             return {
                 success: false,
@@ -97,7 +70,6 @@ class Game {
             };
         }
 
-        // Check if it's the correct player's turn
         const piece = this.state.board.getPieceOnCell(cellFrom);
         if (!piece) {
             return {
@@ -115,7 +87,6 @@ class Game {
             };
         }
 
-        // Try to make the move
         const promotionPiece = request.promotion || null;
         const moveSuccess = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
 
@@ -127,7 +98,6 @@ class Game {
             };
         }
 
-        // Update game state
         const movedPiece = this.state.board.getPieceOnCell(cellTo);
         this.state.lastMove = {
             from: cellFrom,
@@ -135,13 +105,10 @@ class Game {
             piece: movedPiece
         };
 
-        // Update castling rights
         this._updateCastlingRights();
 
-        // Update en passant target
         this.state.enPassantTarget = this.state.board.getEnPassantTarget();
 
-        // Add to move history
         this.state.moveHistory.push({
             from: cellFrom,
             to: cellTo,
@@ -149,35 +116,28 @@ class Game {
             color: movedPiece.color
         });
 
-        // Check for check
         const opponentColor = this.state.currentTurn === 'white' ? 'black' : 'white';
         const isCheck = this.state.board.isKingInCheck(opponentColor);
 
-        // Check for checkmate
         const isCheckmate = this.state.board.checkForCheckmateAfterMove(cellFrom, cellTo);
 
-        // Check for stalemate
         const isStalemate = this.state.board.checkForStalemateAfterMove(cellFrom, cellTo);
 
-        // Check for insufficient material
         const enoughPieces = this.state.board.enoughPiecesAfterMoveToContinueGame(cellFrom, cellTo);
 
-        // Determine game status
         if (isCheckmate) {
             this.state.gameStatus = 'checkmate';
             this.state.winner = this.state.currentTurn;
         } else if (isStalemate) {
-            this.state.gameStatus = 'draw'; // Stalemate is a draw
+            this.state.gameStatus = 'draw';
         } else if (!enoughPieces) {
             this.state.gameStatus = 'draw';
         }
 
-        // Switch turns if game is still active
         if (this.state.gameStatus === 'active') {
             this.state.currentTurn = opponentColor;
         }
 
-        // Build result
         const result = {
             success: true,
             state: this.state
@@ -202,10 +162,6 @@ class Game {
         return result;
     }
 
-    /**
-     * Processes a draw proposal
-     * @private
-     */
     _processProposeDraw() {
         if (this.state.gameStatus !== 'active') {
             return {
@@ -223,10 +179,6 @@ class Game {
         };
     }
 
-    /**
-     * Processes draw acceptance
-     * @private
-     */
     _processAcceptDraw() {
         if (this.state.gameStatus !== 'active') {
             return {
@@ -262,10 +214,6 @@ class Game {
         };
     }
 
-    /**
-     * Processes resignation
-     * @private
-     */
     _processResign() {
         if (this.state.gameStatus !== 'active') {
             return {
@@ -284,10 +232,6 @@ class Game {
         };
     }
 
-    /**
-     * Updates castling rights based on current board state
-     * @private
-     */
     _updateCastlingRights() {
         this.state.castlingRights.white.kingSide = 
             !this.state.board.hasPieceMoved('white', 'king') &&
@@ -308,4 +252,3 @@ class Game {
 }
 
 module.exports = Game;
-

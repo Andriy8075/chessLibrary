@@ -16,7 +16,7 @@
   "license": "ISC",
   "author": "Andriy8075",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
@@ -26,12 +26,13 @@
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
-      "./tests/**/*.test.js"
+      "**/tests/**/*.test.js"
     ],
     "collectCoverageFrom": [
-      "./src/**/*.js",
-      "!./node_modules/**",
-      "!./tests/**",
+      "**/*.js",
+      "!**/node_modules/**",
+      "!**/tests/**",
+      "!index.test.js"
     ]
   }
 }

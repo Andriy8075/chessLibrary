@@ -1,15 +1,7 @@
 const Piece = require('./Piece');
 const { getDistance, isValidCell } = require('../utils/Cell');
 
-/**
- * Queen piece class
- */
 class Queen extends Piece {
-    /**
-     * Checks if queen can move to cell on empty board (horizontal, vertical, or diagonal)
-     * @param {{row: number, col: number}} cellTo - Target cell
-     * @returns {boolean} True if queen can move to cell
-     */
     canMoveToCellOnEmptyBoard(cellTo) {
         if (!isValidCell(cellTo)) return false;
         if (this.cell.row === cellTo.row && this.cell.col === cellTo.col) return false;
@@ -18,43 +10,31 @@ class Queen extends Piece {
         const absRowDiff = Math.abs(rowDiff);
         const absColDiff = Math.abs(colDiff);
 
-        // Queen moves like rook (horizontal/vertical) or bishop (diagonal)
-        return (absRowDiff === 0 && absColDiff !== 0) ||  // Horizontal
-               (absRowDiff !== 0 && absColDiff === 0) ||  // Vertical
-               (absRowDiff === absColDiff);                // Diagonal
+        return (absRowDiff === 0 && absColDiff !== 0) ||
+               (absRowDiff !== 0 && absColDiff === 0) ||
+               (absRowDiff === absColDiff);
     }
 
-    /**
-     * Checks if queen attacks the enemy king
-     * @param {Board} board - Board instance
-     * @returns {boolean} True if queen attacks enemy king
-     */
     doesCheckToKing(board) {
         const enemyKing = board.getKing(this.getOppositeColor());
         if (!enemyKing) return false;
 
         if (!this.canMoveToCellOnEmptyBoard(enemyKing.cell)) return false;
 
-        // Check if path is clear
         return board.isPathClear(this.cell, enemyKing.cell);
     }
 
-    /**
-     * Finds all possible moves for queen
-     * @param {Board} board - Board instance
-     * @returns {Array<{row: number, col: number}>} Array of possible move cells
-     */
     findAllPossibleMoves(board) {
         const possibleMoves = [];
         const directions = [
-            { row: 1, col: 0 },   // Up
-            { row: -1, col: 0 },  // Down
-            { row: 0, col: 1 },   // Right
-            { row: 0, col: -1 },  // Left
-            { row: 1, col: 1 },   // Up-right
-            { row: 1, col: -1 },  // Up-left
-            { row: -1, col: 1 },  // Down-right
-            { row: -1, col: -1 }  // Down-left
+            { row: 1, col: 0 },
+            { row: -1, col: 0 },
+            { row: 0, col: 1 },
+            { row: 0, col: -1 },
+            { row: 1, col: 1 },
+            { row: 1, col: -1 },
+            { row: -1, col: 1 },
+            { row: -1, col: -1 }
         ];
 
         for (const dir of directions) {
@@ -70,11 +50,10 @@ class Queen extends Piece {
                 if (!pieceOnTarget) {
                     possibleMoves.push(targetCell);
                 } else {
-                    // Can capture enemy piece
                     if (pieceOnTarget.color !== this.color) {
                         possibleMoves.push(targetCell);
                     }
-                    break; // Blocked by piece
+                    break;
                 }
             }
         }
@@ -84,4 +63,3 @@ class Queen extends Piece {
 }
 
 module.exports = Queen;
-
