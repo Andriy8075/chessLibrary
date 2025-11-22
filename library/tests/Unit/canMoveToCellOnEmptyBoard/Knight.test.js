@@ -2,7 +2,7 @@ const Knight = require('../../../src/pieces/Knight.js');
 
 knight = new Knight('black', {
     row: 4,
-    column: 3
+    col: 3
 })
 
 test('returns true for valid moves', () => {
