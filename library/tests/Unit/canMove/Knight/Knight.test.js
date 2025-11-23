@@ -1,5 +1,5 @@
 const mockBoard = require('../MockBoard');
-const positions = require('./positionsAndMoves');
+const emptyBoardCases = require('./EmptyBoardCases');
 const { cellsEqual } = require('../../../../src/utils/Cell');
 
 const knightProvider = (cell) => {
@@ -26,7 +26,7 @@ test('can not move to cells outside of the board', () => {
 });
 
 test('test positions with all valid moves', () => {
-    for (const position of positions) {
+    for (const position of emptyBoardCases) {
         const knight = knightProvider(position.position);
         for (let i = 1; i <= 8; i++) {
             for (let j = 1; j <= 8; j++) {
