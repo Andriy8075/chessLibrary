@@ -132,7 +132,14 @@ function handleSquareClick(square, boardRow, boardCol, arrangement) {
     
     const piece = arrangement[boardRow]?.[boardCol] || null;
     
-    // Only allow selection if there's a piece of the player's color
+    // If clicking on the already selected square, deselect it
+    if (selectedSquare === square) {
+        square.classList.remove('selected');
+        selectedSquare = null;
+        return;
+    }
+    
+    // If clicking on own piece, select it
     if (piece && piece.color === playerColor) {
         // Remove highlight from previously selected square
         if (selectedSquare) {
@@ -142,6 +149,12 @@ function handleSquareClick(square, boardRow, boardCol, arrangement) {
         // Add highlight to clicked square
         square.classList.add('selected');
         selectedSquare = square;
+    } else {
+        // Clicking on opponent's piece or empty cell - clear selection
+        if (selectedSquare) {
+            selectedSquare.classList.remove('selected');
+            selectedSquare = null;
+        }
     }
 }
 
