@@ -2,6 +2,8 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const Game = require('../library/src/Game');
 require('dotenv').config();
 
 const app = express();
@@ -25,13 +27,14 @@ const mesasges = {
         }
         else {
             const game = new Game();
-            gameUUID = uuidv4();
+            const gameUUID = uuidv4();
             games[gameUUID] = game;
+            const serializedState = game.getSerializedState();
             const waitingPlayerMessage = JSON.stringify({
                 type: 'gameFound',
                 data: {
                     gameUUID: gameUUID,
-                    gameState: game.getState(),
+                    gameState: serializedState,
                     color: 'black',
                 }
             })
@@ -39,12 +42,14 @@ const mesasges = {
                 type: 'gameFound',
                 data: {
                     gameUUID: gameUUID,
-                    gameState: game.getState(),
+                    gameState: serializedState,
                     color: 'white',
                 }
             })
             waitingPlayer.send(waitingPlayerMessage);
             ws.send(wsMessage);
+            ws.data = ws.data || {};
+            waitingPlayer.data = waitingPlayer.data || {};
             ws.data.color = 'white';
             waitingPlayer.data.color = 'black';
             waitingPlayer.data.gameUUID = gameUUID;
@@ -64,10 +69,10 @@ const mesasges = {
             type: 'gameResponse',
             data: result
         })
-        ws.send(JSON.stringify(toSend))
+        ws.send(toSend);
         if (result.success) {
-            opponent = ws.data.opponent;
-            opponent.send(toSend)
+            const opponent = ws.data.opponent;
+            opponent.send(toSend);
         }
     }
 };
@@ -76,9 +81,16 @@ wss.on('connection', function connection(ws) {
     console.log('Client connected');
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
-        func = message['type'];
-        if (func in mesasges) {
-            mesasges[func](ws, message);
+        try {
+            // Handle both string and Buffer messages
+            const messageString = Buffer.isBuffer(message) ? message.toString('utf8') : message;
+            const parsedMessage = JSON.parse(messageString);
+            const func = parsedMessage.type;
+            if (func && func in mesasges) {
+                mesasges[func](ws, parsedMessage);
+            }
+        } catch (e) {
+            console.error('Failed to parse message:', e);
         }
     });
 });

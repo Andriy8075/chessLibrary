@@ -60,6 +60,19 @@ class Board {
         return this.#arrangement;
     }
 
+    getSerializedState() {
+        return this.#arrangement.map(row => 
+            row.map(piece => {
+                if (!piece) return null;
+                return {
+                    type: piece.constructor.name.toLowerCase(),
+                    color: piece.color,
+                    position: piece.position
+                };
+            })
+        );
+    }
+
     getPieceOnCell(cell) {
         if (!isValidCell(cell)) return null;
         return this.#arrangement[cell.row - 1][cell.col - 1];

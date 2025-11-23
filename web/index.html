@@ -4,9 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #findGameBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 20px;
+            cursor: pointer;
+        }
+        #status {
+            margin: 10px;
+            font-weight: bold;
+        }
+        #chessBoard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 640px;
+            height: 640px;
+            border: 2px solid #333;
+        }
+        .square {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .square.light {
+            background-color: #f0d9b5;
+        }
+        .square.dark {
+            background-color: #b58863;
+        }
+        .square img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+    </style>
 </head>
 <body>
     <h1>Chess</h1>
+    <button id="findGameBtn">Find Game</button>
+    <div id="status"></div>
+    <div id="chessBoard"></div>
     <script src="app.js"></script>
 </body>
 </html>

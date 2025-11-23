@@ -23,6 +23,20 @@ class Game {
         return this.state;
     }
 
+    getSerializedState() {
+        return {
+            board: this.state.board.getSerializedState(),
+            currentTurn: this.state.currentTurn,
+            lastMove: this.state.lastMove,
+            castlingRights: this.state.castlingRights,
+            enPassantTarget: this.state.enPassantTarget,
+            gameStatus: this.state.gameStatus,
+            winner: this.state.winner,
+            drawProposed: this.state.drawProposed,
+            moveHistory: this.state.moveHistory
+        };
+    }
+
     processRequest(request) {
         if (!request || !request.type) {
             return {
