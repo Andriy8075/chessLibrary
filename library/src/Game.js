@@ -1,4 +1,5 @@
 const Board = require('./board/Board');
+const validateMoveRequest = require('./validators/moveRequestValidator');
 
 class Game {
     constructor() {
@@ -63,6 +64,14 @@ class Game {
             return {
                 success: false,
                 error: `Game is not active. Status: ${this.state.gameStatus}`,
+                state: this.state
+            };
+        }
+
+        if (this.state.currentTurn !== color) {
+            return {
+                success: false,
+                error: `It is ${this.state.currentTurn}'s turn, not ${color}'s`,
                 state: this.state
             };
         }

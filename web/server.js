@@ -13,11 +13,73 @@ app.use(express.static(path.join(__dirname)));
 
 const wss = new WebSocket.Server({ server: server, path: '/ws' });
 
+const games = {};
+let waitingPlayer = null;
+const mesasges = {
+    findGame: (ws, message) => {
+        if (waitingPlayer === null) {
+            waitingPlayer = ws;
+            waitingPlayer.send(JSON.stringify({
+                type: 'waitingForOpponent',
+            }))
+        }
+        else {
+            const game = new Game();
+            gameUUID = uuidv4();
+            games[gameUUID] = game;
+            const waitingPlayerMessage = JSON.stringify({
+                type: 'gameFound',
+                data: {
+                    gameUUID: gameUUID,
+                    gameState: game.getState(),
+                    color: 'black',
+                }
+            })
+            const wsMessage = JSON.stringify({
+                type: 'gameFound',
+                data: {
+                    gameUUID: gameUUID,
+                    gameState: game.getState(),
+                    color: 'white',
+                }
+            })
+            waitingPlayer.send(waitingPlayerMessage);
+            ws.send(wsMessage);
+            ws.data.color = 'white';
+            waitingPlayer.data.color = 'black';
+            waitingPlayer.data.gameUUID = gameUUID;
+            ws.data.gameUUID = gameUUID;
+            waitingPlayer.data.opponent = ws;
+            ws.data.opponent = waitingPlayer;
+            waitingPlayer = null;
+        }
+    },
+    gameRequest: (ws, message) => {
+        const gameUUID = ws.data.gameUUID;
+        const game = games[gameUUID];
+        const gameRequest = message.gameRequest;
+        gameRequest.color = ws.data.color;
+        const result = game.processRequest(gameRequest);
+        const toSend = JSON.stringify({
+            type: 'gameResponse',
+            data: result
+        })
+        ws.send(JSON.stringify(toSend))
+        if (result.success) {
+            opponent = ws.data.opponent;
+            opponent.send(toSend)
+        }
+    }
+};
+
 wss.on('connection', function connection(ws) {
     console.log('Client connected');
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
-        ws.send(`Echo: ${message}`);
+        func = message['type'];
+        if (func in mesasges) {
+            mesasges[func](ws, message);
+        }
     });
 });
 
