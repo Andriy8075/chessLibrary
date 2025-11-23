@@ -39,3 +39,5 @@ const positions = [
         { row: 7, col: 6 }]
     },
 ]
+
+module.exports = positions;
