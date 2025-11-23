@@ -1,17 +1,11 @@
 let socket;
 
-async function connectWebSocket() {
-    try {
-        const response = await fetch('/config');
-        const config = await response.json();
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.hostname}:${config.wsPort}/ws`;
-        socket = new WebSocket(wsUrl);
-        
-        setupSocketHandlers();
-    } catch (error) {
-        console.error('Failed to get WebSocket config:', error);
-    }
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    socket = new WebSocket(wsUrl);
+    
+    setupSocketHandlers();
 }
 
 function setupSocketHandlers() {

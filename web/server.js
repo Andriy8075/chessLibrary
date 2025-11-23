@@ -11,10 +11,6 @@ const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(express.static(path.join(__dirname)));
 
-app.get('/config', (req, res) => {
-    res.json({ wsPort: port });
-});
-
 const wss = new WebSocket.Server({ server: server, path: '/ws' });
 
 wss.on('connection', function connection(ws) {
