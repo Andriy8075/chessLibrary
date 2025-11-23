@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Board Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Mock Board Editor</h1>
+        
+        <div class="controls">
+            <div class="piece-selector">
+                <h3>Select Piece</h3>
+                <div class="piece-options">
+                    <div class="piece-option" data-piece="pawn" data-color="white">
+                        <img src="../../../web/images/whitePawn.png" alt="White Pawn">
+                        <span>White Pawn</span>
+                    </div>
+                    <div class="piece-option" data-piece="pawn" data-color="black">
+                        <img src="../../../web/images/blackPawn.png" alt="Black Pawn">
+                        <span>Black Pawn</span>
+                    </div>
+                    <div class="piece-option" data-piece="rook" data-color="white">
+                        <img src="../../../web/images/whiteRook.png" alt="White Rook">
+                        <span>White Rook</span>
+                    </div>
+                    <div class="piece-option" data-piece="rook" data-color="black">
+                        <img src="../../../web/images/blackRook.png" alt="Black Rook">
+                        <span>Black Rook</span>
+                    </div>
+                    <div class="piece-option" data-piece="knight" data-color="white">
+                        <img src="../../../web/images/whiteKnight.png" alt="White Knight">
+                        <span>White Knight</span>
+                    </div>
+                    <div class="piece-option" data-piece="knight" data-color="black">
+                        <img src="../../../web/images/blackKnight.png" alt="Black Knight">
+                        <span>Black Knight</span>
+                    </div>
+                    <div class="piece-option" data-piece="bishop" data-color="white">
+                        <img src="../../../web/images/whiteBishop.png" alt="White Bishop">
+                        <span>White Bishop</span>
+                    </div>
+                    <div class="piece-option" data-piece="bishop" data-color="black">
+                        <img src="../../../web/images/blackBishop.png" alt="Black Bishop">
+                        <span>Black Bishop</span>
+                    </div>
+                    <div class="piece-option" data-piece="queen" data-color="white">
+                        <img src="../../../web/images/whiteQueen.png" alt="White Queen">
+                        <span>White Queen</span>
+                    </div>
+                    <div class="piece-option" data-piece="queen" data-color="black">
+                        <img src="../../../web/images/blackQueen.png" alt="Black Queen">
+                        <span>Black Queen</span>
+                    </div>
+                    <div class="piece-option" data-piece="king" data-color="white">
+                        <img src="../../../web/images/whiteKing.png" alt="White King">
+                        <span>White King</span>
+                    </div>
+                    <div class="piece-option" data-piece="king" data-color="black">
+                        <img src="../../../web/images/blackKing.png" alt="Black King">
+                        <span>Black King</span>
+                    </div>
+                    <div class="piece-option remove" data-piece="remove">
+                        <span class="remove-icon">✕</span>
+                        <span>Remove</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mode-selector">
+                <h3>Mode</h3>
+                <button class="mode-btn active" data-mode="place">Place Pieces</button>
+                <button class="mode-btn" data-mode="main">Select Main Piece</button>
+                <button class="mode-btn" data-mode="moves">Mark Moves</button>
+            </div>
+
+            <div class="info-panel">
+                <h3>Board Info</h3>
+                <div id="mainPieceInfo">Main Piece: None</div>
+                <div id="piecesCount">Pieces: 0</div>
+                <div id="movesCount">Moves: 0</div>
+            </div>
+
+            <div class="save-panel">
+                <h3>Save Mock Board</h3>
+                <input type="text" id="fileName" placeholder="Enter file name (e.g., MyBoard)" value="">
+                <button id="saveBtn">Download File</button>
+                <div id="saveStatus"></div>
+                <div class="save-instructions">
+                    <small>Save the downloaded file to: <code>library/tests/mockBoards/</code></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div id="chessBoard"></div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
+
