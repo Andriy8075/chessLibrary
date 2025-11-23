@@ -65,6 +65,12 @@ const mesasges = {
         const gameRequest = message.gameRequest;
         gameRequest.color = ws.data.color;
         const result = game.processRequest(gameRequest);
+        
+        // Serialize the state if it exists
+        if (result.state) {
+            result.state = game.getSerializedState();
+        }
+        
         const toSend = JSON.stringify({
             type: 'gameResponse',
             data: result

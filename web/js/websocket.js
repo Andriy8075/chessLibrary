@@ -1,4 +1,4 @@
-import { setGameState, setPlayerColor, resetSelection } from './gameState.js';
+import { setGameState, setPlayerColor, resetSelection, getPlayerColor } from './gameState.js';
 import { createBoard } from './board.js';
 import { updateStatus } from './uiHelpers.js';
 
@@ -52,15 +52,7 @@ function handleServerMessage(message) {
             createBoard(message.data.gameState);
             break;
         case 'gameResponse':
-            if (message.data && message.data.state) {
-                setGameState(message.data.state);
-                createBoard(message.data.state);
-                if (message.data.success) {
-                    updateStatus('Move successful');
-                } else if (message.data.error) {
-                    updateStatus(`Move failed: ${message.data.error}`);
-                }
-            }
+            handleGameResponse(message.data);
             break;
         default:
             console.log('Unknown message type:', message.type);
@@ -73,6 +65,74 @@ function sendMessage(message) {
         return true;
     }
     return false;
+}
+
+function handleGameResponse(data) {
+    if (!data) {
+        console.error('Invalid game response data');
+        return;
+    }
+    
+    // Update game state if provided
+    if (data.state) {
+        // The state should already be serialized from the server
+        // But we need to ensure the board is properly serialized
+        let gameState = data.state;
+        
+        // If board is not an array (not serialized), we can't handle it
+        // The server should serialize it before sending
+        if (!Array.isArray(gameState.board)) {
+            console.warn('Board state is not serialized properly');
+        }
+        
+        setGameState(gameState);
+        createBoard(gameState);
+    }
+    
+    // Handle response status
+    if (data.success) {
+        const statusMessages = [];
+        
+        // Check for special game states
+        if (data.checkmate) {
+            statusMessages.push('Checkmate!');
+            if (data.state && data.state.winner) {
+                const winner = data.state.winner === getPlayerColor() ? 'You' : 'Opponent';
+                statusMessages.push(`${winner} win!`);
+            }
+        } else if (data.stalemate) {
+            statusMessages.push('Stalemate! Game is a draw.');
+        } else if (data.draw) {
+            statusMessages.push('Game is a draw.');
+        } else if (data.check) {
+            statusMessages.push('Check!');
+        } else {
+            statusMessages.push('Move successful');
+        }
+        
+        // Show whose turn it is
+        if (data.state && data.state.currentTurn) {
+            const currentPlayer = data.state.currentTurn === getPlayerColor() ? 'Your' : 'Opponent\'s';
+            statusMessages.push(`${currentPlayer} turn`);
+        }
+        
+        // Show game status if game has ended
+        if (data.state && data.state.gameStatus && data.state.gameStatus !== 'active') {
+            if (data.state.gameStatus === 'checkmate') {
+                // Already handled above
+            } else if (data.state.gameStatus === 'draw') {
+                // Already handled above
+            } else if (data.state.gameStatus === 'resigned') {
+                statusMessages.push('Game ended by resignation');
+            }
+        }
+        
+        updateStatus(statusMessages.join(' - '));
+    } else if (data.error) {
+        updateStatus(`Move failed: ${data.error}`);
+    } else {
+        updateStatus('Received game response');
+    }
 }
 
 function getSocket() {
