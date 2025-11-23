@@ -23,69 +23,132 @@ class GameEndDetector {
     }
 
     static checkForCheckmateAfterMove(cellFrom, cellTo, board) {
-        const piece = board.getPieceOnCell(cellFrom);
-        const capturedPiece = board.getPieceOnCell(cellTo);
-        const movingColor = piece.color;
-        const opponentColor = movingColor === 'white' ? 'black' : 'white';
+        // Check if move has already been executed (piece is at destination)
+        const pieceAtDest = board.getPieceOnCell(cellTo);
+        const pieceAtSource = board.getPieceOnCell(cellFrom);
         
-        board._movePiece(cellFrom, cellTo);
+        let movingColor;
+        let opponentColor;
         
-        const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
-        
-        const hasMoves = this.hasLegalMoves(opponentColor, board);
-        
-        board._movePiece(cellTo, cellFrom);
-        if (capturedPiece) {
-            board._placePiece(capturedPiece, cellTo);
+        if (pieceAtDest && !pieceAtSource) {
+            // Move has already been executed - piece is at destination
+            movingColor = pieceAtDest.color;
+            opponentColor = movingColor === 'white' ? 'black' : 'white';
+            
+            // Check current state (move already executed)
+            const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
+            const hasMoves = this.hasLegalMoves(opponentColor, board);
+            
+            return kingInCheck && !hasMoves;
+        } else if (pieceAtSource) {
+            // Move has not been executed yet - simulate it
+            const capturedPiece = board.getPieceOnCell(cellTo);
+            movingColor = pieceAtSource.color;
+            opponentColor = movingColor === 'white' ? 'black' : 'white';
+            
+            board._movePiece(cellFrom, cellTo);
+            
+            const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
+            const hasMoves = this.hasLegalMoves(opponentColor, board);
+            
+            board._movePiece(cellTo, cellFrom);
+            if (capturedPiece) {
+                board._placePiece(capturedPiece, cellTo);
+            }
+            
+            return kingInCheck && !hasMoves;
         }
         
-        return kingInCheck && !hasMoves;
+        return false;
     }
 
     static checkForStalemateAfterMove(cellFrom, cellTo, board) {
-        const piece = board.getPieceOnCell(cellFrom);
-        const capturedPiece = board.getPieceOnCell(cellTo);
-        const movingColor = piece.color;
-        const opponentColor = movingColor === 'white' ? 'black' : 'white';
+        // Check if move has already been executed (piece is at destination)
+        const pieceAtDest = board.getPieceOnCell(cellTo);
+        const pieceAtSource = board.getPieceOnCell(cellFrom);
         
-        board._movePiece(cellFrom, cellTo);
+        let movingColor;
+        let opponentColor;
         
-        const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
-        
-        const hasMoves = this.hasLegalMoves(opponentColor, board);
-        
-        board._movePiece(cellTo, cellFrom);
-        if (capturedPiece) {
-            board._placePiece(capturedPiece, cellTo);
+        if (pieceAtDest && !pieceAtSource) {
+            // Move has already been executed - piece is at destination
+            movingColor = pieceAtDest.color;
+            opponentColor = movingColor === 'white' ? 'black' : 'white';
+            
+            // Check current state (move already executed)
+            const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
+            const hasMoves = this.hasLegalMoves(opponentColor, board);
+            
+            return !kingInCheck && !hasMoves;
+        } else if (pieceAtSource) {
+            // Move has not been executed yet - simulate it
+            const capturedPiece = board.getPieceOnCell(cellTo);
+            movingColor = pieceAtSource.color;
+            opponentColor = movingColor === 'white' ? 'black' : 'white';
+            
+            board._movePiece(cellFrom, cellTo);
+            
+            const kingInCheck = CheckDetector.isKingInCheck(opponentColor, board);
+            const hasMoves = this.hasLegalMoves(opponentColor, board);
+            
+            board._movePiece(cellTo, cellFrom);
+            if (capturedPiece) {
+                board._placePiece(capturedPiece, cellTo);
+            }
+            
+            return !kingInCheck && !hasMoves;
         }
         
-        return !kingInCheck && !hasMoves;
+        return false;
     }
 
     static enoughPiecesAfterMoveToContinueGame(cellFrom, cellTo, board) {
-        const piece = board.getPieceOnCell(cellFrom);
-        const capturedPiece = board.getPieceOnCell(cellTo);
+        // Check if move has already been executed (piece is at destination)
+        const pieceAtDest = board.getPieceOnCell(cellTo);
+        const pieceAtSource = board.getPieceOnCell(cellFrom);
         
-        board._movePiece(cellFrom, cellTo);
-        if (capturedPiece) {
-            board._removePiece(cellTo);
-        }
+        let arrangement;
+        let pieces = [];
         
-        const arrangement = board.getArrangement();
-        const pieces = [];
-        
-        for (let row = 1; row <= 8; row++) {
-            for (let col = 1; col <= 8; col++) {
-                const p = arrangement[row - 1][col - 1];
-                if (p) {
-                    pieces.push(p);
+        if (pieceAtDest && !pieceAtSource) {
+            // Move has already been executed - check current state
+            arrangement = board.getArrangement();
+            
+            for (let row = 1; row <= 8; row++) {
+                for (let col = 1; col <= 8; col++) {
+                    const p = arrangement[row - 1][col - 1];
+                    if (p) {
+                        pieces.push(p);
+                    }
                 }
             }
-        }
-        
-        board._movePiece(cellTo, cellFrom);
-        if (capturedPiece) {
-            board._placePiece(capturedPiece, cellTo);
+        } else if (pieceAtSource) {
+            // Move has not been executed yet - simulate it
+            const capturedPiece = board.getPieceOnCell(cellTo);
+            
+            board._movePiece(cellFrom, cellTo);
+            if (capturedPiece) {
+                board._removePiece(cellTo);
+            }
+            
+            arrangement = board.getArrangement();
+            
+            for (let row = 1; row <= 8; row++) {
+                for (let col = 1; col <= 8; col++) {
+                    const p = arrangement[row - 1][col - 1];
+                    if (p) {
+                        pieces.push(p);
+                    }
+                }
+            }
+            
+            board._movePiece(cellTo, cellFrom);
+            if (capturedPiece) {
+                board._placePiece(capturedPiece, cellTo);
+            }
+        } else {
+            // No piece at either location - invalid state
+            return true;
         }
         
         if (pieces.length <= 2) {

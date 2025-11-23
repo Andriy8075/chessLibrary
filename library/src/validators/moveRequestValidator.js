@@ -34,10 +34,12 @@ function validateMoveRequest(request) {
         };
     }
 
-    if (Object.keys(request).length !== 3) {
+    const allowedKeys = ['type', 'from', 'to', 'color'];
+    const requestKeys = Object.keys(request);
+    if (requestKeys.length !== 4 || !requestKeys.every(key => allowedKeys.includes(key))) {
         return {
             valid: false,
-            error: 'Move request must include only from and to cells and color'
+            error: 'Move request must include only type, from and to cells and color'
         };
     }
 

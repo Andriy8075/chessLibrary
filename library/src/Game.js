@@ -74,6 +74,10 @@ class Game {
             };
         }
 
+        const cellFrom = request.from;
+        const cellTo = request.to;
+        const color = request.color;
+
         if (this.state.gameStatus !== 'active') {
             return {
                 success: false,
