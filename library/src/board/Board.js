@@ -49,11 +49,11 @@ class Board {
         this._placePiece(new Bishop('black', { row: 8, col: 3 }, this), { row: 8, col: 3 });
         this._placePiece(new Bishop('black', { row: 8, col: 6 }, this), { row: 8, col: 6 });
 
-        this._placePiece(new Queen('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
-        this._placePiece(new Queen('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
+        this._placePiece(new King('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
+        this._placePiece(new King('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
 
-        this._placePiece(new King('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
-        this._placePiece(new King('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
+        this._placePiece(new Queen('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
+        this._placePiece(new Queen('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
     }
 
     getArrangement() {

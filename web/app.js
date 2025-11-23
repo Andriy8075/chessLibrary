@@ -80,25 +80,25 @@ function createBoard(state) {
         return;
     }
     
-    // Board is now serialized as an array of arrays
     const arrangement = Array.isArray(state.board) ? state.board : [];
     
-    // Create 8x8 grid
-    // Note: Board uses 0-based indexing in the array, but pieces use 1-based for position
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+    const isBlackPlayer = playerColor === 'black';
+    
+    for (let displayRow = 0; displayRow < 8; displayRow++) {
+        for (let displayCol = 0; displayCol < 8; displayCol++) {
+            const boardRow = isBlackPlayer ? displayRow : 7 - displayRow;
+            const boardCol = isBlackPlayer ? displayCol : 7 - displayCol;
+            
             const square = document.createElement('div');
-            const isLight = (row + col) % 2 === 0;
+            const isLight = (displayRow + displayCol) % 2 === 0;
             square.className = `square ${isLight ? 'light' : 'dark'}`;
             
-            // Get piece at this position
-            const piece = arrangement[row] && arrangement[row][col] ? arrangement[row][col] : null;
+            const piece = arrangement[boardRow]?.[boardCol] || null;
             
             if (piece && piece.type && piece.color) {
                 const img = document.createElement('img');
                 const pieceType = piece.type.toLowerCase();
                 const color = piece.color.toLowerCase();
-                // Capitalize first letter of piece type
                 const pieceTypeCapitalized = pieceType.charAt(0).toUpperCase() + pieceType.slice(1);
                 img.src = `images/${color}${pieceTypeCapitalized}.png`;
                 img.alt = `${color} ${pieceType}`;
@@ -110,7 +110,6 @@ function createBoard(state) {
     }
 }
 
-// Set up find game button
 document.addEventListener('DOMContentLoaded', function() {
     const findGameBtn = document.getElementById('findGameBtn');
     if (findGameBtn) {
