@@ -1,6 +1,7 @@
 let socket;
 let gameState = null;
 let playerColor = null;
+let selectedSquare = null;
 
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -74,6 +75,8 @@ function updateStatus(text) {
 function createBoard(state) {
     const boardEl = document.getElementById('chessBoard');
     boardEl.innerHTML = '';
+    selectedSquare = null;
+    gameState = state;
     
     if (!state || !state.board) {
         console.error('Invalid game state');
@@ -93,6 +96,10 @@ function createBoard(state) {
             const isLight = (displayRow + displayCol) % 2 === 0;
             square.className = `square ${isLight ? 'light' : 'dark'}`;
             
+            // Store board coordinates as data attributes for click handling
+            square.dataset.boardRow = boardRow;
+            square.dataset.boardCol = boardCol;
+            
             const piece = arrangement[boardRow]?.[boardCol] || null;
             
             if (piece && piece.type && piece.color) {
@@ -105,8 +112,36 @@ function createBoard(state) {
                 square.appendChild(img);
             }
             
+            // Add click handler
+            square.addEventListener('click', function() {
+                handleSquareClick(square, boardRow, boardCol, arrangement);
+            });
+            
+            square.style.cursor = 'pointer';
+            
             boardEl.appendChild(square);
         }
+    }
+}
+
+function handleSquareClick(square, boardRow, boardCol, arrangement) {
+    // Check if it's the player's turn
+    if (!gameState || gameState.currentTurn !== playerColor) {
+        return;
+    }
+    
+    const piece = arrangement[boardRow]?.[boardCol] || null;
+    
+    // Only allow selection if there's a piece of the player's color
+    if (piece && piece.color === playerColor) {
+        // Remove highlight from previously selected square
+        if (selectedSquare) {
+            selectedSquare.classList.remove('selected');
+        }
+        
+        // Add highlight to clicked square
+        square.classList.add('selected');
+        selectedSquare = square;
     }
 }
 
