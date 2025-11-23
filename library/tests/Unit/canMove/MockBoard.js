@@ -1,12 +1,31 @@
 const { isValidCell } = require('../../../src/utils/Cell');
+const King = require('../../../src/pieces/King');
+const Queen = require('../../../src/pieces/Queen');
+const Rook = require('../../../src/pieces/Rook');
+const Bishop = require('../../../src/pieces/Bishop');
+const Knight = require('../../../src/pieces/Knight');
+const Pawn = require('../../../src/pieces/Pawn');
 
 class MockBoard {
     constructor(additionalPieces = []) {
         this.arrangement = Array(8).fill(null).map(() => Array(8).fill(null));
         
         for (const piece of additionalPieces) {
-            if (piece && piece.cell) {
-                this.arrangement[piece.cell.row - 1][piece.cell.col - 1] = piece;
+            if (piece.type === 'king') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new King(piece.color, piece.position, this);
+            } else if (piece.type === 'queen') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Queen(piece.color, piece.position, this);
+            } else if (piece.type === 'rook') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Rook(piece.color, piece.position, this);
+            } else if (piece.type === 'bishop') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Bishop(piece.color, piece.position, this);
+            } else if (piece.type === 'knight') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Knight(piece.color, piece.position, this);
+            } else if (piece.type === 'pawn') {
+                this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Pawn(piece.color, piece.position, this);
+            }
+            else {
+                throw new Error(`Invalid piece type: ${piece.type}`);
             }
         }
     }
