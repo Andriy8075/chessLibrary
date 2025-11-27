@@ -147,8 +147,9 @@ class Board {
         if (piece instanceof King && Math.abs(cellTo.col - cellFrom.col) === 2) {
             const validation = MoveValidator.validateCastling(cellFrom, cellTo, this);
             if (!validation.valid) return false;
-
+            console.log('castling successful');
             this._executeCastling(cellFrom, cellTo);
+            console.log('castling executed');
             return true;
         }
 
@@ -223,14 +224,13 @@ class Board {
 
     _executeCastling(cellFrom, cellTo) {
         const king = this.getPieceOnCell(cellFrom);
-        const isKingside = cellTo.col > cellFrom.col;
-        const rookCol = isKingside ? 8 : 1;
+        const isKingside = cellTo.col < cellFrom.col;
+        const rookCol = isKingside ? 1 : 8;
         const rookCell = { row: cellFrom.row, col: rookCol };
-        const rook = this.getPieceOnCell(rookCell);
 
         this._movePiece(cellFrom, cellTo);
 
-        const newRookCol = isKingside ? 6 : 4;
+        const newRookCol = isKingside ? 3 : 5;
         const newRookCell = { row: cellFrom.row, col: newRookCol };
         this._movePiece(rookCell, newRookCell);
 

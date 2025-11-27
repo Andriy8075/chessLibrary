@@ -21,34 +21,34 @@ class King extends Piece {
 
     tryCastle(cellTo) {
         const kingStartRow = this.color === 'white' ? 1 : 8;
-        if (this.cell.row !== kingStartRow || this.cell.col !== 5) return false;
+        if (this.cell.row !== kingStartRow || this.cell.col !== 4) return false;
 
         if (this.board.hasPieceMoved(this.color, 'king')) return false;
 
         const colDiff = cellTo.col - this.cell.col;
         if (Math.abs(colDiff) !== 2) return false;
 
-        const isKingside = colDiff > 0;
-        const rookCol = isKingside ? 8 : 1;
-        const rookCell = { row: kingStartRow, col: rookCol };
-
-        const rook = this.board.getPieceOnCell(rookCell);
-        if (!rook || !(rook instanceof Rook) || rook.color !== this.color) return false;
+        const isKingside = colDiff < 0;
 
         if (this.board.hasPieceMoved(this.color, isKingside ? 'kingsideRook' : 'queensideRook')) return false;
+        if (this.board.hasPieceMoved(this.color, 'king')) return false;
 
-        const pathStartCol = isKingside ? 6 : 2;
-        const pathEndCol = isKingside ? 7 : 4;
+        // check for pieces between king and rook
+        const pathStartCol = isKingside ? 2 : 5;
+        const pathEndCol = isKingside ? 3 : 7;
         for (let col = pathStartCol; col <= pathEndCol; col++) {
             const pathCell = { row: kingStartRow, col };
             if (this.board.getPieceOnCell(pathCell)) return false;
         }
 
-        if (this.board.isKingInCheck(this.color)) return false;
+        // check for checks for king, rook and pieces
+        const startCol = isKingside ? 1 : 4;
+        const endCol = isKingside ? 4 : 8;
 
-        const intermediateCol = isKingside ? 6 : 3;
-        const intermediateCell = { row: kingStartRow, col: intermediateCol };
-        if (this.board.wouldMoveCauseCheck(this.cell, intermediateCell, this.color)) return false;
+        for (let col = startCol; col <= endCol; col++) {
+            const pathCell = { row: kingStartRow, col };
+            if (this.board.isSquareAttacked(pathCell, this.getOppositeColor())) return false;
+        }
 
         return true;
     }
@@ -85,13 +85,13 @@ class King extends Piece {
         }
 
         const kingStartRow = this.color === 'white' ? 1 : 8;
-        if (this.cell.row === kingStartRow && this.cell.col === 5) {
-            const kingsideCell = { row: kingStartRow, col: 7 };
+        if (this.cell.row === kingStartRow && this.cell.col === 4) {
+            const kingsideCell = { row: kingStartRow, col: 6 };
             if (this.tryCastle(kingsideCell)) {
                 possibleMoves.push(kingsideCell);
             }
 
-            const queensideCell = { row: kingStartRow, col: 3 };
+            const queensideCell = { row: kingStartRow, col: 2 };
             if (this.tryCastle(queensideCell)) {
                 possibleMoves.push(queensideCell);
             }
