@@ -168,7 +168,7 @@ class MockBoardEditor {
                 if (piece) {
                     square.classList.add('has-piece');
                     const img = document.createElement('img');
-                    img.src = `../../../web/images/${piece.color}${piece.type.charAt(0).toUpperCase() + piece.type.slice(1)}.png`;
+                    img.src = `../../../../web/images/${piece.color}${piece.type.charAt(0).toUpperCase() + piece.type.slice(1)}.png`;
                     img.alt = `${piece.color} ${piece.type}`;
                     square.appendChild(img);
                 }
