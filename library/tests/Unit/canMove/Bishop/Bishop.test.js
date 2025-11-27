@@ -1,4 +1,4 @@
-const mockBoard = require('../MockBoard');
+const mockBoard = require('../../../helpers/MockBoard');
 
 const bishopProvider = (cell) => {
     const board = new mockBoard([{type: 'bishop', color: 'black', position: cell}]);
@@ -21,4 +21,8 @@ test('can not move to cells outside of the board', () => {
     const bishop = bishopProvider({ row: 4, col: 7 });
     result = bishop.canMove({ row: 6, col: 9 });
     expect(result).toBe(false);
+});
+
+test('mock board cases', () => {
+    
 });

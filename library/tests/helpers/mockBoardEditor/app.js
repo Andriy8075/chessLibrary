@@ -220,13 +220,16 @@ class MockBoardEditor {
         // Capitalize first letter for variable name
         const varName = fileName.charAt(0).toUpperCase() + fileName.slice(1);
 
-        return `const MockBoard = require('../Unit/canMove/MockBoard');
+        // Generate mainPiecePosition if main piece is selected
+        let mainPiecePositionStr = '';
+        if (this.mainPiece) {
+            mainPiecePositionStr = `    mainPiecePosition: {row: ${this.mainPiece.position.row}, col: ${this.mainPiece.position.col}},\n`;
+        }
 
-const ${varName} = {
-    board: new MockBoard([
+        return `${varName} = {
+    board: [
 ${piecesArray}
-    ]),
-    moves: [
+    ],${mainPiecePositionStr}    moves: [
 ${movesArray}
     ]
 }
@@ -247,6 +250,12 @@ module.exports = ${varName};
 
         if (this.pieces.length === 0) {
             statusDiv.textContent = 'Please add at least one piece to the board';
+            statusDiv.className = 'error';
+            return;
+        }
+
+        if (!this.mainPiece) {
+            statusDiv.textContent = 'Please select a main piece first';
             statusDiv.className = 'error';
             return;
         }
