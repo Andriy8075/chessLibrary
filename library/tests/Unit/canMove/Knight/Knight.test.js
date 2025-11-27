@@ -25,6 +25,24 @@ test('can not move to cells outside of the board', () => {
     expect(result).toBe(false);
 });
 
+test('can not move to the same cell', () => {
+    const knight = knightProvider({ row: 4, col: 3 });
+    result = knight.canMove({ row: 4, col: 3 });
+    expect(result).toBe(false);
+});
+
+test('can jump over pieces', () => {
+    const board = new mockBoard([
+        {type: 'knight', color: 'black', position: { row: 4, col: 3 }},
+        {type: 'pawn', color: 'black', position: { row: 5, col: 4 }},
+        {type: 'pawn', color: 'black', position: { row: 4, col: 4 }},
+        {type: 'pawn', color: 'white', position: { row: 5, col: 5 }},
+    ]);
+    const knight = board.getPieceOnCell({ row: 4, col: 3 });
+    result = knight.canMove({ row: 5, col: 5 });
+    expect(result).toBe(true);
+});
+
 test('test positions with all valid moves', () => {
     for (const position of emptyBoardCases) {
         const knight = knightProvider(position.position);
