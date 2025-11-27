@@ -1,5 +1,5 @@
 BishopInCenter = {
-    board: [
+    pieces: [
         {type: 'bishop', color: 'white', position: {row: 3, col: 3}}
     ],    mainPiecePosition: {row: 3, col: 3},
     moves: [

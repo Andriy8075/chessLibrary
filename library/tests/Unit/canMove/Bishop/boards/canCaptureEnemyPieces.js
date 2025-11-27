@@ -1,5 +1,5 @@
 CanCaptureEnemyPieces = {
-    board: [
+    pieces: [
         {type: 'queen', color: 'black', position: {row: 2, col: 1}},
         {type: 'bishop', color: 'white', position: {row: 3, col: 2}},
         {type: 'bishop', color: 'black', position: {row: 4, col: 1}}

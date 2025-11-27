@@ -1,5 +1,5 @@
 BishopOnTheEdge = {
-    board: [
+    pieces: [
         {type: 'bishop', color: 'white', position: {row: 1, col: 3}}
     ],    mainPiecePosition: {row: 1, col: 3},
     moves: [

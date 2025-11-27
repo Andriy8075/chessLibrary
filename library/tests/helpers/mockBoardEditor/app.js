@@ -227,7 +227,7 @@ class MockBoardEditor {
         }
 
         return `${varName} = {
-    board: [
+    pieces: [
 ${piecesArray}
     ],${mainPiecePositionStr}    moves: [
 ${movesArray}
