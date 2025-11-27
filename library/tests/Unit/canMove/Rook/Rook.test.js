@@ -25,6 +25,18 @@ test('can not move to a cell that is not in the same row or column', () => {
     expect(result).toBe(false);
 });
 
+test('can move to a cell in the same row', () => {
+    const rook = rookProvider({ row: 4, col: 3 });
+    result = rook.canMove({ row: 4, col: 4 });
+    expect(result).toBe(true);
+});
+
+test('can move to a cell in the same column', () => {
+    const rook = rookProvider({ row: 4, col: 3 });
+    result = rook.canMove({ row: 5, col: 3 });
+    expect(result).toBe(true);
+});
+
 test('mock board cases', () => {
     const boards = loadMockBoards('Unit/canMove/Rook/boards');
     for (const board of boards) {
