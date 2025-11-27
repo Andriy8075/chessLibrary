@@ -1,5 +1,29 @@
 const loadMockBoards = require('../../../helpers/loadMockBoards');
+const MockBoard = require('../../../helpers/MockBoard');
 const { cellsEqual } = require('../../../../src/utils/Cell');
+
+const rookProvider = (cell) => {
+    const board = new MockBoard([{type: 'rook', color: 'black', position: cell}]);
+    return board.getPieceOnCell(cell);
+}
+
+test('can not move to cells outside of the board', () => {
+    const rook = rookProvider({ row: 4, col: 3 });
+    result = rook.canMove({ row: 4, col: 9 });
+    expect(result).toBe(false);
+});
+
+test('can not move to the same cell', () => {
+    const rook = rookProvider({ row: 4, col: 3 });
+    result = rook.canMove({ row: 4, col: 3 });
+    expect(result).toBe(false);
+});
+
+test('can not move to a cell that is not in the same row or column', () => {
+    const rook = rookProvider({ row: 4, col: 3 });
+    result = rook.canMove({ row: 5, col: 4 });
+    expect(result).toBe(false);
+});
 
 test('mock board cases', () => {
     const boards = loadMockBoards('Unit/canMove/Rook/boards');
@@ -17,7 +41,7 @@ test('mock board cases', () => {
                     }
                 }
                 if (result !== expected) {
-                    console.log(`Bishop at ${board.mainPiecePosition} can move to ${cellTo} but should not`, {depth: 5});
+                    console.log(`Rook at ${board.mainPiecePosition} can move to ${cellTo} but should not`, {depth: 5});
                 }
                 expect(result).toBe(expected);
 
