@@ -1,5 +1,5 @@
 CanNotGoOverOtherPieces = {
-    board: [
+    pieces: [
         {type: 'queen', color: 'white', position: {row: 2, col: 3}},
         {type: 'bishop', color: 'white', position: {row: 3, col: 2}},
         {type: 'knight', color: 'black', position: {row: 5, col: 4}}

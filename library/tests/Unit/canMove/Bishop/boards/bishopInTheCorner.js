@@ -1,5 +1,5 @@
 BishopInTheCorner = {
-    board: [
+    pieces: [
         {type: 'bishop', color: 'white', position: {row: 1, col: 1}}
     ],    mainPiecePosition: {row: 1, col: 1},
     moves: [
