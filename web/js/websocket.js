@@ -19,8 +19,6 @@ function setupSocketHandlers() {
     };
 
     socket.addEventListener('message', function(event) {
-        console.log('Message from server:', event);
-        console.log('Message from server:', event.data);
         try {
             const message = JSON.parse(event.data);
             handleServerMessage(message);

@@ -156,9 +156,7 @@ class Board {
         if (piece instanceof King && Math.abs(cellTo.col - cellFrom.col) === 2) {
             const validation = MoveValidator.validateCastling(cellFrom, cellTo, this);
             if (!validation.valid) return false;
-            console.log('castling successful');
             this._executeCastling(cellFrom, cellTo);
-            console.log('castling executed');
             return true;
         }
 

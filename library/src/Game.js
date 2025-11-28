@@ -7,11 +7,6 @@ class Game {
             board: new Board(),
             currentTurn: 'white',
             lastMove: null,
-            castlingRights: {
-                white: { kingSide: true, queenSide: true },
-                black: { kingSide: true, queenSide: true }
-            },
-            enPassantTarget: null,
             gameStatus: 'active',
             winner: null,
             drawProposed: null,
@@ -28,8 +23,6 @@ class Game {
             board: this.state.board.getSerializedState(),
             currentTurn: this.state.currentTurn,
             lastMove: this.state.lastMove,
-            castlingRights: this.state.castlingRights,
-            enPassantTarget: this.state.enPassantTarget,
             gameStatus: this.state.gameStatus,
             winner: this.state.winner,
             drawProposed: this.state.drawProposed,
@@ -128,8 +121,6 @@ class Game {
             to: cellTo,
             piece: movedPiece
         };
-
-        this._updateCastlingRights();
 
         this.state.enPassantTarget = this.state.board.getEnPassantTarget();
 
@@ -254,24 +245,6 @@ class Game {
             success: true,
             state: this.state
         };
-    }
-
-    _updateCastlingRights() {
-        this.state.castlingRights.white.kingSide = 
-            !this.state.board.hasPieceMoved('white', 'king') &&
-            !this.state.board.hasPieceMoved('white', 'kingsideRook');
-
-        this.state.castlingRights.white.queenSide = 
-            !this.state.board.hasPieceMoved('white', 'king') &&
-            !this.state.board.hasPieceMoved('white', 'queensideRook');
-
-        this.state.castlingRights.black.kingSide = 
-            !this.state.board.hasPieceMoved('black', 'king') &&
-            !this.state.board.hasPieceMoved('black', 'kingsideRook');
-
-        this.state.castlingRights.black.queenSide = 
-            !this.state.board.hasPieceMoved('black', 'king') &&
-            !this.state.board.hasPieceMoved('black', 'queensideRook');
     }
 }
 
