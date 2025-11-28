@@ -66,19 +66,6 @@ class MoveValidator {
         return inCheck;
     }
 
-    static validateEnPassant(cellFrom, cellTo, board) {
-        const pawn = board.getPieceOnCell(cellFrom);
-        if (!(pawn instanceof Pawn)) {
-            return { valid: false, error: 'Only pawn can perform en passant' };
-        }
-
-        if (!pawn.canEnPassant(cellTo)) {
-            return { valid: false, error: 'En passant is not possible' };
-        }
-
-        return { valid: true };
-    }
-
     static _getDistance(cell1, cell2) {
         return {
             rowDiff: cell2.row - cell1.row,
