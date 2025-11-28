@@ -44,7 +44,7 @@ class Pawn extends Piece {
         }
     }
 
-    static isEnPassantMove(cellFrom, cellTo, board) {
+    static isValidEnPassantMove(cellFrom, cellTo, board) {
         const piece = board.getPieceOnCell(cellFrom);
         if (!(piece instanceof Pawn)) return false;
         
@@ -68,14 +68,9 @@ class Pawn extends Piece {
         return enPassantTarget.row === enPassantRow && enPassantTarget.col === cellTo.col;
     }
 
-    canPromote(cellTo) {
-        if (!isValidCell(cellTo)) return false;
-
-        if (this.color === 'white') {
-            return cellTo.row === 8;
-        } else {
-            return cellTo.row === 1;
-        }
+    static canPromote(cell, board) {
+        const piece = board.getPieceOnCell(cell);
+        return (piece instanceof Pawn && piece.cell.row === (piece.color === 'white' ? 8 : 1))
     }
 
     doesCheckToKing() {

@@ -149,21 +149,22 @@ class Board {
         return MoveValidator.wouldMoveCauseCheck(cellFrom, cellTo, this);
     }
 
+    promotePawnIfNeeded(cellTo, promotionPiece) {
+        if (Pawn.canPromote(cellTo, this)) {
+            this._executePromotion(cellTo, promotionPiece = 'queen');
+        }
+    }
+
     tryToMove(cellFrom, cellTo, promotionPiece = null) {
         const piece = this.getPieceOnCell(cellFrom);
         if (!piece) return false;
 
-        if (piece instanceof King && Math.abs(cellTo.col - cellFrom.col) === 2) {
-            const validation = MoveValidator.validateCastling(cellFrom, cellTo, this);
-            if (!validation.valid) return false;
+        if (King.isValidCastlingMove(cellFrom, cellTo, this)) {
             this._executeCastling(cellFrom, cellTo);
             return true;
         }
 
-        if (piece instanceof Pawn && piece.canEnPassant(cellTo)) {
-            const validation = MoveValidator.validateEnPassant(cellFrom, cellTo, this);
-            if (!validation.valid) return false;
-
+        if (Pawn.isValidEnPassantMove(cellFrom, cellTo, this)) {
             this._executeEnPassant(cellFrom, cellTo);
             return true;
         }
@@ -171,14 +172,18 @@ class Board {
         const validation = MoveValidator.validateMove(cellFrom, cellTo, this);
         if (!validation.valid) return false;
 
-        if (piece instanceof Pawn && piece.canPromote(cellTo)) {
-            if (!promotionPiece) {
-                promotionPiece = 'queen';
-            }
-            this._executeMoveWithPromotion(cellFrom, cellTo, promotionPiece);
-        } else {
-            this._executeMove(cellFrom, cellTo);
-        }
+        this._executeMove(cellFrom, cellTo);
+
+        this.promotePawnIfNeeded(cellTo,promotionPiece);
+
+        // if (piece instanceof Pawn && piece.canPromote(cellTo)) {
+        //     if (!promotionPiece) {
+        //         promotionPiece = 'queen';
+        //     }
+        //     this._executeMoveWithPromotion(cellFrom, cellTo, promotionPiece);
+        // } else {
+        //     this._executeMove(cellFrom, cellTo);
+        // }
 
         this._updateEnPassantTarget(piece, cellFrom, cellTo);
 
@@ -198,35 +203,28 @@ class Board {
         this._updatePieceMovementTracking(piece, cellFrom);
     }
 
-    _executeMoveWithPromotion(cellFrom, cellTo, promotionPiece) {
-        const pawn = this.getPieceOnCell(cellFrom);
-        const capturedPiece = this.getPieceOnCell(cellTo);
-        const color = pawn.color;
+    _executePromotion(cell, promotionPiece) {
+        const piece = this.getPieceOnCell(cell);
+        const color = piece.color;
 
-        this._removePiece(cellFrom);
-        if (capturedPiece) {
-            this._removePiece(cellTo);
-        }
+        this._removePiece(cell);
 
         let newPiece;
         switch (promotionPiece.toLowerCase()) {
             case 'queen':
-                newPiece = new Queen(color, cellTo, this);
+                newPiece = new Queen(color, cell, this);
                 break;
             case 'rook':
-                newPiece = new Rook(color, cellTo, this);
+                newPiece = new Rook(color, cell, this);
                 break;
             case 'bishop':
-                newPiece = new Bishop(color, cellTo, this);
+                newPiece = new Bishop(color, cell, this);
                 break;
             case 'knight':
-                newPiece = new Knight(color, cellTo, this);
-                break;
-            default:
-                newPiece = new Queen(color, cellTo, this);
+                newPiece = new Knight(color, cell, this);
         }
 
-        this._placePiece(newPiece, cellTo);
+        this._placePiece(newPiece, cell);
     }
 
     _executeCastling(cellFrom, cellTo) {

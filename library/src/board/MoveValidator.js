@@ -21,7 +21,7 @@ class MoveValidator {
     }
 
     static wouldMoveCauseCheck(cellFrom, cellTo, board) {
-        if (Pawn.isEnPassantMove(cellFrom, cellTo, board)) {
+        if (Pawn.isValidEnPassantMove(cellFrom, cellTo, board)) {
             return this.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, board);
         }
 
@@ -64,19 +64,6 @@ class MoveValidator {
         board._placePiece(capturedPiece, targetCell);
 
         return inCheck;
-    }
-
-    static validateCastling(cellFrom, cellTo, board) {
-        const king = board.getPieceOnCell(cellFrom);
-        if (!(king instanceof King)) {
-            return { valid: false, error: 'Only king can castle' };
-        }
-
-        if (!king.tryCastle(cellTo)) {
-            return { valid: false, error: 'Castling is not allowed' };
-        }
-
-        return { valid: true };
     }
 
     static validateEnPassant(cellFrom, cellTo, board) {

@@ -53,6 +53,14 @@ class King extends Piece {
         return true;
     }
 
+    static isValidCastlingMove(cellFrom, cellTo, board) {
+        const piece = board.getPieceOnCell(cellFrom);
+        if (!piece) return false;
+        if (!(piece instanceof King)) return false;
+        if (!piece.tryCastle(cellTo)) return false;
+        return true;
+    }
+
     doesCheckToKing() {
         return this.board.isSquareAttacked(this.cell, this.getOppositeColor());
     }
