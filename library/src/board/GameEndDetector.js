@@ -1,4 +1,5 @@
 const CheckDetector = require('./CheckDetector');
+const MoveValidator = require('./MoveValidator');
 
 class GameEndDetector {
     static hasLegalMoves(color, board) {
@@ -10,7 +11,6 @@ class GameEndDetector {
                 if (piece && piece.color === color) {
                     const possibleMoves = piece.findAllPossibleMoves();
                     for (const move of possibleMoves) {
-                        const MoveValidator = require('./MoveValidator');
                         if (!MoveValidator.wouldMoveCauseCheck(piece.cell, move, color, board)) {
                             return true;
                         }

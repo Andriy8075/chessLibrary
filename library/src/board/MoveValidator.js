@@ -1,7 +1,5 @@
 const CheckDetector = require('./CheckDetector');
-const { cellsEqual } = require('../utils/Cell');
 const King = require('../pieces/King');
-const Rook = require('../pieces/Rook');
 const Pawn = require('../pieces/Pawn');
 
 class MoveValidator {
@@ -38,7 +36,6 @@ class MoveValidator {
     }
 
     static wouldMoveCauseCheck(cellFrom, cellTo, movingColor, board) {
-        const piece = board.getPieceOnCell(cellFrom);
         const capturedPiece = board.getPieceOnCell(cellTo);
         
         board._movePiece(cellFrom, cellTo);

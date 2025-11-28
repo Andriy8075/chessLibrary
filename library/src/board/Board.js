@@ -11,7 +11,7 @@ const { cellsEqual, isValidCell } = require('../utils/Cell');
 
 class Board {
     constructor() {
-        this.#arrangement = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.arrangement = Array(8).fill(null).map(() => Array(8).fill(null));
         
         this.extraInfo = {
             piecesMadeMoves: {
@@ -57,11 +57,11 @@ class Board {
     }
 
     getArrangement() {
-        return this.#arrangement;
+        return this.arrangement;
     }
 
     getSerializedState() {
-        return this.#arrangement.map(row => 
+        return this.arrangement.map(row => 
             row.map(piece => {
                 if (!piece) return null;
                 return {
@@ -73,15 +73,24 @@ class Board {
         );
     }
 
+    toJSON() {
+        // Prevent circular reference when serializing Board
+        // Use getSerializedState() instead of including arrangement directly
+        return {
+            arrangement: this.getSerializedState(),
+            extraInfo: this.extraInfo
+        };
+    }
+
     getPieceOnCell(cell) {
         if (!isValidCell(cell)) return null;
-        return this.#arrangement[cell.row - 1][cell.col - 1];
+        return this.arrangement[cell.row - 1][cell.col - 1];
     }
 
     getKing(color) {
         for (let row = 1; row <= 8; row++) {
             for (let col = 1; col <= 8; col++) {
-                const piece = this.#arrangement[row - 1][col - 1];
+                const piece = this.arrangement[row - 1][col - 1];
                 if (piece instanceof King && piece.color === color) {
                     return piece;
                 }
@@ -100,7 +109,7 @@ class Board {
         let currentCol = cellFrom.col + colStep;
 
         while (currentRow !== cellTo.row || currentCol !== cellTo.col) {
-            if (this.#arrangement[currentRow - 1][currentCol - 1] !== null) {
+            if (this.arrangement[currentRow - 1][currentCol - 1] !== null) {
                 return false;
             }
             currentRow += rowStep;
@@ -293,22 +302,22 @@ class Board {
     }
 
     _movePiece(cellFrom, cellTo) {
-        const piece = this.#arrangement[cellFrom.row - 1][cellFrom.col - 1];
-        this.#arrangement[cellFrom.row - 1][cellFrom.col - 1] = null;
-        this.#arrangement[cellTo.row - 1][cellTo.col - 1] = piece;
+        const piece = this.arrangement[cellFrom.row - 1][cellFrom.col - 1];
+        this.arrangement[cellFrom.row - 1][cellFrom.col - 1] = null;
+        this.arrangement[cellTo.row - 1][cellTo.col - 1] = piece;
         piece.updatePosition(cellTo);
     }
 
     _placePiece(piece, cell) {
-        this.#arrangement[cell.row - 1][cell.col - 1] = piece;
+        this.arrangement[cell.row - 1][cell.col - 1] = piece;
         piece.updatePosition(cell);
     }
 
     _removePiece(cell) {
-        this.#arrangement[cell.row - 1][cell.col - 1] = null;
+        this.arrangement[cell.row - 1][cell.col - 1] = null;
     }
 
-    #arrangement;
+    arrangement;
 }
 
 module.exports = Board;
