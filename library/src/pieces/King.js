@@ -22,6 +22,7 @@ class King extends Piece {
     canCastle(cellTo) {
         const kingStartRow = this.color === 'white' ? 1 : 8;
         if (this.cell.row !== kingStartRow || this.cell.col !== 4) return false;
+        if (cellTo.row !== kingStartRow) return false;
 
         if (this.board.hasPieceMoved(this.color, 'king')) return false;
 
