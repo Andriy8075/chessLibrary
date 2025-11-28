@@ -19,7 +19,7 @@ class King extends Piece {
         return true;
     }
 
-    tryCastle(cellTo) {
+    canCastle(cellTo) {
         const kingStartRow = this.color === 'white' ? 1 : 8;
         if (this.cell.row !== kingStartRow || this.cell.col !== 4) return false;
 
@@ -57,7 +57,7 @@ class King extends Piece {
         const piece = board.getPieceOnCell(cellFrom);
         if (!piece) return false;
         if (!(piece instanceof King)) return false;
-        if (!piece.tryCastle(cellTo)) return false;
+        if (!piece.canCastle(cellTo)) return false;
         return true;
     }
 
@@ -95,12 +95,12 @@ class King extends Piece {
         const kingStartRow = this.color === 'white' ? 1 : 8;
         if (this.cell.row === kingStartRow && this.cell.col === 4) {
             const kingsideCell = { row: kingStartRow, col: 6 };
-            if (this.tryCastle(kingsideCell)) {
+            if (this.canCastle(kingsideCell)) {
                 possibleMoves.push(kingsideCell);
             }
 
             const queensideCell = { row: kingStartRow, col: 2 };
-            if (this.tryCastle(queensideCell)) {
+            if (this.canCastle(queensideCell)) {
                 possibleMoves.push(queensideCell);
             }
         }

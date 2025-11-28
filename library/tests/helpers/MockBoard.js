@@ -1,5 +1,6 @@
 const { isValidCell } = require('../../src/utils/Cell');
 const pieceClassProvider = require('./pieceClassProvider');
+const CheckDetector = require('../../src/board/CheckDetector');
 
 class MockBoard {
     constructor(additionalPieces = [], extraInfo = {}) {
@@ -9,22 +10,6 @@ class MockBoard {
         for (const piece of additionalPieces) {
             const pieceClass = pieceClassProvider(piece.type);
             this.arrangement[piece.position.row - 1][piece.position.col - 1] = new pieceClass(piece.color, piece.position, this);
-            // if (piece.type === 'king') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new King(piece.color, piece.position, this);
-            // } else if (piece.type === 'queen') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Queen(piece.color, piece.position, this);
-            // } else if (piece.type === 'rook') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Rook(piece.color, piece.position, this);
-            // } else if (piece.type === 'bishop') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Bishop(piece.color, piece.position, this);
-            // } else if (piece.type === 'knight') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Knight(piece.color, piece.position, this);
-            // } else if (piece.type === 'pawn') {
-            //     this.arrangement[piece.position.row - 1][piece.position.col - 1] = new Pawn(piece.color, piece.position, this);
-            // }
-            // else {
-            //     throw new Error(`Invalid piece type: ${piece.type}`);
-            // }
         }
     }
 
@@ -57,6 +42,18 @@ class MockBoard {
 
     getEnPassantTarget() {
         return this.extraInfo.enPassantTarget;
+    }
+
+    hasPieceMoved(color, pieceType) {
+        return this.extraInfo.piecesMadeMoves[`${color}${pieceType.charAt(0).toUpperCase()}${pieceType.slice(1)}`];
+    }
+
+    isSquareAttacked(cell, color) {
+        return CheckDetector.isSquareAttacked(cell, color, this);
+    }
+
+    getArrangement() {
+        return this.arrangement;
     }
 }
 
