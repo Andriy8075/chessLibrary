@@ -1,5 +1,4 @@
 const MockBoard = require('../../../helpers/MockBoard');
-const { cellsEqual } = require('../../../../src/utils/Cell');
 
 const kingProvider = (cell) => {
     const board = new MockBoard([{type: 'king', color: 'black', position: cell}]);

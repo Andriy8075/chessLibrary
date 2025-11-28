@@ -2,8 +2,9 @@ const { isValidCell } = require('../../src/utils/Cell');
 const pieceClassProvider = require('./pieceClassProvider');
 
 class MockBoard {
-    constructor(additionalPieces = []) {
+    constructor(additionalPieces = [], extraInfo = {}) {
         this.arrangement = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.extraInfo = extraInfo;
         
         for (const piece of additionalPieces) {
             const pieceClass = pieceClassProvider(piece.type);
@@ -52,6 +53,10 @@ class MockBoard {
         }
 
         return true;
+    }
+
+    getEnPassantTarget() {
+        return this.extraInfo.enPassantTarget;
     }
 }
 
