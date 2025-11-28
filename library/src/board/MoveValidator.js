@@ -28,14 +28,25 @@ class MoveValidator {
             }
         }
 
-        if (this.wouldMoveCauseCheck(cellFrom, cellTo, piece.color, board)) {
+        if (this.wouldMoveCauseCheck(cellFrom, cellTo, board)) {
             return { valid: false, error: 'Move would leave king in check' };
         }
 
         return { valid: true };
     }
 
-    static wouldMoveCauseCheck(cellFrom, cellTo, movingColor, board) {
+    static wouldMoveCauseCheck(cellFrom, cellTo, board) {
+        if (Pawn.isEnPassantMove(cellFrom, cellTo, board)) {
+            return this.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, board);
+        }
+
+        const piece = board.getPieceOnCell(cellFrom);
+        if (!piece) {
+            return false; // No piece to move, so can't cause check
+        }
+        
+        const movingColor = piece.color;
+
         const capturedPiece = board.getPieceOnCell(cellTo);
         
         board._movePiece(cellFrom, cellTo);
@@ -47,6 +58,26 @@ class MoveValidator {
             board._placePiece(capturedPiece, cellTo);
         }
         
+        return inCheck;
+    }
+
+    static wouldEnPassantMoveCauseCheck(cellFrom, cellTo, board) {
+        const piece = board.getPieceOnCell(cellFrom);
+        
+        const movingColor = piece.color;
+
+        const targetRow = piece.color === 'white' ? cellTo.row - 1 : cellTo.row + 1;
+        const targetCell = { row: targetRow, col: cellTo.col };
+        const capturedPiece = board.getPieceOnCell(targetCell);
+
+        board._movePiece(cellFrom, cellTo);
+        board._removePiece(targetCell);
+
+        const inCheck = CheckDetector.isKingInCheck(movingColor, board);
+
+        board._movePiece(cellTo, cellFrom);
+        board._placePiece(capturedPiece, targetCell);
+
         return inCheck;
     }
 

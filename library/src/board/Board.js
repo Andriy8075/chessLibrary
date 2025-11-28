@@ -145,8 +145,8 @@ class Board {
         return CheckDetector.isSquareAttacked(cell, attackingColor, this);
     }
 
-    wouldMoveCauseCheck(cellFrom, cellTo, movingColor) {
-        return MoveValidator.wouldMoveCauseCheck(cellFrom, cellTo, movingColor, this);
+    wouldMoveCauseCheck(cellFrom, cellTo) {
+        return MoveValidator.wouldMoveCauseCheck(cellFrom, cellTo, this);
     }
 
     tryToMove(cellFrom, cellTo, promotionPiece = null) {

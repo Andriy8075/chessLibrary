@@ -44,6 +44,20 @@ class Pawn extends Piece {
         }
     }
 
+    static isEnPassantMove(cellFrom, cellTo, board) {
+        const piece = board.getPieceOnCell(cellFrom);
+        if (!(piece instanceof Pawn)) return false;
+        
+        if (!piece.canCaptureAt(cellTo)) return false;
+
+        const targetPiece = board.getPieceOnCell(cellTo);
+        if (targetPiece) return false;
+
+        if (!piece.canEnPassant(cellTo)) return false;
+
+        return true;
+    }
+
     canEnPassant(cellTo) {
         if (!this.canCaptureAt(cellTo)) return false;
 
