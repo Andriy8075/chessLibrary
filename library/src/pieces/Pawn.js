@@ -59,6 +59,7 @@ class Pawn extends Piece {
     }
 
     canEnPassant(cellTo) {
+        if(cellTo.row !== (this.color === 'white' ? 6 : 3)) return false;
         if (!this.canCaptureAt(cellTo)) return false;
 
         const enPassantTarget = this.board.getEnPassantTarget();
