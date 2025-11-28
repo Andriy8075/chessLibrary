@@ -13,21 +13,6 @@ class MoveValidator {
             return { valid: false, error: 'Piece cannot move to target cell' };
         }
 
-        if (piece instanceof Pawn) {
-            const { rowDiff } = this._getDistance(cellFrom, cellTo);
-            const isForwardMove = piece.color === 'white' ? rowDiff > 0 : rowDiff < 0;
-            const isSameColumn = cellFrom.col === cellTo.col;
-            const targetPiece = board.getPieceOnCell(cellTo);
-            
-            if (isForwardMove && isSameColumn && targetPiece) {
-                return { valid: false, error: 'Pawn cannot move forward to occupied square' };
-            }
-            
-            if (!isSameColumn && !targetPiece && !piece.canEnPassant(cellTo)) {
-                return { valid: false, error: 'Pawn can only move diagonally to capture' };
-            }
-        }
-
         if (this.wouldMoveCauseCheck(cellFrom, cellTo, board)) {
             return { valid: false, error: 'Move would leave king in check' };
         }
