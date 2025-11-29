@@ -1,6 +1,4 @@
 const CheckDetector = require('./CheckDetector');
-const King = require('../pieces/King');
-const Pawn = require('../pieces/Pawn');
 
 class MoveValidator {
     static validateMove(cellFrom, cellTo, board) {
