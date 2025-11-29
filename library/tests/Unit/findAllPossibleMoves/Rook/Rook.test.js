@@ -2,10 +2,10 @@ const loadMockBoards = require('../../../helpers/loadMockBoards');
 const sortMoves = require('../sort');
 
 test('board cases', () => {
-    const boards = loadMockBoards('Unit/boards/Knight');
+    const boards = loadMockBoards('Unit/boards/Rook');
     boards.forEach(board => {
-        const knight = board.board.getPieceOnCell(board.mainPiecePosition);
-        const possibleMoves = knight.findAllPossibleMoves();
+        const bishop = board.board.getPieceOnCell(board.mainPiecePosition);
+        const possibleMoves = bishop.findAllPossibleMoves();
         
         const { sortedPossibleMoves, sortedExpectedMoves } = sortMoves(possibleMoves, board.moves);
         
