@@ -9,6 +9,7 @@ describe('Board._executeMove', () => {
         board._executeMove({ row: 2, col: 4 }, { row: 3, col: 4 });
         expect(board.getPieceOnCell({ row: 3, col: 4 })).toBe(pawn);
         expect(board.getPieceOnCell({ row: 2, col: 4 })).toBeNull();
+        expect(pawn.cell).toStrictEqual({ row: 3, col: 4 });
     });
 
     it('should capture a piece if it is on the target cell', () => {
@@ -20,5 +21,6 @@ describe('Board._executeMove', () => {
         board._executeMove({ row: 2, col: 4 }, { row: 3, col: 4 });
         expect(board.getPieceOnCell({ row: 3, col: 4 })).toBe(pawn);
         expect(board.getPieceOnCell({ row: 2, col: 5 })).toBeNull();
+        expect(pawn.cell).toStrictEqual({ row: 3, col: 4 });
     });
 });
