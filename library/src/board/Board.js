@@ -74,8 +74,6 @@ class Board {
     }
 
     toJSON() {
-        // Prevent circular reference when serializing Board
-        // Use getSerializedState() instead of including arrangement directly
         return {
             arrangement: this.getSerializedState(),
             extraInfo: this.extraInfo
@@ -171,15 +169,6 @@ class Board {
         this._executeMove(cellFrom, cellTo);
 
         this.promotePawnIfNeeded(cellTo,promotionPiece);
-
-        // if (piece instanceof Pawn && piece.canPromote(cellTo)) {
-        //     if (!promotionPiece) {
-        //         promotionPiece = 'queen';
-        //     }
-        //     this._executeMoveWithPromotion(cellFrom, cellTo, promotionPiece);
-        // } else {
-        //     this._executeMove(cellFrom, cellTo);
-        // }
 
         this._updateEnPassantTarget(piece, cellFrom, cellTo);
 

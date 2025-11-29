@@ -12,8 +12,11 @@ test('white king can castle kingside', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 1, col: 4 });
-    result = king.canCastle({ row: 1, col: 2 });
-    expect(result).toBe(true);
+    const canCastle = king.canCastle({ row: 1, col: 2 });
+    expect(canCastle).toBe(true);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, { row: 1, col: 2 }, board);
+    expect(isValidCastlingMove).toBe(true);
 })
 
 test('white king can castle queenside', () => {
@@ -27,8 +30,11 @@ test('white king can castle queenside', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 1, col: 4 });
-    result = king.canCastle({ row: 1, col: 6 });
-    expect(result).toBe(true);
+    const canCastle = king.canCastle({ row: 1, col: 6 });
+    expect(canCastle).toBe(true);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, { row: 1, col: 6 }, board);
+    expect(isValidCastlingMove).toBe(true);
 })
 
 test('black king can castle kingside', () => {
@@ -42,8 +48,11 @@ test('black king can castle kingside', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 8, col: 4 });
-    result = king.canCastle({ row: 8, col: 2 });
-    expect(result).toBe(true);
+    const canCastle = king.canCastle({ row: 8, col: 2 });
+    expect(canCastle).toBe(true);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 8, col: 4 }, { row: 8, col: 2 }, board);
+    expect(isValidCastlingMove).toBe(true);
 })
 
 test('black king can castle queenside', () => {
@@ -57,8 +66,11 @@ test('black king can castle queenside', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 8, col: 4 });
-    result = king.canCastle({ row: 8, col: 6 });
-    expect(result).toBe(true);
+    const canCastle = king.canCastle({ row: 8, col: 6 });
+    expect(canCastle).toBe(true);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 8, col: 4 }, { row: 8, col: 6 }, board);
+    expect(isValidCastlingMove).toBe(true);
 })
 
 test('can not castle if king has moved', () => {
@@ -72,8 +84,11 @@ test('can not castle if king has moved', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 1, col: 4 });
-    result = king.canCastle({ row: 1, col: 2 });
-    expect(result).toBe(false);
+    const canCastle = king.canCastle({ row: 1, col: 2 });
+    expect(canCastle).toBe(false);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, { row: 1, col: 2 }, board);
+    expect(isValidCastlingMove).toBe(false);
 })
 
 test('can not castle if rook has moved', () => {
@@ -87,8 +102,11 @@ test('can not castle if rook has moved', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 1, col: 4 });
-    result = king.canCastle({ row: 1, col: 2 });
-    expect(result).toBe(false);
+    const canCastle = king.canCastle({ row: 1, col: 2 });
+    expect(canCastle).toBe(false);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, { row: 1, col: 2 }, board);
+    expect(isValidCastlingMove).toBe(false);
 })
 
 test('can not castle if there is a piece between king and rook', () => {
@@ -103,8 +121,11 @@ test('can not castle if there is a piece between king and rook', () => {
         }
     });
     const king = board.getPieceOnCell({ row: 1, col: 4 });
-    result = king.canCastle({ row: 1, col: 6 });
-    expect(result).toBe(false);
+    const canCastle = king.canCastle({ row: 1, col: 6 });
+    expect(canCastle).toBe(false);
+
+    const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, { row: 1, col: 6 }, board);
+    expect(isValidCastlingMove).toBe(false);
 })
 
 test('can castle only if king is moving to specific cell', () => {
@@ -125,12 +146,19 @@ test('can castle only if king is moving to specific cell', () => {
     for (let i = 1; i <= 8; i++) {
         for (let j = 1; j <= 8; j++) {
             const cell = { row: i, col: j };
-            result = king.canCastle(cell);
-            if (result !== (i === 1 && j === 2)) {
-                console.log(`result: ${result}, expected: ${i === 1 && j === 2}`);
+            const canCastle = king.canCastle(cell);
+            if (canCastle !== (i === 1 && j === 2)) {
+                console.log(`canCastle: ${canCastle}, expected: ${i === 1 && j === 2}`);
                 console.log(`cell: ${cell.row}, ${cell.col}`);
             }
-            expect(result).toBe(i === 1 && j === 2);
+            expect(canCastle).toBe(i === 1 && j === 2);
+
+            const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 4 }, cell, board);
+            if (isValidCastlingMove !== (i === 1 && j === 2)) {
+                console.log(`isValidCastlingMove: ${isValidCastlingMove}, expected: ${i === 1 && j === 2}`);
+                console.log(`cell: ${cell.row}, ${cell.col}`);
+            }
+            expect(isValidCastlingMove).toBe(i === 1 && j === 2);
         }
     }
 })
