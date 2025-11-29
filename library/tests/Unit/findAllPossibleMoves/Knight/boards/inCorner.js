@@ -1,0 +1,11 @@
+InCorner = {
+    pieces: [
+        {type: 'knight', color: 'black', position: {row: 1, col: 1}}
+    ],    mainPiecePosition: {row: 1, col: 1},
+    moves: [
+        {row: 3, col: 2},
+        {row: 2, col: 3}
+    ]
+}
+
+module.exports = InCorner;
