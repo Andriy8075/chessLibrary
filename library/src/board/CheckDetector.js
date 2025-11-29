@@ -6,7 +6,6 @@ class CheckDetector {
             for (let col = 1; col <= 8; col++) {
                 const piece = arrangement[row - 1][col - 1];
                 if (piece && piece.color === attackingColor) {
-                    const pieceType = piece.constructor.name;
                     
                     if (piece.canMove(cell)) {
                         return true;
