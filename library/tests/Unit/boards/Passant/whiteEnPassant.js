@@ -1,0 +1,16 @@
+WhiteEnPassant = {
+    pieces: [
+        {type: 'pawn', color: 'white', position: {row: 5, col: 2}},
+        {type: 'pawn', color: 'black', position: {row: 5, col: 3}}
+    ],    mainPiecePosition: {row: 5, col: 2},
+    moves: [
+        {row: 6, col: 2},
+        {row: 6, col: 3}
+    ],
+    extraInfo: {
+        enPassantTarget: {row: 6, col: 3},
+    }
+
+}
+
+module.exports = WhiteEnPassant;
