@@ -1,6 +1,6 @@
-const InvalidCellError = require('./errors/InvalidCellError');
-const InvalidColorError = require('./errors/InvalidColorError');
-const NotImplementedMethodError = require('./errors/NotImplementedMethodError');
+class InvalidCellError extends Error {}
+class InvalidColorError extends Error {}
+class NotImplementedMethodError extends Error {}
 
 module.exports = {
     InvalidCellError,
