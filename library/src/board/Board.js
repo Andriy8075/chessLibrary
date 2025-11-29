@@ -7,7 +7,7 @@ const Pawn = require('../pieces/Pawn');
 const MoveValidator = require('./MoveValidator');
 const CheckDetector = require('./CheckDetector');
 const GameEndDetector = require('./GameEndDetector');
-const { cellsEqual, isValidCell } = require('../utils/Cell');
+const { isValidCell } = require('../utils/Cell');
 
 class Board {
     constructor() {
