@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, testCI ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, testCI ]
 
 jobs:
   test:
@@ -28,5 +28,5 @@ jobs:
       
       - name: Run tests
         working-directory: ./library
-        run: npm test
+        run: npx jest --rootDir .
 
