@@ -179,7 +179,7 @@ class Board {
 
         this._movePiece(cellFrom, cellTo);
 
-        this._updatePieceMovementTracking(piece, cellFrom);
+        this._updatePieceMovementTracking(cellFrom);
     }
 
     promotePawnIfNeeded(cellTo, promotionPiece) {
@@ -251,23 +251,34 @@ class Board {
         }
     }
 
-    _updatePieceMovementTracking(piece, cellFrom) {
-        if (piece instanceof King) {
-            this._markPieceMoved(piece.color, 'king');
-        } else if (piece instanceof Rook) {
-            if (piece.color === 'white') {
-                if (cellFrom.col === 1) {
-                    this._markPieceMoved('white', 'queensideRook');
-                } else if (cellFrom.col === 8) {
-                    this._markPieceMoved('white', 'kingsideRook');
+    _updatePieceMovementTracking(cellFrom) {
+        switch (cellFrom.row) {
+            case 1:
+                switch (cellFrom.col) {
+                    case 1:
+                        this._markPieceMoved('white', 'queensideRook');
+                        break;
+                    case 4:
+                        this._markPieceMoved('white', 'king');
+                        break;
+                    case 8:
+                        this._markPieceMoved('white', 'kingsideRook');
+                        break;
                 }
-            } else {
-                if (cellFrom.col === 1) {
-                    this._markPieceMoved('black', 'queensideRook');
-                } else if (cellFrom.col === 8) {
-                    this._markPieceMoved('black', 'kingsideRook');
+                break;
+            case 8:
+                switch (cellFrom.col) {
+                    case 1:
+                        this._markPieceMoved('black', 'queensideRook');
+                        break;
+                    case 4:
+                        this._markPieceMoved('black', 'king');
+                        break;
+                    case 8:
+                        this._markPieceMoved('black', 'kingsideRook');
+                        break;
                 }
-            }
+                break;
         }
     }
 
