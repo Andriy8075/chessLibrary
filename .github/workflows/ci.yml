@@ -28,5 +28,5 @@ jobs:
       
       - name: Run tests
         working-directory: ./library
-        run: npm test
+        run: npx jest --rootDir .
 
