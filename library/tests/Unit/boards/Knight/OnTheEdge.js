@@ -1,0 +1,13 @@
+OnTheEdge = {
+    pieces: [
+        {type: 'knight', color: 'black', position: {row: 4, col: 1}}
+    ],    mainPiecePosition: {row: 4, col: 1},
+    moves: [
+        {row: 2, col: 2},
+        {row: 3, col: 3},
+        {row: 5, col: 3},
+        {row: 6, col: 2}
+    ]
+}
+
+module.exports = OnTheEdge;
