@@ -145,10 +145,6 @@ class Board {
         return CheckDetector.isSquareAttacked(cell, attackingColor, this);
     }
 
-    wouldMoveCauseCheck(cellFrom, cellTo) {
-        return MoveValidator.wouldMoveCauseCheck(cellFrom, cellTo, this);
-    }
-
     promotePawnIfNeeded(cellTo, promotionPiece) {
         if (Pawn.canPromote(cellTo, this)) {
             this._executePromotion(cellTo, promotionPiece = 'queen');

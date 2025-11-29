@@ -62,10 +62,6 @@ class King extends Piece {
         return true;
     }
 
-    doesCheckToKing() {
-        return this.board.isSquareAttacked(this.cell, this.getOppositeColor());
-    }
-
     findAllPossibleMoves() {
         const possibleMoves = [];
         const directions = [

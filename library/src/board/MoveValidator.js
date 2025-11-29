@@ -21,14 +21,7 @@ class MoveValidator {
     }
 
     static wouldMoveCauseCheck(cellFrom, cellTo, board) {
-        if (Pawn.isValidEnPassantMove(cellFrom, cellTo, board)) {
-            return this.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, board);
-        }
-
         const piece = board.getPieceOnCell(cellFrom);
-        if (!piece) {
-            return false; // No piece to move, so can't cause check
-        }
         
         const movingColor = piece.color;
 

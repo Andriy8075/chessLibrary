@@ -23,10 +23,6 @@ class Piece {
         throw new NotImplementedMethodError('canMove must be implemented by subclass');
     }
 
-    doesCheckToKing() {
-        throw new NotImplementedMethodError('doesCheckToKing must be implemented by subclass');
-    }
-
     findAllPossibleMoves() {
         throw new NotImplementedMethodError('findAllPossibleMoves must be implemented by subclass');
     }

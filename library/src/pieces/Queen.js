@@ -22,13 +22,6 @@ class Queen extends Piece {
         return true;
     }
 
-    doesCheckToKing() {
-        const enemyKing = this.board.getKing(this.getOppositeColor());
-        if (!enemyKing) return false;
-
-        return this.canMove(enemyKing.cell);
-    }
-
     findAllPossibleMoves() {
         const possibleMoves = [];
         const directions = [

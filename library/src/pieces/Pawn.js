@@ -74,13 +74,6 @@ class Pawn extends Piece {
         return (piece instanceof Pawn && piece.cell.row === (piece.color === 'white' ? 8 : 1))
     }
 
-    doesCheckToKing() {
-        const enemyKing = this.board.getKing(this.getOppositeColor());
-        if (!enemyKing) return false;
-
-        return this.canCaptureAt(enemyKing.cell);
-    }
-
     findAllPossibleMoves() {
         const possibleMoves = [];
 

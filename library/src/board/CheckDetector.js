@@ -8,7 +8,7 @@ class CheckDetector {
                 if (piece && piece.color === attackingColor) {
                     const pieceType = piece.constructor.name;
                     
-                    if (piece.canMove && piece.canMove(cell)) {
+                    if (piece.canMove(cell)) {
                         return true;
                     }
                 }
