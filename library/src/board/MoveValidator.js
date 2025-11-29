@@ -36,13 +36,6 @@ class MoveValidator {
         
         return inCheck;
     }
-
-    static _getDistance(cell1, cell2) {
-        return {
-            rowDiff: cell2.row - cell1.row,
-            colDiff: cell2.col - cell1.col
-        };
-    }
 }
 
 module.exports = MoveValidator;
