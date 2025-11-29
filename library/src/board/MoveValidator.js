@@ -36,6 +36,26 @@ class MoveValidator {
         
         return inCheck;
     }
+
+    static wouldEnPassantMoveCauseCheck(cellFrom, cellTo, board) {
+        const piece = board.getPieceOnCell(cellFrom);
+        
+        const movingColor = piece.color;
+
+        const targetRow = piece.color === 'white' ? cellTo.row - 1 : cellTo.row + 1;
+        const targetCell = { row: targetRow, col: cellTo.col };
+        const capturedPiece = board.getPieceOnCell(targetCell);
+
+        board._movePiece(cellFrom, cellTo);
+        board._removePiece(targetCell);
+
+        const inCheck = CheckDetector.isKingInCheck(movingColor, board);
+
+        board._movePiece(cellTo, cellFrom);
+        board._placePiece(capturedPiece, targetCell);
+
+        return inCheck;
+    }
 }
 
 module.exports = MoveValidator;
