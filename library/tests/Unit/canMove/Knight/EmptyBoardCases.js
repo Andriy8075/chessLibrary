@@ -10,7 +10,7 @@ const positions = [
         { row: 3, col: 1 }]
      },
      { position: { row: 4, col: 7 }, moves: [ // knight near the edge of the board
-        { row: 6, col: 6 },
+        { row: 6, col: 8 },
         { row: 6, col: 8 },
         { row: 5, col: 5 },
         { row: 3, col: 5 },
