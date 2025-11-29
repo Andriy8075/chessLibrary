@@ -152,7 +152,8 @@ class Board {
             return true;
         }
 
-        if (Pawn.isValidEnPassantMove(cellFrom, cellTo, this) && !MoveValidator.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, this)) {
+        if (Pawn.isValidEnPassantMove(cellFrom, cellTo, this)) {
+            if(MoveValidator.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, this)) return false;
             this._executeEnPassant(cellFrom, cellTo);
             return true;
         }

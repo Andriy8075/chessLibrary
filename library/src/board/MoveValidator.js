@@ -42,7 +42,7 @@ class MoveValidator {
         
         const movingColor = piece.color;
 
-        const targetRow = piece.color === 'white' ? cellTo.row - 1 : cellTo.row + 1;
+        const targetRow = movingColor === 'white' ? cellTo.row - 1 : cellTo.row + 1;
         const targetCell = { row: targetRow, col: cellTo.col };
         const capturedPiece = board.getPieceOnCell(targetCell);
 
