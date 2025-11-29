@@ -143,12 +143,6 @@ class Board {
         return CheckDetector.isSquareAttacked(cell, attackingColor, this);
     }
 
-    promotePawnIfNeeded(cellTo, promotionPiece) {
-        if (Pawn.canPromote(cellTo, this)) {
-            this._executePromotion(cellTo, promotionPiece = 'queen');
-        }
-    }
-
     tryToMove(cellFrom, cellTo, promotionPiece = null) {
         const piece = this.getPieceOnCell(cellFrom);
         if (!piece) return false;
@@ -188,12 +182,19 @@ class Board {
         this._updatePieceMovementTracking(piece, cellFrom);
     }
 
-    _executePromotion(cell, promotionPiece) {
+    promotePawnIfNeeded(cellTo, promotionPiece) {
+        if (Pawn.canPromote(cellTo, this)) {
+            this._executePromotion(cellTo, promotionPiece);
+        }
+    }
+
+    _executePromotion(cell, promotionPiece = 'queen') {
         const piece = this.getPieceOnCell(cell);
         const color = piece.color;
 
         this._removePiece(cell);
 
+        promotionPiece = promotionPiece.toLowerCase();
         let newPiece;
         switch (promotionPiece.toLowerCase()) {
             case 'queen':
