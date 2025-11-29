@@ -7,6 +7,17 @@ class MockBoardEditor {
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
+        this.extraInfo = {
+            enPassantTarget: null,
+            piecesMadeMoves: {
+                whiteKing: false,
+                blackKing: false,
+                whiteKingsideRook: false,
+                whiteQueensideRook: false,
+                blackKingsideRook: false,
+                blackQueensideRook: false
+            }
+        };
         
         this.init();
     }
@@ -65,6 +76,19 @@ class MockBoardEditor {
 
         // Save button
         document.getElementById('saveBtn').addEventListener('click', () => this.saveMockBoard());
+
+        // En Passant controls
+        document.getElementById('enPassantRow').addEventListener('input', () => this.updateEnPassant());
+        document.getElementById('enPassantCol').addEventListener('input', () => this.updateEnPassant());
+        document.getElementById('clearEnPassant').addEventListener('click', () => this.clearEnPassant());
+
+        // Pieces Made Moves checkboxes
+        document.querySelectorAll('.pieces-moved-controls input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const key = checkbox.dataset.key;
+                this.extraInfo.piecesMadeMoves[key] = checkbox.checked;
+            });
+        });
     }
 
     handleSquareClick(row, col) {
@@ -201,6 +225,23 @@ class MockBoardEditor {
             `Moves: ${this.validMoves.length}`;
     }
 
+    updateEnPassant() {
+        const row = parseInt(document.getElementById('enPassantRow').value);
+        const col = parseInt(document.getElementById('enPassantCol').value);
+        
+        if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+            this.extraInfo.enPassantTarget = { row, col };
+        } else {
+            this.extraInfo.enPassantTarget = null;
+        }
+    }
+
+    clearEnPassant() {
+        document.getElementById('enPassantRow').value = '';
+        document.getElementById('enPassantCol').value = '';
+        this.extraInfo.enPassantTarget = null;
+    }
+
     generateMockBoardFile(fileName) {
         const { pieces, moves } = {
             pieces: this.pieces,
@@ -226,12 +267,53 @@ class MockBoardEditor {
             mainPiecePositionStr = `    mainPiecePosition: {row: ${this.mainPiece.position.row}, col: ${this.mainPiece.position.col}},\n`;
         }
 
+        // Generate extraInfo if any is set
+        let extraInfoStr = '';
+        const hasEnPassant = this.extraInfo.enPassantTarget !== null;
+        const hasPiecesMoved = Object.values(this.extraInfo.piecesMadeMoves).some(v => v === true);
+        
+        if (hasEnPassant || hasPiecesMoved) {
+            extraInfoStr = '    extraInfo: {\n';
+            
+            if (hasEnPassant) {
+                const ep = this.extraInfo.enPassantTarget;
+                extraInfoStr += `        enPassantTarget: {row: ${ep.row}, col: ${ep.col}},\n`;
+            }
+            
+            if (hasPiecesMoved) {
+                extraInfoStr += '        piecesMadeMoves: {\n';
+                const piecesMovedEntries = [];
+                if (this.extraInfo.piecesMadeMoves.whiteKing) {
+                    piecesMovedEntries.push('            whiteKing: true');
+                }
+                if (this.extraInfo.piecesMadeMoves.blackKing) {
+                    piecesMovedEntries.push('            blackKing: true');
+                }
+                if (this.extraInfo.piecesMadeMoves.whiteKingsideRook) {
+                    piecesMovedEntries.push('            whiteKingsideRook: true');
+                }
+                if (this.extraInfo.piecesMadeMoves.whiteQueensideRook) {
+                    piecesMovedEntries.push('            whiteQueensideRook: true');
+                }
+                if (this.extraInfo.piecesMadeMoves.blackKingsideRook) {
+                    piecesMovedEntries.push('            blackKingsideRook: true');
+                }
+                if (this.extraInfo.piecesMadeMoves.blackQueensideRook) {
+                    piecesMovedEntries.push('            blackQueensideRook: true');
+                }
+                extraInfoStr += piecesMovedEntries.join(',\n');
+                extraInfoStr += '\n        }\n';
+            }
+            
+            extraInfoStr += '    }\n';
+        }
+
         return `${varName} = {
     pieces: [
 ${piecesArray}
     ],${mainPiecePositionStr}    moves: [
 ${movesArray}
-    ]
+    ]${extraInfoStr ? ',\n' + extraInfoStr : ''}
 }
 
 module.exports = ${varName};

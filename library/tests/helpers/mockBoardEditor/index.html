@@ -83,6 +83,53 @@
                 <div id="movesCount">Moves: 0</div>
             </div>
 
+            <div class="extra-info-panel">
+                <h3>Extra Board Info</h3>
+                
+                <div class="extra-info-section">
+                    <h4>En Passant Target</h4>
+                    <div class="en-passant-controls">
+                        <label>
+                            Row: <input type="number" id="enPassantRow" min="1" max="8" placeholder="Row">
+                        </label>
+                        <label>
+                            Col: <input type="number" id="enPassantCol" min="1" max="8" placeholder="Col">
+                        </label>
+                        <button type="button" id="clearEnPassant" class="clear-btn">Clear</button>
+                    </div>
+                </div>
+
+                <div class="extra-info-section">
+                    <h4>Pieces Made Moves</h4>
+                    <div class="pieces-moved-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="whiteKingMoved" data-key="whiteKing">
+                            White King
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="blackKingMoved" data-key="blackKing">
+                            Black King
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="whiteKingsideRookMoved" data-key="whiteKingsideRook">
+                            White Kingside Rook
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="whiteQueensideRookMoved" data-key="whiteQueensideRook">
+                            White Queenside Rook
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="blackKingsideRookMoved" data-key="blackKingsideRook">
+                            Black Kingside Rook
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="blackQueensideRookMoved" data-key="blackQueensideRook">
+                            Black Queenside Rook
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="save-panel">
                 <h3>Save Mock Board</h3>
                 <input type="text" id="fileName" placeholder="Enter file name (e.g., MyBoard)" value="">
