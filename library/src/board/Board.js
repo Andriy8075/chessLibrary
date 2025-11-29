@@ -143,7 +143,7 @@ class Board {
         return CheckDetector.isSquareAttacked(cell, attackingColor, this);
     }
 
-    tryToMove(cellFrom, cellTo, promotionPiece = null) {
+    tryToMove(cellFrom, cellTo, promotionPiece = 'queen') {
         const piece = this.getPieceOnCell(cellFrom);
         if (!piece) return false;
 
@@ -188,14 +188,14 @@ class Board {
         }
     }
 
-    _executePromotion(cell, promotionPiece = 'queen') {
+    _executePromotion(cell, promotionPiece) {
         const piece = this.getPieceOnCell(cell);
         const color = piece.color;
 
         this._removePiece(cell);
-
-        promotionPiece = promotionPiece.toLowerCase();
         let newPiece;
+
+        if (!promotionPiece) promotionPiece = 'queen';
         switch (promotionPiece.toLowerCase()) {
             case 'queen':
                 newPiece = new Queen(color, cell, this);

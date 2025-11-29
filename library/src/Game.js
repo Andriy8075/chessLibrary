@@ -104,7 +104,7 @@ class Game {
             };
         }
 
-        const promotionPiece = request.promotion || null;
+        const promotionPiece = request.promotion;
         const moveSuccess = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
 
         if (!moveSuccess) {
