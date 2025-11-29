@@ -1,0 +1,11 @@
+MoveStraightFromStartWhitePawn = {
+    pieces: [
+        {type: 'pawn', color: 'white', position: {row: 2, col: 2}}
+    ],    mainPiecePosition: {row: 2, col: 2},
+    moves: [
+        {row: 3, col: 2},
+        {row: 4, col: 2}
+    ]
+}
+
+module.exports = MoveStraightFromStartWhitePawn;
