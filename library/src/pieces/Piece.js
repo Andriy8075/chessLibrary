@@ -1,5 +1,5 @@
 const { isValidCell } = require('../utils/Cell');
-const { InvalidColorError, InvalidCellError, NotImplementedMethodError } = require('../Errors');
+const { InvalidColorError, InvalidCellError, NotImplementedMethodError } = require('../errors');
 
 
 class Piece {
