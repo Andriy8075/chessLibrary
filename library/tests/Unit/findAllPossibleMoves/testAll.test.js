@@ -2,9 +2,10 @@ const loadMockBoards = require('../../helpers/loadMockBoards');
 const sortMoves = require('./sort');
 const fs = require('fs');
 const path = require('path');
+const mockBoardsFolder = require('../../helpers/mockBoardsFolder');
 
 test('board cases', () => {
-    const boardsPath = path.join(__dirname, '../../boards/findAllPossibleMoves');
+    const boardsPath = path.join(mockBoardsFolder, 'findAllPossibleMoves');
     const folders = fs.readdirSync(boardsPath).filter(item => {
         const itemPath = path.join(boardsPath, item);
         return fs.statSync(itemPath).isDirectory();
