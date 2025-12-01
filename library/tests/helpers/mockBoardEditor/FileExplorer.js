@@ -27,11 +27,31 @@ export class FileExplorer {
             return;
         }
 
-        this.openFolderBtn?.addEventListener('click', () => this.handleOpenFolder());
-        this.newFolderBtn?.addEventListener('click', () => this.handleNewFolder());
-        this.newFileBtn?.addEventListener('click', () => this.handleNewFile());
-        this.saveFileBtn?.addEventListener('click', () => this.handleSaveFile());
-        this.revertFileBtn?.addEventListener('click', () => this.handleRevertFile());
+        this.openFolderBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleOpenFolder();
+        });
+        this.newFolderBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleNewFolder();
+        });
+        this.newFileBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleNewFile();
+        });
+        this.saveFileBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleSaveFile();
+        });
+        this.revertFileBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleRevertFile();
+        });
     }
 
     async handleOpenFolder() {
