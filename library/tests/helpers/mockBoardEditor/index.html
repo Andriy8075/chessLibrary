@@ -145,6 +145,34 @@
                     <small>Save the downloaded file to: <code>library/tests/mockBoards/</code></small>
                 </div>
             </div>
+
+            <div class="file-explorer-panel">
+                <h3>Boards File Explorer</h3>
+                <p class="file-explorer-hint">
+                    Select the <code>library/tests/boards</code> folder from your project to browse and edit test boards.
+                </p>
+
+                <div class="file-explorer-controls">
+                    <button id="openFolderBtn">Open boards folder</button>
+                    <button id="newFolderBtn" disabled>New Folder</button>
+                    <button id="newFileBtn" disabled>New File</button>
+                </div>
+
+                <div id="fsSupportWarning" class="fs-warning" hidden>
+                    File system access is not supported in this browser. Please use a Chromium-based browser (Chrome, Edge, etc.).
+                </div>
+
+                <div id="fileTree" class="file-tree"></div>
+
+                <div class="file-editor-panel">
+                    <div id="currentFilePath" class="current-file-path">No file opened</div>
+                    <textarea id="fileEditor" rows="10" spellcheck="false" placeholder="Select a file to view and edit its contents" disabled></textarea>
+                    <div class="file-editor-controls">
+                        <button id="saveFileBtn" disabled>Save File</button>
+                        <button id="revertFileBtn" disabled>Revert Changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="board-container">
