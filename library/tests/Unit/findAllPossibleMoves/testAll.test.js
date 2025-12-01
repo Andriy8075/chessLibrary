@@ -4,14 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 test('board cases', () => {
-    const boardsPath = path.join(__dirname, '../boards/findAllPossibleMoves');
+    const boardsPath = path.join(__dirname, '../../boards/findAllPossibleMoves');
     const folders = fs.readdirSync(boardsPath).filter(item => {
         const itemPath = path.join(boardsPath, item);
         return fs.statSync(itemPath).isDirectory();
     });
 
     folders.forEach(folderName => {
-        const boards = loadMockBoards(`Unit/boards/findAllPossibleMoves/${folderName}`);
+        const boards = loadMockBoards(`findAllPossibleMoves/${folderName}`);
         boards.forEach(board => {
             const piece = board.board.getPieceOnCell(board.mainPiecePosition);
             const possibleMoves = piece.findAllPossibleMoves();
