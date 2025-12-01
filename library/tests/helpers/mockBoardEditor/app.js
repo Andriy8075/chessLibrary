@@ -253,11 +253,6 @@ class MockBoardEditor {
             `        {type: '${p.type}', color: '${p.color}', position: {row: ${p.position.row}, col: ${p.position.col}}}`
         ).join(',\n');
 
-        // Generate moves array
-        const movesArray = moves.map(m => 
-            `        {row: ${m.row}, col: ${m.col}}`
-        ).join(',\n');
-
         // Capitalize first letter for variable name
         const varName = fileName.charAt(0).toUpperCase() + fileName.slice(1);
 
@@ -265,6 +260,17 @@ class MockBoardEditor {
         let mainPiecePositionStr = '';
         if (this.mainPiece) {
             mainPiecePositionStr = `    mainPiecePosition: {row: ${this.mainPiece.position.row}, col: ${this.mainPiece.position.col}},\n`;
+        }
+
+        // Generate moves array only if main piece is selected
+        let movesStr = '';
+        if (this.mainPiece) {
+            const movesArray = moves.map(m => 
+                `        {row: ${m.row}, col: ${m.col}}`
+            ).join(',\n');
+            movesStr = `    moves: [
+${movesArray}
+    ]`;
         }
 
         // Generate extraInfo if any is set
@@ -305,19 +311,26 @@ class MockBoardEditor {
                 extraInfoStr += '\n        }\n';
             }
             
-            extraInfoStr += '    }\n';
+            extraInfoStr += '    }';
         }
 
-        return `${varName} = {
+        // Build the file content
+        let fileContent = `${varName} = {
     pieces: [
 ${piecesArray}
-    ],${mainPiecePositionStr}    moves: [
-${movesArray}
-    ]${extraInfoStr ? ',\n' + extraInfoStr : ''}
-}
-
-module.exports = ${varName};
-`;
+    ]`;
+        
+        if (mainPiecePositionStr) {
+            fileContent += `,\n${mainPiecePositionStr}${movesStr}`;
+        }
+        
+        if (extraInfoStr) {
+            fileContent += `,\n${extraInfoStr}`;
+        }
+        
+        fileContent += `\n}\n\nmodule.exports = ${varName};\n`;
+        
+        return fileContent;
     }
 
     async saveMockBoard() {
@@ -332,12 +345,6 @@ module.exports = ${varName};
 
         if (this.pieces.length === 0) {
             statusDiv.textContent = 'Please add at least one piece to the board';
-            statusDiv.className = 'error';
-            return;
-        }
-
-        if (!this.mainPiece) {
-            statusDiv.textContent = 'Please select a main piece first';
             statusDiv.className = 'error';
             return;
         }
