@@ -1,0 +1,23 @@
+{
+    "boardType": "isKingInCheck",
+    "pieces": [
+        {
+            "type": "bishop",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 5
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "color": "white",
+    "expectedResult": true
+}

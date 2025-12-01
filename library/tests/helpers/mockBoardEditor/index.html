@@ -40,6 +40,7 @@
                 <button class="tab-btn" data-tab="enPassant">En Passant</button>
                 <button class="tab-btn" data-tab="simple">Simple Board</button>
                 <button class="tab-btn" data-tab="isSquareAttacked">Is Square Attacked</button>
+                <button class="tab-btn" data-tab="isKingInCheck">Is King In Check</button>
             </div>
 
             <div class="controls">
@@ -184,6 +185,34 @@
                         <label class="radio-label">
                             <input type="radio" name="expectedResult" value="false" id="expectedResultFalse">
                             False (Square is not attacked)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="is-king-in-check-panel">
+                <h3>Is King In Check</h3>
+                <div class="is-king-in-check-controls">
+                    <div class="king-color-section">
+                        <h4>King Color</h4>
+                        <label class="radio-label">
+                            <input type="radio" name="kingColor" value="white" id="kingColorWhite">
+                            White
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="kingColor" value="black" id="kingColorBlack">
+                            Black
+                        </label>
+                    </div>
+                    <div class="king-check-result-section">
+                        <h4>Expected Result</h4>
+                        <label class="radio-label">
+                            <input type="radio" name="kingCheckResult" value="true" id="kingCheckResultTrue">
+                            True (King is in check)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="kingCheckResult" value="false" id="kingCheckResultFalse">
+                            False (King is not in check)
                         </label>
                     </div>
                 </div>

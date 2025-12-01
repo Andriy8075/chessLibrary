@@ -1,0 +1,47 @@
+{
+    "boardType": "isKingInCheck",
+    "pieces": [
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "queen",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 5
+            }
+        },
+        {
+            "type": "knight",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 7,
+                "col": 4
+            }
+        }
+    ],
+    "color": "white",
+    "expectedResult": false
+}

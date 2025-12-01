@@ -4,7 +4,7 @@ export class MockBoardEditor {
         this.selectedPiece = null;
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves', 'target'
-        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple', 'isSquareAttacked'
+        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple', 'isSquareAttacked', 'isKingInCheck'
         this.currentBoardType = 'findAllPossibleMoves';
         this.mainPiece = null;
         this.validMoves = [];
@@ -12,6 +12,8 @@ export class MockBoardEditor {
         this.targetSquare = null; // For isSquareAttacked board type
         this.expectedResult = null; // true or false for isSquareAttacked
         this.attackingColor = null; // 'white' or 'black' for isSquareAttacked
+        this.kingColor = null; // 'white' or 'black' for isKingInCheck
+        this.kingCheckResult = null; // true or false for isKingInCheck
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -53,6 +55,8 @@ export class MockBoardEditor {
         this.targetSquare = null;
         this.expectedResult = null;
         this.attackingColor = null;
+        this.kingColor = null;
+        this.kingCheckResult = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -74,6 +78,8 @@ export class MockBoardEditor {
             this.activeTab = 'enPassant';
         } else if (type === 'isSquareAttacked') {
             this.activeTab = 'isSquareAttacked';
+        } else if (type === 'isKingInCheck') {
+            this.activeTab = 'isKingInCheck';
         } else {
             this.activeTab = 'moves';
         }
@@ -100,8 +106,8 @@ export class MockBoardEditor {
         // Rebuild pieces array from board
         this.updatePiecesList();
 
-        // Main piece & moves for non-simple boards (but not isSquareAttacked)
-        if (this.activeTab !== 'simple' && this.activeTab !== 'isSquareAttacked') {
+        // Main piece & moves for non-simple boards (but not isSquareAttacked or isKingInCheck)
+        if (this.activeTab !== 'simple' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck') {
             if (schema.mainPiecePosition) {
                 const cell = {
                     row: schema.mainPiecePosition.row,
@@ -155,6 +161,29 @@ export class MockBoardEditor {
             }
         }
 
+        // King color and expected result for isKingInCheck
+        if (this.activeTab === 'isKingInCheck') {
+            if (schema.color) {
+                this.kingColor = schema.color;
+                const whiteRadio = document.getElementById('kingColorWhite');
+                const blackRadio = document.getElementById('kingColorBlack');
+                if (whiteRadio) whiteRadio.checked = this.kingColor === 'white';
+                if (blackRadio) blackRadio.checked = this.kingColor === 'black';
+            } else {
+                this.kingColor = null;
+            }
+
+            if (schema.expectedResult !== undefined) {
+                this.kingCheckResult = schema.expectedResult === true;
+                const trueRadio = document.getElementById('kingCheckResultTrue');
+                const falseRadio = document.getElementById('kingCheckResultFalse');
+                if (trueRadio) trueRadio.checked = this.kingCheckResult === true;
+                if (falseRadio) falseRadio.checked = this.kingCheckResult === false;
+            } else {
+                this.kingCheckResult = null;
+            }
+        }
+
         // Extra info (en passant, pieces made moves)
         if (schema.extraInfo) {
             if (schema.extraInfo.enPassantTarget) {
@@ -199,7 +228,9 @@ export class MockBoardEditor {
                     ? 'enPassant'
                     : this.activeTab === 'isSquareAttacked'
                         ? 'isSquareAttacked'
-                        : 'findAllPossibleMoves');
+                        : this.activeTab === 'isKingInCheck'
+                            ? 'isKingInCheck'
+                            : 'findAllPossibleMoves');
 
         const schema = {
             boardType,
@@ -225,6 +256,13 @@ export class MockBoardEditor {
             }
             if (this.attackingColor) {
                 schema.attackingColor = this.attackingColor;
+            }
+        } else if (this.activeTab === 'isKingInCheck') {
+            if (this.kingColor) {
+                schema.color = this.kingColor;
+            }
+            if (this.kingCheckResult !== null && this.kingCheckResult !== undefined) {
+                schema.expectedResult = this.kingCheckResult === true;
             }
         } else if (this.activeTab !== 'simple') {
             if (this.mainPiece && this.mainPiece.position) {
@@ -310,6 +348,8 @@ export class MockBoardEditor {
                     this.currentBoardType = 'enPassant';
                 } else if (this.activeTab === 'isSquareAttacked') {
                     this.currentBoardType = 'isSquareAttacked';
+                } else if (this.activeTab === 'isKingInCheck') {
+                    this.currentBoardType = 'isKingInCheck';
                 } else {
                     this.currentBoardType = 'findAllPossibleMoves';
                 }
@@ -383,6 +423,22 @@ export class MockBoardEditor {
                 }
             });
         });
+
+        document.querySelectorAll('input[name="kingColor"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.kingColor = radio.value;
+                }
+            });
+        });
+
+        document.querySelectorAll('input[name="kingCheckResult"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.kingCheckResult = radio.value === 'true';
+                }
+            });
+        });
     }
 
     updateTabVisibility() {
@@ -406,11 +462,13 @@ export class MockBoardEditor {
         if (controls) controls.style.display = '';
 
         const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
+        const isKingInCheckPanel = document.querySelector('.is-king-in-check-panel');
 
         if (this.activeTab === 'moves') {
             // Full moves testing: place + main + moves, no extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -422,6 +480,7 @@ export class MockBoardEditor {
             // En passant testing: same as moves, but with extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -432,8 +491,8 @@ export class MockBoardEditor {
         } else if (this.activeTab === 'simple') {
             // Simple board: only placing pieces
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
-            const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
 
             if (mainBtn) {
                 mainBtn.disabled = true;
@@ -484,6 +543,27 @@ export class MockBoardEditor {
             }
 
             // Force mode to place initially
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else if (this.activeTab === 'isKingInCheck') {
+            // Is King In Check: only placing pieces + king color selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'flex';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Force mode to place
             this.mode = 'place';
             if (placeBtn) {
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -667,6 +747,8 @@ export class MockBoardEditor {
         this.targetSquare = null;
         this.expectedResult = null;
         this.attackingColor = null;
+        this.kingColor = null;
+        this.kingCheckResult = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -696,6 +778,13 @@ export class MockBoardEditor {
             radio.checked = false;
         });
         document.querySelectorAll('input[name="attackingColor"]').forEach(radio => {
+            radio.checked = false;
+        });
+        // Clear isKingInCheck inputs
+        document.querySelectorAll('input[name="kingColor"]').forEach(radio => {
+            radio.checked = false;
+        });
+        document.querySelectorAll('input[name="kingCheckResult"]').forEach(radio => {
             radio.checked = false;
         });
 

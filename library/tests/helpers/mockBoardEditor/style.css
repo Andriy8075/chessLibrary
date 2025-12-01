@@ -320,7 +320,7 @@ h1 {
     z-index: 1;
 }
 
-.extra-info-panel, .is-square-attacked-panel {
+.extra-info-panel, .is-square-attacked-panel, .is-king-in-check-panel {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -413,16 +413,27 @@ h1 {
     padding-top: 15px;
 }
 
-.target-square-section:first-child, .expected-result-section:first-child {
+.target-square-section:first-child, .expected-result-section:first-child, .attacking-color-section:first-child, .king-color-section:first-child, .king-check-result-section:first-child {
     border-top: none;
     padding-top: 0;
 }
 
-.target-square-section h4, .expected-result-section h4 {
+.target-square-section h4, .expected-result-section h4, .attacking-color-section h4, .king-color-section h4, .king-check-result-section h4 {
     margin-bottom: 10px;
     color: #555;
     font-size: 14px;
     font-weight: 600;
+}
+
+.is-king-in-check-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.king-color-section, .king-check-result-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
 }
 
 #targetSquareDisplay {
