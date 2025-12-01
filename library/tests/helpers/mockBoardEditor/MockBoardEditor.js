@@ -21,6 +21,11 @@ export class MockBoardEditor {
             }
         };
 
+        // When true, we are editing an empty file that has no board type yet.
+        // In this mode only the three tab buttons are shown until the user
+        // chooses one, which sets the board type.
+        this.awaitingBoardType = false;
+
         this.init();
     }
 
@@ -28,6 +33,9 @@ export class MockBoardEditor {
         if (!schema || !Array.isArray(schema.pieces)) {
             return;
         }
+
+        // We have a concrete schema, so we are no longer waiting for type
+        this.awaitingBoardType = false;
 
         const editorPanel = document.getElementById('editorPanel');
         if (editorPanel && editorPanel.classList.contains('hidden')) {
@@ -230,12 +238,27 @@ export class MockBoardEditor {
     }
 
     setupEventListeners() {
-        // Tabs
+        // Tabs (board type selector)
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+
                 this.activeTab = btn.dataset.tab;
+
+                // Map tab to boardType string
+                if (this.activeTab === 'simple') {
+                    this.currentBoardType = 'simpleBoard';
+                } else if (this.activeTab === 'enPassant') {
+                    this.currentBoardType = 'enPassant';
+                } else {
+                    this.currentBoardType = 'findAllPossibleMoves';
+                }
+
+                // If we were waiting for a type for a new file, we can now
+                // reveal the rest of the controls.
+                this.awaitingBoardType = false;
+
                 this.updateTabVisibility();
             });
         });
@@ -282,10 +305,24 @@ export class MockBoardEditor {
     }
 
     updateTabVisibility() {
+        const controls = document.querySelector('.controls');
         const extraInfoPanel = document.querySelector('.extra-info-panel');
         const mainBtn = document.querySelector('.mode-btn[data-mode="main"]');
         const movesBtn = document.querySelector('.mode-btn[data-mode="moves"]');
         const placeBtn = document.querySelector('.mode-btn[data-mode="place"]');
+
+        // If we are awaiting board type selection for a new, empty file,
+        // hide all controls below the three tab buttons.
+        if (this.awaitingBoardType) {
+            if (controls) controls.style.display = 'none';
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            this.updateBoardDisplay();
+            this.updateInfo();
+            return;
+        }
+
+        // Otherwise ensure controls are visible
+        if (controls) controls.style.display = '';
 
         if (this.activeTab === 'moves') {
             // Full moves testing: place + main + moves, no extra info
@@ -473,6 +510,56 @@ export class MockBoardEditor {
         document.getElementById('enPassantRow').value = '';
         document.getElementById('enPassantCol').value = '';
         this.extraInfo.enPassantTarget = null;
+    }
+
+    // Called when opening a new, empty file that has no boardType yet.
+    // Shows only the three tab buttons so the user can choose the type,
+    // and hides the rest of the controls until that happens.
+    beginNewBoardWithoutType() {
+        const editorPanel = document.getElementById('editorPanel');
+        if (editorPanel && editorPanel.classList.contains('hidden')) {
+            editorPanel.classList.remove('hidden');
+        }
+
+        // Reset internal state to a blank board
+        this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.mainPiece = null;
+        this.validMoves = [];
+        this.pieces = [];
+        this.extraInfo = {
+            enPassantTarget: null,
+            piecesMadeMoves: {
+                whiteKing: false,
+                blackKing: false,
+                whiteKingsideRook: false,
+                whiteQueensideRook: false,
+                blackKingsideRook: false,
+                blackQueensideRook: false
+            }
+        };
+
+        // Clear extra-info inputs
+        const rowInput = document.getElementById('enPassantRow');
+        const colInput = document.getElementById('enPassantCol');
+        if (rowInput) rowInput.value = '';
+        if (colInput) colInput.value = '';
+        document
+            .querySelectorAll('.pieces-moved-controls input[type="checkbox"]')
+            .forEach(cb => {
+                cb.checked = false;
+            });
+
+        // No board type yet; tabs act as selector
+        this.currentBoardType = null;
+        this.activeTab = 'moves';
+        this.awaitingBoardType = true;
+
+        // Remove any active styling from tabs so the user must choose
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        this.updateTabVisibility();
     }
 
 }

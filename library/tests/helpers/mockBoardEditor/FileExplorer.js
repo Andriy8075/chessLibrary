@@ -205,6 +205,27 @@ export class FileExplorer {
             return;
         }
 
+        const trimmed = text.trim();
+
+        // If file is empty, treat it as a new board file with no type selected yet.
+        if (!trimmed) {
+            if (this.editor && typeof this.editor.beginNewBoardWithoutType === 'function') {
+                this.editor.beginNewBoardWithoutType();
+            }
+
+            this.currentFileIsBoardJson = true;
+            this.currentBoardType = null;
+
+            if (this.currentFilePathEl) {
+                this.currentFilePathEl.textContent = `${path} (new board file - choose type)`;
+            }
+
+            if (this.saveFileBtn) this.saveFileBtn.disabled = false;
+            if (this.revertFileBtn) this.revertFileBtn.disabled = false;
+            if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = false;
+            return;
+        }
+
         // Try to interpret as a mock board JSON and load into editor.
         let parsed = null;
         try {
