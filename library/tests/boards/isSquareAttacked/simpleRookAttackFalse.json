@@ -3,16 +3,17 @@
     "pieces": [
         {
             "type": "rook",
-            "color": "white",
+            "color": "black",
             "position": {
-                "row": 4,
-                "col": 1
+                "row": 7,
+                "col": 6
             }
         }
     ],
     "targetSquare": {
-        "row": 4,
-        "col": 4
+        "row": 3,
+        "col": 5
     },
-    "expectedResult": true
+    "expectedResult": false,
+    "attackingColor": "black"
 }

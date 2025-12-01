@@ -11,6 +11,7 @@ export class MockBoardEditor {
         this.pieces = [];
         this.targetSquare = null; // For isSquareAttacked board type
         this.expectedResult = null; // true or false for isSquareAttacked
+        this.attackingColor = null; // 'white' or 'black' for isSquareAttacked
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -51,6 +52,7 @@ export class MockBoardEditor {
         this.pieces = [];
         this.targetSquare = null;
         this.expectedResult = null;
+        this.attackingColor = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -141,6 +143,16 @@ export class MockBoardEditor {
             } else {
                 this.expectedResult = null;
             }
+
+            if (schema.attackingColor) {
+                this.attackingColor = schema.attackingColor;
+                const whiteRadio = document.getElementById('attackingColorWhite');
+                const blackRadio = document.getElementById('attackingColorBlack');
+                if (whiteRadio) whiteRadio.checked = this.attackingColor === 'white';
+                if (blackRadio) blackRadio.checked = this.attackingColor === 'black';
+            } else {
+                this.attackingColor = null;
+            }
         }
 
         // Extra info (en passant, pieces made moves)
@@ -210,6 +222,9 @@ export class MockBoardEditor {
             }
             if (this.expectedResult !== null && this.expectedResult !== undefined) {
                 schema.expectedResult = this.expectedResult === true;
+            }
+            if (this.attackingColor) {
+                schema.attackingColor = this.attackingColor;
             }
         } else if (this.activeTab !== 'simple') {
             if (this.mainPiece && this.mainPiece.position) {
@@ -357,6 +372,14 @@ export class MockBoardEditor {
             radio.addEventListener('change', () => {
                 if (radio.checked) {
                     this.expectedResult = radio.value === 'true';
+                }
+            });
+        });
+
+        document.querySelectorAll('input[name="attackingColor"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.attackingColor = radio.value;
                 }
             });
         });
@@ -643,6 +666,7 @@ export class MockBoardEditor {
         this.pieces = [];
         this.targetSquare = null;
         this.expectedResult = null;
+        this.attackingColor = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -669,6 +693,9 @@ export class MockBoardEditor {
         // Clear isSquareAttacked inputs
         this.updateTargetSquareDisplay();
         document.querySelectorAll('input[name="expectedResult"]').forEach(radio => {
+            radio.checked = false;
+        });
+        document.querySelectorAll('input[name="attackingColor"]').forEach(radio => {
             radio.checked = false;
         });
 

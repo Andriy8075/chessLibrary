@@ -13,8 +13,10 @@ function loadMockBoards(folderPath) {
         const board = new MockBoard(boardSchema.pieces, extraInfo);
         boards.push({
             board: board,
-            mainPiecePosition: boardSchema.mainPiecePosition,
-            moves: boardSchema.moves
+            ...Object.fromEntries(
+                Object.entries(boardSchema)
+                    .filter(([key]) => key !== 'pieces')
+        ),
         });
     }
     return boards;
