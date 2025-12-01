@@ -5,6 +5,8 @@ export class FileExplorer {
         this.currentFilePath = '';
         this.pathHandleMap = new Map(); // path -> handle
         this.editor = editor;
+        this.currentFileIsBoardJson = false;
+        this.currentBoardType = null;
 
         this.init();
     }
@@ -160,6 +162,8 @@ export class FileExplorer {
 
         this.currentFileHandle = handle;
         this.currentFilePath = path;
+        this.currentFileIsBoardJson = false;
+        this.currentBoardType = null;
 
         const file = await handle.getFile();
         const text = await file.text();
@@ -176,13 +180,17 @@ export class FileExplorer {
             // Load into the board editor instead of plain text editing
             this.editor.loadFromSchema(parsed);
 
+            this.currentFileIsBoardJson = true;
+            this.currentBoardType = parsed.boardType;
+
             // Show path but keep editor read-only for board JSON files
             this.currentFilePathEl.textContent = `${path} (board file)`;
             this.fileEditor.disabled = true;
             this.fileEditor.value = '';
 
-            this.saveFileBtn.disabled = true;
-            this.revertFileBtn.disabled = true;
+            // Saving will use editor state instead of textarea
+            this.saveFileBtn.disabled = false;
+            this.revertFileBtn.disabled = false;
         } else {
             // Fallback: treat as plain text file
             this.fileEditor.disabled = false;
@@ -246,7 +254,15 @@ export class FileExplorer {
         if (!this.currentFileHandle) return;
 
         const writable = await this.currentFileHandle.createWritable();
-        await writable.write(this.fileEditor.value);
+
+        if (this.currentFileIsBoardJson && this.editor && typeof this.editor.getCurrentSchema === 'function') {
+            const schema = this.editor.getCurrentSchema(this.currentBoardType);
+            const jsonText = JSON.stringify(schema, null, 4);
+            await writable.write(jsonText);
+        } else {
+            await writable.write(this.fileEditor.value);
+        }
+
         await writable.close();
     }
 
@@ -256,6 +272,18 @@ export class FileExplorer {
         const file = await this.currentFileHandle.getFile();
         const text = await file.text();
         this.fileEditor.value = text;
+
+        // Also re-load board state if this is a board JSON file
+        if (this.currentFileIsBoardJson && this.editor && typeof this.editor.loadFromSchema === 'function') {
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed && parsed.boardType && Array.isArray(parsed.pieces)) {
+                    this.editor.loadFromSchema(parsed);
+                }
+            } catch (e) {
+                // ignore parse errors on revert
+            }
+        }
     }
 }
 

@@ -7,6 +7,7 @@ export class MockBoardEditor {
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves'
         this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple'
+        this.currentBoardType = 'findAllPossibleMoves';
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
@@ -47,8 +48,9 @@ export class MockBoardEditor {
             }
         };
 
-        // Determine tab by boardType
-        const type = schema.boardType || '';
+        // Remember board type and determine tab
+        this.currentBoardType = schema.boardType || this.currentBoardType;
+        const type = this.currentBoardType || '';
         if (type === 'simpleBoard') {
             this.activeTab = 'simple';
         } else if (type === 'enPassant') {
@@ -132,6 +134,70 @@ export class MockBoardEditor {
 
         // Apply tab-specific UI and redraw board
         this.updateTabVisibility();
+    }
+
+    getCurrentSchema(boardTypeOverride) {
+        const boardType =
+            boardTypeOverride ||
+            this.currentBoardType ||
+            (this.activeTab === 'simple'
+                ? 'simpleBoard'
+                : this.activeTab === 'enPassant'
+                    ? 'enPassant'
+                    : 'findAllPossibleMoves');
+
+        const schema = {
+            boardType,
+            pieces: this.pieces.map(p => ({
+                type: p.type,
+                color: p.color,
+                position: {
+                    row: p.position.row,
+                    col: p.position.col
+                }
+            }))
+        };
+
+        if (this.activeTab !== 'simple') {
+            if (this.mainPiece && this.mainPiece.position) {
+                schema.mainPiecePosition = {
+                    row: this.mainPiece.position.row,
+                    col: this.mainPiece.position.col
+                };
+            }
+
+            if (this.validMoves && this.validMoves.length > 0) {
+                schema.moves = this.validMoves.map(m => ({
+                    row: m.row,
+                    col: m.col
+                }));
+            }
+        }
+
+        const hasEnPassant = this.extraInfo.enPassantTarget !== null;
+        const hasPiecesMoved = Object.values(this.extraInfo.piecesMadeMoves || {}).some(v => v === true);
+
+        if (hasEnPassant || hasPiecesMoved) {
+            schema.extraInfo = {};
+
+            if (hasEnPassant) {
+                schema.extraInfo.enPassantTarget = {
+                    row: this.extraInfo.enPassantTarget.row,
+                    col: this.extraInfo.enPassantTarget.col
+                };
+            }
+
+            if (hasPiecesMoved) {
+                schema.extraInfo.piecesMadeMoves = {};
+                Object.keys(this.extraInfo.piecesMadeMoves).forEach(key => {
+                    if (this.extraInfo.piecesMadeMoves[key]) {
+                        schema.extraInfo.piecesMadeMoves[key] = true;
+                    }
+                });
+            }
+        }
+
+        return schema;
     }
 
     init() {
