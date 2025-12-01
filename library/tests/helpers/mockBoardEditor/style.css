@@ -406,6 +406,10 @@ h1 {
     min-height: 320px;
 }
 
+.editor-panel.hidden {
+    display: none;
+}
+
 .file-explorer-hint {
     font-size: 12px;
     color: #666;

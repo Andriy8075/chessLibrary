@@ -31,6 +31,11 @@ export class MockBoardEditor {
             return;
         }
 
+        const editorPanel = document.getElementById('editorPanel');
+        if (editorPanel && editorPanel.classList.contains('hidden')) {
+            editorPanel.classList.remove('hidden');
+        }
+
         // Reset internal state
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
         this.mainPiece = null;
