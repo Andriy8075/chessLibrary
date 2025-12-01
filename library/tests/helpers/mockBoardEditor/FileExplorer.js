@@ -1,10 +1,7 @@
 export class FileExplorer {
     constructor(editor) {
-        this.rootHandle = null;
-        this.currentFileHandle = null;
-        this.currentFilePath = '';
-        this.pathHandleMap = new Map(); // path -> handle
         this.editor = editor;
+        this.currentFilePath = '';
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
         this.expandedPaths = new Set();
@@ -13,7 +10,6 @@ export class FileExplorer {
     }
 
     async init() {
-        this.openFolderBtn = document.getElementById('openFolderBtn');
         this.newFolderBtn = document.getElementById('newFolderBtn');
         this.newFileBtn = document.getElementById('newFileBtn');
         this.deleteFolderBtn = document.getElementById('deleteFolderBtn');
@@ -24,19 +20,9 @@ export class FileExplorer {
         this.revertFileBtn = document.getElementById('revertFileBtn');
         this.fsSupportWarning = document.getElementById('fsSupportWarning');
 
-        if (!('showDirectoryPicker' in window)) {
-            if (this.fsSupportWarning) {
-                this.fsSupportWarning.hidden = false;
-            }
-            if (this.openFolderBtn) this.openFolderBtn.disabled = true;
-            return;
-        }
+        // We always use server-side API; hide any FS warning.
+        if (this.fsSupportWarning) this.fsSupportWarning.hidden = true;
 
-        this.openFolderBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.handleOpenFolder();
-        });
         this.newFolderBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -62,70 +48,61 @@ export class FileExplorer {
             e.stopPropagation();
             this.handleRevertFile();
         });
+
+        // Initial load
+        await this.loadTree();
+        this.newFolderBtn.disabled = false;
+        this.newFileBtn.disabled = false;
+        if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
     }
 
-    async handleOpenFolder() {
+    async loadTree() {
+        if (!this.fileTreeEl) return;
         try {
-            this.rootHandle = await window.showDirectoryPicker({
-                mode: 'readwrite'
-            });
-
-            this.pathHandleMap.clear();
-            this.pathHandleMap.set('', this.rootHandle);
-            this.expandedPaths.clear();
-
-            this.newFolderBtn.disabled = false;
-            this.newFileBtn.disabled = false;
-            if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = false;
-
-            await this.renderTree();
-        } catch (err) {
-            // User cancelled or error; ignore
-            console.error(err);
+            const res = await fetch('/api/boards/tree');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            this.treeRoot = data.root;
+            this.renderTree();
+        } catch (e) {
+            console.error('Failed to load boards tree', e);
         }
     }
 
-    async renderTree() {
-        if (!this.rootHandle || !this.fileTreeEl) return;
+    renderTree() {
+        if (!this.fileTreeEl || !this.treeRoot) return;
 
         this.fileTreeEl.innerHTML = '';
         const ul = document.createElement('ul');
         ul.className = 'file-tree-root';
 
-        await this.addDirectoryEntries('', this.rootHandle, ul);
+        this.addDirectoryEntries(this.treeRoot, ul);
 
         this.fileTreeEl.appendChild(ul);
     }
 
-    async addDirectoryEntries(basePath, dirHandle, parentEl) {
-        const entries = [];
-        for await (const [name, handle] of dirHandle.entries()) {
-            entries.push({ name, handle });
-        }
+    addDirectoryEntries(node, parentEl) {
+        if (!node.children) return;
 
-        // Sort: directories first, then files, both alphabetically
-        entries.sort((a, b) => {
-            const aIsDir = a.handle.kind === 'directory';
-            const bIsDir = b.handle.kind === 'directory';
-            if (aIsDir !== bIsDir) return aIsDir ? -1 : 1;
+        const entries = [...node.children].sort((a, b) => {
+            if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1;
             return a.name.localeCompare(b.name);
         });
 
-        for (const { name, handle } of entries) {
+        for (const entry of entries) {
             const li = document.createElement('li');
-            const relativePath = basePath ? `${basePath}/${name}` : name;
-            this.pathHandleMap.set(relativePath, handle);
+            const relativePath = entry.path;
 
-            if (handle.kind === 'directory') {
+            if (entry.kind === 'directory') {
                 const isExpanded = this.expandedPaths.has(relativePath);
 
                 li.className = 'file-item folder-item ' + (isExpanded ? 'expanded' : 'collapsed');
-                li.textContent = name;
+                li.textContent = entry.name;
 
                 const childUl = document.createElement('ul');
                 childUl.style.display = isExpanded ? 'block' : 'none';
 
-                await this.addDirectoryEntries(relativePath, handle, childUl);
+                this.addDirectoryEntries(entry, childUl);
                 li.appendChild(childUl);
 
                 li.addEventListener('click', (e) => {
@@ -145,10 +122,10 @@ export class FileExplorer {
                 });
             } else {
                 li.className = 'file-item file-leaf';
-                li.textContent = name;
+                li.textContent = entry.name;
                 li.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    this.openFile(relativePath, handle, li);
+                    this.openFile(relativePath, li);
                 });
             }
 
@@ -168,7 +145,6 @@ export class FileExplorer {
         liEl.classList.add('selected');
         this.selectedFolderPath = path;
         // Clear any current file selection
-        this.currentFileHandle = null;
         this.currentFilePath = '';
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
@@ -178,20 +154,27 @@ export class FileExplorer {
         }
     }
 
-    async openFile(path, handle, liEl) {
+    async openFile(path, liEl) {
         this.clearSelection();
         liEl.classList.add('selected');
 
         // Clear selected folder, this is now a file selection
         this.selectedFolderPath = null;
 
-        this.currentFileHandle = handle;
         this.currentFilePath = path;
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
 
-        const file = await handle.getFile();
-        const text = await file.text();
+        let text = '';
+        try {
+            const res = await fetch(`/api/boards/file?path=${encodeURIComponent(path)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            text = data.content || '';
+        } catch (e) {
+            console.error('Failed to load file', e);
+            return;
+        }
 
         // Try to interpret as a mock board JSON and load into editor.
         let parsed = null;
@@ -233,58 +216,52 @@ export class FileExplorer {
         }
     }
 
-    getTargetDirectoryHandleForNewItem() {
-        if (!this.rootHandle) return null;
-
+    getTargetDirectoryPathForNewItem() {
         if (!this.selectedFolderPath) {
-            return this.rootHandle;
+            return '';
         }
-
-        const handle = this.pathHandleMap.get(this.selectedFolderPath);
-        if (handle && handle.kind === 'directory') {
-            return handle;
-        }
-
-        return this.rootHandle;
+        return this.selectedFolderPath;
     }
 
     async handleNewFolder() {
-        if (!this.rootHandle) return;
-
         const name = window.prompt('New folder name:');
         if (!name) return;
 
-        const parentDir = this.getTargetDirectoryHandleForNewItem();
-        if (!parentDir) return;
+        const parentPath = this.getTargetDirectoryPathForNewItem();
 
-        await parentDir.getDirectoryHandle(name, { create: true });
-        await this.renderTree();
+        try {
+            await fetch('/api/boards/folder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parentPath, name })
+            });
+            await this.loadTree();
+        } catch (e) {
+            console.error('Failed to create folder', e);
+        }
     }
 
     async handleNewFile() {
-        if (!this.rootHandle) return;
-
         const name = window.prompt('New file name (e.g., myTestBoard.json):');
         if (!name) return;
 
-        const parentDir = this.getTargetDirectoryHandleForNewItem();
-        if (!parentDir) return;
+        const parentPath = this.getTargetDirectoryPathForNewItem();
 
-        const fileHandle = await parentDir.getFileHandle(name, { create: true });
-
-        // Initialize empty file
-        const writable = await fileHandle.createWritable();
-        await writable.write('');
-        await writable.close();
-
-        await this.renderTree();
+        try {
+            await fetch('/api/boards/file', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parentPath, name, content: '' })
+            });
+            await this.loadTree();
+        } catch (e) {
+            console.error('Failed to create file', e);
+        }
     }
 
     async handleDeleteSelected() {
-        if (!this.rootHandle) return;
-
         // Prefer deleting a selected file if present
-        if (this.currentFilePath && this.currentFileHandle) {
+        if (this.currentFilePath) {
             const filePath = this.currentFilePath;
             const parts = filePath.split('/');
             const name = parts.pop();
@@ -293,24 +270,18 @@ export class FileExplorer {
             const confirmDelete = window.confirm(`Delete file "${filePath}"?`);
             if (!confirmDelete) return;
 
-            const parentHandle =
-                parentPath === ''
-                    ? this.rootHandle
-                    : this.pathHandleMap.get(parentPath);
-
-            if (!parentHandle || parentHandle.kind !== 'directory') {
-                return;
-            }
-
             try {
-                await parentHandle.removeEntry(name);
+                await fetch('/api/boards/entry', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: filePath })
+                });
             } catch (e) {
                 console.error('Failed to delete file', e);
                 return;
             }
 
             // Clear current file selection
-            this.currentFileHandle = null;
             this.currentFilePath = '';
             this.currentFileIsBoardJson = false;
             this.currentBoardType = null;
@@ -325,7 +296,7 @@ export class FileExplorer {
             if (this.revertFileBtn) this.revertFileBtn.disabled = true;
             if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
 
-            await this.renderTree();
+            await this.loadTree();
             return;
         }
 
@@ -342,17 +313,12 @@ export class FileExplorer {
         const name = parts.pop();
         const parentPath = parts.join('/');
 
-        const parentHandle =
-            parentPath === ''
-                ? this.rootHandle
-                : this.pathHandleMap.get(parentPath);
-
-        if (!parentHandle || parentHandle.kind !== 'directory') {
-            return;
-        }
-
         try {
-            await parentHandle.removeEntry(name, { recursive: true });
+            await fetch('/api/boards/entry', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: folderPath })
+            });
         } catch (e) {
             console.error('Failed to delete folder', e);
             return;
@@ -360,30 +326,43 @@ export class FileExplorer {
 
         this.selectedFolderPath = null;
         if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
-        await this.renderTree();
+        await this.loadTree();
     }
 
     async handleSaveFile() {
-        if (!this.currentFileHandle) return;
-
-        const writable = await this.currentFileHandle.createWritable();
+        if (!this.currentFilePath) return;
 
         if (this.currentFileIsBoardJson && this.editor && typeof this.editor.getCurrentSchema === 'function') {
             const schema = this.editor.getCurrentSchema(this.currentBoardType);
             const jsonText = JSON.stringify(schema, null, 4);
-            await writable.write(jsonText);
+            await fetch('/api/boards/file', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: this.currentFilePath, content: jsonText })
+            });
         } else {
-            await writable.write(this.fileEditor.value);
+            await fetch('/api/boards/file', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: this.currentFilePath, content: this.fileEditor.value })
+            });
         }
-
-        await writable.close();
     }
 
     async handleRevertFile() {
-        if (!this.currentFileHandle) return;
+        if (!this.currentFilePath) return;
 
-        const file = await this.currentFileHandle.getFile();
-        const text = await file.text();
+        let text = '';
+        try {
+            const res = await fetch(`/api/boards/file?path=${encodeURIComponent(this.currentFilePath)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            text = data.content || '';
+        } catch (e) {
+            console.error('Failed to reload file', e);
+            return;
+        }
+
         this.fileEditor.value = text;
 
         // Also re-load board state if this is a board JSON file
