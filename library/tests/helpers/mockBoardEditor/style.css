@@ -23,6 +23,35 @@ h1 {
     color: #333;
 }
 
+.tab-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    border-color: #2196F3;
+    color: #2196F3;
+}
+
+.tab-btn.active {
+    background: #2196F3;
+    border-color: #2196F3;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+}
+
 .controls {
     flex: 0 0 350px;
     display: flex;
@@ -131,6 +160,11 @@ h1 {
     border-color: #2196F3;
     background: #2196F3;
     color: white;
+}
+
+.mode-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .info-panel div {

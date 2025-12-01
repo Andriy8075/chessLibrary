@@ -4,6 +4,7 @@ class MockBoardEditor {
         this.selectedPiece = null;
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves'
+        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple'
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
@@ -25,6 +26,7 @@ class MockBoardEditor {
     init() {
         this.createBoard();
         this.setupEventListeners();
+        this.updateTabVisibility();
         this.updateInfo();
     }
 
@@ -48,6 +50,16 @@ class MockBoardEditor {
     }
 
     setupEventListeners() {
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.activeTab = btn.dataset.tab;
+                this.updateTabVisibility();
+            });
+        });
+
         // Piece selection
         document.querySelectorAll('.piece-option').forEach(option => {
             option.addEventListener('click', () => {
@@ -89,6 +101,59 @@ class MockBoardEditor {
                 this.extraInfo.piecesMadeMoves[key] = checkbox.checked;
             });
         });
+    }
+
+    updateTabVisibility() {
+        const extraInfoPanel = document.querySelector('.extra-info-panel');
+        const modeSelector = document.querySelector('.mode-selector');
+        const mainBtn = document.querySelector('.mode-btn[data-mode="main"]');
+        const movesBtn = document.querySelector('.mode-btn[data-mode="moves"]');
+        const placeBtn = document.querySelector('.mode-btn[data-mode="place"]');
+
+        if (this.activeTab === 'moves') {
+            // Full moves testing: place + main + moves, no extra info
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+
+            [mainBtn, movesBtn].forEach(btn => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                }
+            });
+        } else if (this.activeTab === 'enPassant') {
+            // En passant testing: same as moves, but with extra info
+            if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
+
+            [mainBtn, movesBtn].forEach(btn => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                }
+            });
+        } else if (this.activeTab === 'simple') {
+            // Simple board: only placing pieces
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Force mode to place
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        }
+
+        // Ensure board display matches current mode/tab
+        this.updateBoardDisplay();
+        this.updateInfo();
     }
 
     handleSquareClick(row, col) {
@@ -255,6 +320,18 @@ class MockBoardEditor {
 
         // Capitalize first letter for variable name
         const varName = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+
+        // Simple board tab: only pieces
+        if (this.activeTab === 'simple') {
+            return `${varName} = {
+    pieces: [
+${piecesArray}
+    ]
+}
+
+module.exports = ${varName};
+`;
+        }
 
         // Generate mainPiecePosition if main piece is selected
         let mainPiecePositionStr = '';
