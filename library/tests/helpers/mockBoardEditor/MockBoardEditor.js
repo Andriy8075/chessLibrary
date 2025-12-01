@@ -1,10 +1,10 @@
 export class MockBoardEditor {
-    constructor() {
+    constructor(initialBoardType = 'findAllPossibleMoves') {
         this.selectedPiece = null;
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves', 'target', 'cellFrom', 'cellTo'
-        this.activeTab = 'findAllPossibleMoves'; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck', 'wouldMoveCauseCheck'
-        this.currentBoardType = 'findAllPossibleMoves';
+        this.activeTab = initialBoardType; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck', 'wouldMoveCauseCheck'
+        this.currentBoardType = initialBoardType;
 
         // When true, we are editing an empty file that has no board type yet.
         // In this mode only the three tab buttons are shown until the user
@@ -19,17 +19,6 @@ export class MockBoardEditor {
 
     resetBoardState() {
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
-        this.mainPiece = null;
-        this.validMoves = [];
-        this.pieces = [];
-        this.targetSquare = null;
-        this.expectedResult = null;
-        this.attackingColor = null;
-        this.kingColor = null;
-        this.kingCheckResult = null;
-        this.cellFrom = null; // For wouldMoveCauseCheck board type
-        this.cellTo = null; // For wouldMoveCauseCheck board type
-        this.wouldMoveCauseCheckResult = null; // true or false for wouldMoveCauseCheck
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -41,6 +30,49 @@ export class MockBoardEditor {
                 blackQueensideRook: false
             }
         };
+    }
+
+    // Transfer pieces and relevant state from another editor instance
+    transferPiecesFrom(sourceEditor) {
+        if (!sourceEditor || !sourceEditor.board) {
+            return;
+        }
+
+        // Copy board state (pieces positions)
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = sourceEditor.board[row][col];
+                if (piece) {
+                    this.board[row][col] = {
+                        type: piece.type,
+                        color: piece.color,
+                        position: { row: row + 1, col: col + 1 }
+                    };
+                }
+            }
+        }
+
+        // Rebuild pieces array
+        this.updatePiecesList();
+
+        // Copy extraInfo (en passant, pieces made moves) - shared across all board types
+        if (sourceEditor.extraInfo) {
+            this.extraInfo = {
+                enPassantTarget: sourceEditor.extraInfo.enPassantTarget
+                    ? { ...sourceEditor.extraInfo.enPassantTarget }
+                    : null,
+                piecesMadeMoves: { ...sourceEditor.extraInfo.piecesMadeMoves }
+            };
+        }
+
+        // Copy UI state
+        this.selectedPiece = sourceEditor.selectedPiece;
+        this.selectedColor = sourceEditor.selectedColor;
+        this.mode = sourceEditor.mode;
+        this.awaitingBoardType = sourceEditor.awaitingBoardType;
+
+        // Update display
+        this.updateBoardDisplay();
     }
 
     setExpectedResult(value, trueRadioId, falseRadioId, propertyName) {
@@ -68,14 +100,14 @@ export class MockBoardEditor {
             editorPanel.classList.remove('hidden');
         }
 
-        // Reset internal state
-        this.resetBoardState();
-
         // Remember board type and determine tab
         // Board types now match tab names directly
         this.currentBoardType = schema.boardType || this.currentBoardType;
         // Types now match tab names directly
         this.activeTab = this.currentBoardType || 'findAllPossibleMoves';
+
+        // Reset internal state for a fresh board
+        this.resetBoardState();
 
         // Update tab buttons to match the active tab
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -98,125 +130,6 @@ export class MockBoardEditor {
 
         // Rebuild pieces array from board
         this.updatePiecesList();
-
-        // Main piece & moves for non-simple boards (but not isSquareAttacked, isKingInCheck, or wouldMoveCauseCheck)
-        if (this.activeTab !== 'simpleBoard' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck' && this.activeTab !== 'wouldMoveCauseCheck') {
-            if (schema.mainPiecePosition) {
-                const cell = {
-                    row: schema.mainPiecePosition.row,
-                    col: schema.mainPiecePosition.col
-                };
-                const piece = this.getPiece(cell);
-                if (piece) {
-                    this.mainPiece = { ...piece, position: cell };
-                }
-            }
-
-            if (Array.isArray(schema.moves)) {
-                this.validMoves = schema.moves.map(m => ({
-                    row: m.row,
-                    col: m.col
-                }));
-            }
-        }
-
-        // Target square and expected result for isSquareAttacked
-        if (this.activeTab === 'isSquareAttacked') {
-            if (schema.targetSquare) {
-                this.targetSquare = {
-                    row: schema.targetSquare.row,
-                    col: schema.targetSquare.col
-                };
-                this.updateTargetSquareDisplay();
-            } else {
-                this.targetSquare = null;
-                this.updateTargetSquareDisplay();
-            }
-
-            this.setExpectedResult(schema.expectedResult, 'expectedResultTrue', 'expectedResultFalse', 'expectedResult');
-
-            if (schema.attackingColor) {
-                this.attackingColor = schema.attackingColor;
-                const whiteRadio = document.getElementById('attackingColorWhite');
-                const blackRadio = document.getElementById('attackingColorBlack');
-                if (whiteRadio) whiteRadio.checked = this.attackingColor === 'white';
-                if (blackRadio) blackRadio.checked = this.attackingColor === 'black';
-            } else {
-                this.attackingColor = null;
-            }
-        }
-
-        // King color and expected result for isKingInCheck
-        if (this.activeTab === 'isKingInCheck') {
-            if (schema.color) {
-                this.kingColor = schema.color;
-                const whiteRadio = document.getElementById('kingColorWhite');
-                const blackRadio = document.getElementById('kingColorBlack');
-                if (whiteRadio) whiteRadio.checked = this.kingColor === 'white';
-                if (blackRadio) blackRadio.checked = this.kingColor === 'black';
-            } else {
-                this.kingColor = null;
-            }
-
-            this.setExpectedResult(schema.expectedResult, 'kingCheckResultTrue', 'kingCheckResultFalse', 'kingCheckResult');
-        }
-
-        // Cell from, cell to, and expected result for wouldMoveCauseCheck
-        if (this.activeTab === 'wouldMoveCauseCheck') {
-            if (schema.cellFrom) {
-                this.cellFrom = {
-                    row: schema.cellFrom.row,
-                    col: schema.cellFrom.col
-                };
-                this.updateCellFromDisplay();
-            } else {
-                this.cellFrom = null;
-                this.updateCellFromDisplay();
-            }
-
-            if (schema.cellTo) {
-                this.cellTo = {
-                    row: schema.cellTo.row,
-                    col: schema.cellTo.col
-                };
-                this.updateCellToDisplay();
-            } else {
-                this.cellTo = null;
-                this.updateCellToDisplay();
-            }
-
-            this.setExpectedResult(schema.expectedResult, 'wouldMoveCauseCheckResultTrue', 'wouldMoveCauseCheckResultFalse', 'wouldMoveCauseCheckResult');
-        }
-
-        // Extra info (en passant, pieces made moves)
-        if (schema.extraInfo) {
-            if (schema.extraInfo.enPassantTarget) {
-                this.extraInfo.enPassantTarget = {
-                    row: schema.extraInfo.enPassantTarget.row,
-                    col: schema.extraInfo.enPassantTarget.col
-                };
-
-                const rowInput = document.getElementById('enPassantRow');
-                const colInput = document.getElementById('enPassantCol');
-                if (rowInput) rowInput.value = this.extraInfo.enPassantTarget.row;
-                if (colInput) colInput.value = this.extraInfo.enPassantTarget.col;
-            } else {
-                const rowInput = document.getElementById('enPassantRow');
-                const colInput = document.getElementById('enPassantCol');
-                if (rowInput) rowInput.value = '';
-                if (colInput) colInput.value = '';
-            }
-
-            if (schema.extraInfo.piecesMadeMoves) {
-                Object.keys(this.extraInfo.piecesMadeMoves).forEach(key => {
-                    this.extraInfo.piecesMadeMoves[key] = !!schema.extraInfo.piecesMadeMoves[key];
-                    const checkbox = document.querySelector(`.pieces-moved-controls input[data-key="${key}"]`);
-                    if (checkbox) {
-                        checkbox.checked = this.extraInfo.piecesMadeMoves[key];
-                    }
-                });
-            }
-        }
 
         // Apply tab-specific UI and redraw board
         this.updateTabVisibility();
@@ -337,7 +250,10 @@ export class MockBoardEditor {
                 square.dataset.row = row;
                 square.dataset.col = col;
 
-                square.addEventListener('click', () => this.handleSquareClick(row, col));
+                square.addEventListener('click', () => {
+                    const editor = window.currentEditor || this;
+                    editor.handleSquareClick(row, col);
+                });
 
                 boardElement.appendChild(square);
             }
@@ -349,34 +265,56 @@ export class MockBoardEditor {
         // Tabs (board type selector)
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                const currentEditor = window.currentEditor || this;
+                const newBoardType = btn.dataset.tab;
+                
+                // If switching to the same type, do nothing
+                if (currentEditor.currentBoardType === newBoardType) {
+                    return;
+                }
 
-                this.activeTab = btn.dataset.tab;
+                // Create a new editor instance of the correct type and transfer pieces
+                if (window.createEditorForType) {
+                    const newEditor = window.createEditorForType(newBoardType, currentEditor);
+                    
+                    // Replace the global editor reference
+                    window.currentEditor = newEditor;
 
-                // Board types now match tab names directly
-                this.currentBoardType = this.activeTab;
+                    // Update tab buttons
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
 
-                // If we were waiting for a type for a new file, we can now
-                // reveal the rest of the controls.
-                this.awaitingBoardType = false;
+                    // If we were waiting for a type for a new file, we can now
+                    // reveal the rest of the controls.
+                    newEditor.awaitingBoardType = false;
 
-                this.updateTabVisibility();
+                    newEditor.updateTabVisibility();
+                } else {
+                    // Fallback to old behavior if factory not available
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    this.activeTab = btn.dataset.tab;
+                    this.currentBoardType = this.activeTab;
+                    this.awaitingBoardType = false;
+                    this.updateTabVisibility();
+                }
             });
         });
 
         // Piece selection
         document.querySelectorAll('.piece-option').forEach(option => {
             option.addEventListener('click', () => {
+                const editor = window.currentEditor || this;
                 document.querySelectorAll('.piece-option').forEach(opt => opt.classList.remove('selected'));
                 option.classList.add('selected');
 
                 if (option.dataset.piece === 'remove') {
-                    this.selectedPiece = 'remove';
-                    this.selectedColor = null;
+                    editor.selectedPiece = 'remove';
+                    editor.selectedColor = null;
                 } else {
-                    this.selectedPiece = option.dataset.piece;
-                    this.selectedColor = option.dataset.color;
+                    editor.selectedPiece = option.dataset.piece;
+                    editor.selectedColor = option.dataset.color;
                 }
             });
         });
@@ -384,61 +322,79 @@ export class MockBoardEditor {
         // Mode selection
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.addEventListener('click', () => {
+                const editor = window.currentEditor || this;
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                this.mode = btn.dataset.mode;
-                this.updateBoardDisplay();
+                editor.mode = btn.dataset.mode;
+                editor.updateBoardDisplay();
             });
         });
 
 
         // En Passant controls
-        document.getElementById('enPassantRow').addEventListener('input', () => this.updateEnPassant());
-        document.getElementById('enPassantCol').addEventListener('input', () => this.updateEnPassant());
-        document.getElementById('clearEnPassant').addEventListener('click', () => this.clearEnPassant());
+        document.getElementById('enPassantRow').addEventListener('input', () => {
+            const editor = window.currentEditor || this;
+            editor.updateEnPassant();
+        });
+        document.getElementById('enPassantCol').addEventListener('input', () => {
+            const editor = window.currentEditor || this;
+            editor.updateEnPassant();
+        });
+        document.getElementById('clearEnPassant').addEventListener('click', () => {
+            const editor = window.currentEditor || this;
+            editor.clearEnPassant();
+        });
 
         // Pieces Made Moves checkboxes
         document.querySelectorAll('.pieces-moved-controls input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 const key = checkbox.dataset.key;
-                this.extraInfo.piecesMadeMoves[key] = checkbox.checked;
+                editor.extraInfo.piecesMadeMoves[key] = checkbox.checked;
             });
         });
 
         // Is Square Attacked controls
         const clearTargetSquareBtn = document.getElementById('clearTargetSquare');
         if (clearTargetSquareBtn) {
-            clearTargetSquareBtn.addEventListener('click', () => this.clearTargetSquare());
+            clearTargetSquareBtn.addEventListener('click', () => {
+                const editor = window.currentEditor || this;
+                editor.clearTargetSquare();
+            });
         }
 
         document.querySelectorAll('input[name="expectedResult"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 if (radio.checked) {
-                    this.expectedResult = radio.value === 'true';
+                    editor.expectedResult = radio.value === 'true';
                 }
             });
         });
 
         document.querySelectorAll('input[name="attackingColor"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 if (radio.checked) {
-                    this.attackingColor = radio.value;
+                    editor.attackingColor = radio.value;
                 }
             });
         });
 
         document.querySelectorAll('input[name="kingColor"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 if (radio.checked) {
-                    this.kingColor = radio.value;
+                    editor.kingColor = radio.value;
                 }
             });
         });
 
         document.querySelectorAll('input[name="kingCheckResult"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 if (radio.checked) {
-                    this.kingCheckResult = radio.value === 'true';
+                    editor.kingCheckResult = radio.value === 'true';
                 }
             });
         });
@@ -446,18 +402,25 @@ export class MockBoardEditor {
         // Would Move Cause Check controls
         const clearCellFromBtn = document.getElementById('clearCellFrom');
         if (clearCellFromBtn) {
-            clearCellFromBtn.addEventListener('click', () => this.clearCellFrom());
+            clearCellFromBtn.addEventListener('click', () => {
+                const editor = window.currentEditor || this;
+                editor.clearCellFrom();
+            });
         }
 
         const clearCellToBtn = document.getElementById('clearCellTo');
         if (clearCellToBtn) {
-            clearCellToBtn.addEventListener('click', () => this.clearCellTo());
+            clearCellToBtn.addEventListener('click', () => {
+                const editor = window.currentEditor || this;
+                editor.clearCellTo();
+            });
         }
 
         document.querySelectorAll('input[name="wouldMoveCauseCheckResult"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                const editor = window.currentEditor || this;
                 if (radio.checked) {
-                    this.wouldMoveCauseCheckResult = radio.value === 'true';
+                    editor.wouldMoveCauseCheckResult = radio.value === 'true';
                 }
             });
         });
@@ -487,33 +450,35 @@ export class MockBoardEditor {
         const isKingInCheckPanel = document.querySelector('.is-king-in-check-panel');
         const wouldMoveCauseCheckPanel = document.querySelector('.would-move-cause-check-panel');
 
-        if (this.activeTab === 'findAllPossibleMoves') {
-            // Full moves testing: place + main + moves, no extra info
-            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
-            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
-            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
-            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+        // Delegate actual per-board-type visibility rules to subclasses.
+        this.applyTabVisibility({
+            controls,
+            extraInfoPanel,
+            mainBtn,
+            movesBtn,
+            placeBtn,
+            isSquareAttackedPanel,
+            isKingInCheckPanel,
+            wouldMoveCauseCheckPanel
+        });
 
-            [mainBtn, movesBtn].forEach(btn => {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.classList.remove('disabled');
-                }
-            });
-        } else if (this.activeTab === 'enPassant') {
-            // En passant testing: same as moves, but with extra info
-            if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
-            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
-            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
-            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+        // Ensure board display matches current mode/tab
+        this.updateBoardDisplay();
+        this.updateInfo();
+    }
 
-            [mainBtn, movesBtn].forEach(btn => {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.classList.remove('disabled');
-                }
-            });
-        } else if (this.activeTab === 'simpleBoard') {
+    // Default tab-visibility behavior for "simpleBoard" – child editors override
+    // this method to implement their own rules.
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'simpleBoard') {
             // Simple board: only placing pieces
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
@@ -535,134 +500,7 @@ export class MockBoardEditor {
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
                 placeBtn.classList.add('active');
             }
-        } else if (this.activeTab === 'isSquareAttacked') {
-            // Is Square Attacked: only placing pieces + target square selection
-            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
-            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'flex';
-            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
-            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
-
-            if (mainBtn) {
-                mainBtn.disabled = true;
-                mainBtn.classList.add('disabled');
-            }
-            if (movesBtn) {
-                movesBtn.disabled = true;
-                movesBtn.classList.add('disabled');
-            }
-
-            // Add target mode button if it doesn't exist
-            let targetBtn = document.querySelector('.mode-btn[data-mode="target"]');
-            if (!targetBtn) {
-                const modeSelector = document.querySelector('.mode-selector');
-                if (modeSelector) {
-                    targetBtn = document.createElement('button');
-                    targetBtn.className = 'mode-btn';
-                    targetBtn.dataset.mode = 'target';
-                    targetBtn.textContent = 'Select Target Square';
-                    modeSelector.appendChild(targetBtn);
-                    targetBtn.addEventListener('click', () => {
-                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                        targetBtn.classList.add('active');
-                        this.mode = 'target';
-                        this.updateBoardDisplay();
-                    });
-                }
-            }
-
-            // Force mode to place initially
-            this.mode = 'place';
-            if (placeBtn) {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                placeBtn.classList.add('active');
-            }
-        } else if (this.activeTab === 'isKingInCheck') {
-            // Is King In Check: only placing pieces + king color selection
-            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
-            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
-            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'flex';
-            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
-
-            if (mainBtn) {
-                mainBtn.disabled = true;
-                mainBtn.classList.add('disabled');
-            }
-            if (movesBtn) {
-                movesBtn.disabled = true;
-                movesBtn.classList.add('disabled');
-            }
-
-            // Force mode to place
-            this.mode = 'place';
-            if (placeBtn) {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                placeBtn.classList.add('active');
-            }
-        } else if (this.activeTab === 'wouldMoveCauseCheck') {
-            // Would Move Cause Check: only placing pieces + cell from/to selection
-            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
-            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
-            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
-            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'flex';
-
-            if (mainBtn) {
-                mainBtn.disabled = true;
-                mainBtn.classList.add('disabled');
-            }
-            if (movesBtn) {
-                movesBtn.disabled = true;
-                movesBtn.classList.add('disabled');
-            }
-
-            // Add cellFrom mode button if it doesn't exist
-            let cellFromBtn = document.querySelector('.mode-btn[data-mode="cellFrom"]');
-            if (!cellFromBtn) {
-                const modeSelector = document.querySelector('.mode-selector');
-                if (modeSelector) {
-                    cellFromBtn = document.createElement('button');
-                    cellFromBtn.className = 'mode-btn';
-                    cellFromBtn.dataset.mode = 'cellFrom';
-                    cellFromBtn.textContent = 'Select Cell From';
-                    modeSelector.appendChild(cellFromBtn);
-                    cellFromBtn.addEventListener('click', () => {
-                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                        cellFromBtn.classList.add('active');
-                        this.mode = 'cellFrom';
-                        this.updateBoardDisplay();
-                    });
-                }
-            }
-
-            // Add cellTo mode button if it doesn't exist
-            let cellToBtn = document.querySelector('.mode-btn[data-mode="cellTo"]');
-            if (!cellToBtn) {
-                const modeSelector = document.querySelector('.mode-selector');
-                if (modeSelector) {
-                    cellToBtn = document.createElement('button');
-                    cellToBtn.className = 'mode-btn';
-                    cellToBtn.dataset.mode = 'cellTo';
-                    cellToBtn.textContent = 'Select Cell To';
-                    modeSelector.appendChild(cellToBtn);
-                    cellToBtn.addEventListener('click', () => {
-                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                        cellToBtn.classList.add('active');
-                        this.mode = 'cellTo';
-                        this.updateBoardDisplay();
-                    });
-                }
-            }
-
-            // Force mode to place initially
-            this.mode = 'place';
-            if (placeBtn) {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                placeBtn.classList.add('active');
-            }
         }
-
-        // Ensure board display matches current mode/tab
-        this.updateBoardDisplay();
-        this.updateInfo();
     }
 
     handleSquareClick(row, col) {
@@ -871,6 +709,7 @@ export class MockBoardEditor {
         }
 
         // Reset internal state to a blank board
+        this.currentBoardType = 'findAllPossibleMoves';
         this.resetBoardState();
 
         // Clear extra-info inputs
@@ -966,4 +805,416 @@ export class MockBoardEditor {
 
 }
 
+// Editor classes for specific board types. These extend the base editor but
+// can be used when you want a type-specific editor instance in other code.
+// They all share the common UI/controller logic from MockBoardEditor, but
+// start with a fixed board type and can be augmented with extra helpers as
+// needed per type.
 
+export class SimpleBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('simpleBoard');
+    }
+}
+
+export class FindAllPossibleMovesBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('findAllPossibleMoves');
+    }
+
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'findAllPossibleMoves') {
+            // Full moves testing: place + main + moves, no extra info
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+
+            [mainBtn, movesBtn].forEach(btn => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                }
+            });
+        } else {
+            super.applyTabVisibility({
+                extraInfoPanel,
+                mainBtn,
+                movesBtn,
+                placeBtn,
+                isSquareAttackedPanel,
+                isKingInCheckPanel,
+                wouldMoveCauseCheckPanel
+            });
+        }
+    }
+}
+
+export class EnPassantBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('enPassant');
+    }
+
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'enPassant') {
+            // En passant testing: same as moves, but with extra info
+            if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+
+            [mainBtn, movesBtn].forEach(btn => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                }
+            });
+        } else {
+            super.applyTabVisibility({
+                extraInfoPanel,
+                mainBtn,
+                movesBtn,
+                placeBtn,
+                isSquareAttackedPanel,
+                isKingInCheckPanel,
+                wouldMoveCauseCheckPanel
+            });
+        }
+    }
+}
+
+export class IsSquareAttackedBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('isSquareAttacked');
+    }
+
+    // Properties specific to "isSquareAttacked" boards
+    get targetSquare() {
+        return this._targetSquare;
+    }
+
+    set targetSquare(value) {
+        this._targetSquare = value;
+    }
+
+    get expectedResult() {
+        return this._expectedResult;
+    }
+
+    set expectedResult(value) {
+        this._expectedResult = value;
+    }
+
+    get attackingColor() {
+        return this._attackingColor;
+    }
+
+    set attackingColor(value) {
+        this._attackingColor = value;
+    }
+
+    setAttackingColor(color) {
+        this.attackingColor = color;
+    }
+
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'isSquareAttacked') {
+            // Is Square Attacked: only placing pieces + target square selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'flex';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Add target mode button if it doesn't exist
+            let targetBtn = document.querySelector('.mode-btn[data-mode="target"]');
+            if (!targetBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    targetBtn = document.createElement('button');
+                    targetBtn.className = 'mode-btn';
+                    targetBtn.dataset.mode = 'target';
+                    targetBtn.textContent = 'Select Target Square';
+                    modeSelector.appendChild(targetBtn);
+                    targetBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        targetBtn.classList.add('active');
+                        this.mode = 'target';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Force mode to place initially
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else {
+            super.applyTabVisibility({
+                extraInfoPanel,
+                mainBtn,
+                movesBtn,
+                placeBtn,
+                isSquareAttackedPanel,
+                isKingInCheckPanel,
+                wouldMoveCauseCheckPanel
+            });
+        }
+    }
+
+    loadFromSchema(schema) {
+        // Let the base class handle generic pieces, board type, etc.
+        super.loadFromSchema(schema);
+
+        if (!schema) {
+            return;
+        }
+
+        // Target square and expected result for isSquareAttacked
+        if (schema.targetSquare) {
+            this.targetSquare = {
+                row: schema.targetSquare.row,
+                col: schema.targetSquare.col
+            };
+            this.updateTargetSquareDisplay();
+        } else {
+            this.targetSquare = null;
+            this.updateTargetSquareDisplay();
+        }
+
+        this.setExpectedResult(
+            schema.expectedResult,
+            'expectedResultTrue',
+            'expectedResultFalse',
+            'expectedResult'
+        );
+
+        if (schema.attackingColor) {
+            this.attackingColor = schema.attackingColor;
+            const whiteRadio = document.getElementById('attackingColorWhite');
+            const blackRadio = document.getElementById('attackingColorBlack');
+            if (whiteRadio) whiteRadio.checked = this.attackingColor === 'white';
+            if (blackRadio) blackRadio.checked = this.attackingColor === 'black';
+        } else {
+            this.attackingColor = null;
+        }
+    }
+}
+
+export class inKingInCheckBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('isKingInCheck');
+    }
+
+    // Properties specific to "isKingInCheck" boards
+    get kingColor() {
+        return this._kingColor;
+    }
+
+    set kingColor(value) {
+        this._kingColor = value;
+    }
+
+    get kingCheckResult() {
+        return this._kingCheckResult;
+    }
+
+    set kingCheckResult(value) {
+        this._kingCheckResult = value;
+    }
+
+    setKingColor(color) {
+        this.kingColor = color;
+    }
+
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'isKingInCheck') {
+            // Is King In Check: only placing pieces + king color selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'flex';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Force mode to place
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else {
+            super.applyTabVisibility({
+                extraInfoPanel,
+                mainBtn,
+                movesBtn,
+                placeBtn,
+                isSquareAttackedPanel,
+                isKingInCheckPanel,
+                wouldMoveCauseCheckPanel
+            });
+        }
+    }
+}
+
+export class WouldMoveCauseCheckBoardEditor extends MockBoardEditor {
+    constructor() {
+        super('wouldMoveCauseCheck');
+    }
+
+    // Properties specific to "wouldMoveCauseCheck" boards
+    get cellFrom() {
+        return this._cellFrom;
+    }
+
+    set cellFrom(value) {
+        this._cellFrom = value;
+    }
+
+    get cellTo() {
+        return this._cellTo;
+    }
+
+    set cellTo(value) {
+        this._cellTo = value;
+    }
+
+    get wouldMoveCauseCheckResult() {
+        return this._wouldMoveCauseCheckResult;
+    }
+
+    set wouldMoveCauseCheckResult(value) {
+        this._wouldMoveCauseCheckResult = value;
+    }
+
+    applyTabVisibility({
+        extraInfoPanel,
+        mainBtn,
+        movesBtn,
+        placeBtn,
+        isSquareAttackedPanel,
+        isKingInCheckPanel,
+        wouldMoveCauseCheckPanel
+    }) {
+        if (this.activeTab === 'wouldMoveCauseCheck') {
+            // Would Move Cause Check: only placing pieces + cell from/to selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'flex';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Add cellFrom mode button if it doesn't exist
+            let cellFromBtn = document.querySelector('.mode-btn[data-mode="cellFrom"]');
+            if (!cellFromBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    cellFromBtn = document.createElement('button');
+                    cellFromBtn.className = 'mode-btn';
+                    cellFromBtn.dataset.mode = 'cellFrom';
+                    cellFromBtn.textContent = 'Select Cell From';
+                    modeSelector.appendChild(cellFromBtn);
+                    cellFromBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        cellFromBtn.classList.add('active');
+                        this.mode = 'cellFrom';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Add cellTo mode button if it doesn't exist
+            let cellToBtn = document.querySelector('.mode-btn[data-mode="cellTo"]');
+            if (!cellToBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    cellToBtn = document.createElement('button');
+                    cellToBtn.className = 'mode-btn';
+                    cellToBtn.dataset.mode = 'cellTo';
+                    cellToBtn.textContent = 'Select Cell To';
+                    modeSelector.appendChild(cellToBtn);
+                    cellToBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        cellToBtn.classList.add('active');
+                        this.mode = 'cellTo';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Force mode to place initially
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else {
+            super.applyTabVisibility({
+                extraInfoPanel,
+                mainBtn,
+                movesBtn,
+                placeBtn,
+                isSquareAttackedPanel,
+                isKingInCheckPanel,
+                wouldMoveCauseCheckPanel
+            });
+        }
+    }
+}

@@ -13,7 +13,6 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
-  const location = useLocation();
   const editor = useBoardEditor();
   const [awaitingBoardType, setAwaitingBoardType] = useState(false);
   const [currentFilePath, setCurrentFilePath] = useState(null);

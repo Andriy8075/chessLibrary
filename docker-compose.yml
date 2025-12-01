@@ -1,17 +1,16 @@
 version: "3.9"
 
 services:
-  chess-dev:
-    build: .
-    working_dir: /usr/src/app
+  web:
+    image: node:20-alpine
+    working_dir: /app
     volumes:
-      - .:/usr/src/app
+      - .:/app
     ports:
-      - "3000:3000"   # web/server.js
-      - "3001:3001"   # mockBoardEditor Vite dev server (React app)
-      - "3002:3002"   # mockBoardEditor API server
+      - "3000:3000"
+      - "3001:3001"
+      - "3002:3002"
     environment:
-      - PORT=3000
-      - MOCK_EDITOR_PORT=3002
-
+      - DOCKER=true
+    command: sh entrypoint.sh
 

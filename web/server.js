@@ -9,7 +9,7 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const port = 3000;
 
 app.use(express.static(path.join(__dirname)));
 

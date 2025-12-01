@@ -4,5 +4,12 @@
     "express": "^4.18.2",
     "ws": "^8.18.3",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "scripts": {
+    "dev": "cd .. && nodemon --config nodemon.server.json",
+    "start": "node server.js"
   }
 }

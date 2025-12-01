@@ -1,0 +1,30 @@
+{
+    "boardType": "wouldMoveCauseCheck",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 3
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 4
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 6,
+        "col": 4
+    },
+    "cellTo": {
+        "row": 5,
+        "col": 4
+    },
+    "expectedResult": true
+}

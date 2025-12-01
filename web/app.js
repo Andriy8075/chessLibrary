@@ -8,5 +8,4 @@ document.addEventListener('DOMContentLoaded', function() {
         findGameBtn.addEventListener('click', findGame);
     }
 });
-
 connectWebSocket();

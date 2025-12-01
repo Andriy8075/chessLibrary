@@ -150,7 +150,7 @@ export function useBoardEditor() {
         });
       }
       if (schema.expectedResult !== undefined) {
-        setExpectedResult(schema.expectedResult === true);
+        setExpectedResult(schema.expectedResult);
       }
       if (schema.attackingColor) {
         setAttackingColor(schema.attackingColor);

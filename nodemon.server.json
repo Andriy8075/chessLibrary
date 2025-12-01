@@ -1,13 +1,17 @@
 {
   "watch": [
     "web",
-    "library/src"
+    "library"
   ],
   "ignore": [
-    "library/tests/**"
+    "library/tests/boards/**",
+    "node_modules/**",
+    "coverage/**",
+    "*.log"
   ],
-  "ext": "js,json",
-  "exec": "node web/server.js"
+  "ext": "js,json,html,css",
+  "exec": "node web/server.js",
+  "verbose": true
 }
 
 

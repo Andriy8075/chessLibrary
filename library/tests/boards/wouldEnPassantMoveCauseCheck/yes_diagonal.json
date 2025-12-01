@@ -1,0 +1,46 @@
+{
+    "boardType": "wouldMoveCauseCheck",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 3,
+                "col": 2
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "bishop",
+            "color": "black",
+            "position": {
+                "row": 7,
+                "col": 6
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 5,
+        "col": 3
+    },
+    "cellTo": {
+        "row": 6,
+        "col": 4
+    },
+    "expectedResult": true
+}

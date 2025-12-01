@@ -4,20 +4,16 @@ import ModeSelector from '../components/ModeSelector';
 import ChessBoard from '../components/ChessBoard';
 import ColorSelector from '../components/ColorSelector';
 import ExpectedResult from '../components/ExpectedResult';
+import squareClickFunctions from '../hooks/squareClickFunctions';
 import './route-common.css';
 
 function IsSquareAttacked({ editor }) {
   const handleSquareClick = (row, col) => {
     const cell = { row, col };
 
-    if (editor.mode === 'place') {
-      if (editor.selectedPiece === 'remove') {
-        editor.removePiece(cell);
-      } else if (editor.selectedPiece && editor.selectedColor) {
-        editor.placePiece(cell, editor.selectedPiece, editor.selectedColor);
-      }
-    } else if (editor.mode === 'target') {
-      editor.setTargetSquare({ row, col });
+    const func = squareClickFunctions[editor.mode];
+    if (func) {
+      func(editor, cell);
     }
   };
 
