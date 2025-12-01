@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "web",
+    "library/src"
+  ],
+  "ignore": [
+    "library/tests/**"
+  ],
+  "ext": "js,json",
+  "exec": "node web/server.js"
+}
+
+

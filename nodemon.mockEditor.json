@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "library/tests/helpers/mockBoardEditor"
+  ],
+  "ignore": [
+    "web/**",
+    "library/tests/boards/**"
+  ],
+  "ext": "js,json,html,css",
+  "exec": "node library/tests/helpers/mockBoardEditor/devServer.js"
+}
+
+
