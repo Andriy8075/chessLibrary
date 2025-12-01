@@ -15,6 +15,7 @@ export class FileExplorer {
         this.openFolderBtn = document.getElementById('openFolderBtn');
         this.newFolderBtn = document.getElementById('newFolderBtn');
         this.newFileBtn = document.getElementById('newFileBtn');
+        this.deleteFolderBtn = document.getElementById('deleteFolderBtn');
         this.fileTreeEl = document.getElementById('fileTree');
         this.fileEditor = document.getElementById('fileEditor');
         this.currentFilePathEl = document.getElementById('currentFilePath');
@@ -45,6 +46,11 @@ export class FileExplorer {
             e.stopPropagation();
             this.handleNewFile();
         });
+        this.deleteFolderBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleDeleteSelected();
+        });
         this.saveFileBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -68,6 +74,7 @@ export class FileExplorer {
 
             this.newFolderBtn.disabled = false;
             this.newFileBtn.disabled = false;
+            if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = false;
 
             await this.renderTree();
         } catch (err) {
@@ -154,11 +161,23 @@ export class FileExplorer {
         this.clearSelection();
         liEl.classList.add('selected');
         this.selectedFolderPath = path;
+        // Clear any current file selection
+        this.currentFileHandle = null;
+        this.currentFilePath = '';
+        this.currentFileIsBoardJson = false;
+        this.currentBoardType = null;
+        if (this.deleteFolderBtn) {
+            // Root cannot be deleted, but a valid folder can
+            this.deleteFolderBtn.disabled = !path;
+        }
     }
 
     async openFile(path, handle, liEl) {
         this.clearSelection();
         liEl.classList.add('selected');
+
+        // Clear selected folder, this is now a file selection
+        this.selectedFolderPath = null;
 
         this.currentFileHandle = handle;
         this.currentFilePath = path;
@@ -200,6 +219,11 @@ export class FileExplorer {
 
             this.saveFileBtn.disabled = false;
             this.revertFileBtn.disabled = false;
+        }
+
+        if (this.deleteFolderBtn) {
+            // A file is selected, allow delete
+            this.deleteFolderBtn.disabled = false;
         }
     }
 
@@ -247,6 +271,89 @@ export class FileExplorer {
         await writable.write('');
         await writable.close();
 
+        await this.renderTree();
+    }
+
+    async handleDeleteSelected() {
+        if (!this.rootHandle) return;
+
+        // Prefer deleting a selected file if present
+        if (this.currentFilePath && this.currentFileHandle) {
+            const filePath = this.currentFilePath;
+            const parts = filePath.split('/');
+            const name = parts.pop();
+            const parentPath = parts.join('/');
+
+            const confirmDelete = window.confirm(`Delete file "${filePath}"?`);
+            if (!confirmDelete) return;
+
+            const parentHandle =
+                parentPath === ''
+                    ? this.rootHandle
+                    : this.pathHandleMap.get(parentPath);
+
+            if (!parentHandle || parentHandle.kind !== 'directory') {
+                return;
+            }
+
+            try {
+                await parentHandle.removeEntry(name);
+            } catch (e) {
+                console.error('Failed to delete file', e);
+                return;
+            }
+
+            // Clear current file selection
+            this.currentFileHandle = null;
+            this.currentFilePath = '';
+            this.currentFileIsBoardJson = false;
+            this.currentBoardType = null;
+            if (this.fileEditor) {
+                this.fileEditor.value = '';
+                this.fileEditor.disabled = true;
+            }
+            if (this.currentFilePathEl) {
+                this.currentFilePathEl.textContent = 'No file opened';
+            }
+            if (this.saveFileBtn) this.saveFileBtn.disabled = true;
+            if (this.revertFileBtn) this.revertFileBtn.disabled = true;
+            if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
+
+            await this.renderTree();
+            return;
+        }
+
+        // Otherwise, delete selected folder (if not root)
+        if (!this.selectedFolderPath) return;
+
+        const folderPath = this.selectedFolderPath;
+        if (!folderPath) return;
+
+        const confirmDelete = window.confirm(`Delete folder "${folderPath}" and all its contents?`);
+        if (!confirmDelete) return;
+
+        const parts = folderPath.split('/');
+        const name = parts.pop();
+        const parentPath = parts.join('/');
+
+        const parentHandle =
+            parentPath === ''
+                ? this.rootHandle
+                : this.pathHandleMap.get(parentPath);
+
+        if (!parentHandle || parentHandle.kind !== 'directory') {
+            return;
+        }
+
+        try {
+            await parentHandle.removeEntry(name, { recursive: true });
+        } catch (e) {
+            console.error('Failed to delete folder', e);
+            return;
+        }
+
+        this.selectedFolderPath = null;
+        if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
         await this.renderTree();
     }
 
