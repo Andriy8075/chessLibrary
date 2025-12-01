@@ -1,0 +1,18 @@
+{
+  "watch": [
+    "library/tests/helpers/mockBoardEditor/devServer.js",
+    "library/tests/helpers/mockBoardsFolder.mjs"
+  ],
+  "ignore": [
+    "web/**",
+    "library/tests/boards/**",
+    "library/tests/helpers/mockBoardEditor/src/**",
+    "library/tests/helpers/mockBoardEditor/node_modules/**"
+  ],
+  "ext": "js,mjs",
+  "exec": "node library/tests/helpers/mockBoardEditor/devServer.js",
+  "env": {
+    "MOCK_EDITOR_PORT": "3002"
+  }
+}
+

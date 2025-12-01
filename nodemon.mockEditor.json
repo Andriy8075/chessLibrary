@@ -4,10 +4,12 @@
   ],
   "ignore": [
     "web/**",
-    "library/tests/boards/**"
+    "library/tests/boards/**",
+    "library/tests/helpers/mockBoardEditor/node_modules/**",
+    "library/tests/helpers/mockBoardEditor/dist/**"
   ],
-  "ext": "js,json,html,css",
-  "exec": "node library/tests/helpers/mockBoardEditor/devServer.js"
+  "ext": "js,json,html,css,jsx",
+  "exec": "sh library/tests/helpers/mockBoardEditor/start-vite.sh"
 }
 
 

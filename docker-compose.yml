@@ -8,9 +8,10 @@ services:
       - .:/usr/src/app
     ports:
       - "3000:3000"   # web/server.js
-      - "3001:3001"   # mockBoardEditor dev server
+      - "3001:3001"   # mockBoardEditor Vite dev server (React app)
+      - "3002:3002"   # mockBoardEditor API server
     environment:
       - PORT=3000
-      - MOCK_EDITOR_PORT=3001
+      - MOCK_EDITOR_PORT=3002
 
 

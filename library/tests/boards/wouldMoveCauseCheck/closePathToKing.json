@@ -1,0 +1,38 @@
+{
+    "boardType": "wouldMoveCauseCheck",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 3,
+                "col": 5
+            }
+        },
+        {
+            "type": "knight",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 5
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 5,
+        "col": 4
+    },
+    "cellTo": {
+        "row": 7,
+        "col": 5
+    },
+    "expectedResult": false
+}

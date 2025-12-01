@@ -1,0 +1,27 @@
+.color-selector-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.color-selector-section:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.color-selector-section h4 {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.radio-label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 8px;
+}
+

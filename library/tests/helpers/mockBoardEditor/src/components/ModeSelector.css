@@ -1,0 +1,46 @@
+.mode-selector {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 250px;
+}
+
+.mode-selector h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 18px;
+}
+
+.mode-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mode-btn {
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.mode-btn:hover:not(:disabled) {
+    border-color: #2196F3;
+    color: #2196F3;
+}
+
+.mode-btn.active {
+    background: #2196F3;
+    color: white;
+    border-color: #2196F3;
+}
+
+.mode-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+

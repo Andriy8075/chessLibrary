@@ -1,11 +1,20 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
-const boardsRoot = require('../mockBoardsFolder');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import mockBoardsFolder from '../mockBoardsFolder.mjs';
 
-const rootDir = path.join(__dirname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const boardsRoot = mockBoardsFolder;
+const rootDir = __dirname;
 const port = process.env.MOCK_EDITOR_PORT ? parseInt(process.env.MOCK_EDITOR_PORT, 10) : 3001;
+
+// Check if we should serve React app (if index-react.html exists)
+const useReact = fs.existsSync(path.join(rootDir, 'index-react.html'));
 
 function getContentType(filePath) {
     const ext = path.extname(filePath).toLowerCase();
@@ -13,7 +22,10 @@ function getContentType(filePath) {
         case '.html':
             return 'text/html; charset=utf-8';
         case '.js':
-            return 'text/javascript; charset=utf-8';
+        case '.mjs':
+            return 'application/javascript; charset=utf-8';
+        case '.jsx':
+            return 'application/javascript; charset=utf-8';
         case '.css':
             return 'text/css; charset=utf-8';
         case '.json':
@@ -279,7 +291,25 @@ const server = http.createServer((req, res) => {
     }
 
     if (pathname === '/') {
-        pathname = '/index.html';
+        // For React app, redirect to Vite dev server
+        // The API server should only serve the HTML file if Vite is not running
+        // Otherwise, users should access the app through Vite on port 3001
+        if (useReact && fs.existsSync(path.join(rootDir, 'index-react.html'))) {
+            // If accessing root, serve the HTML but note that /src/ files should come from Vite
+            pathname = '/index-react.html';
+        } else {
+            pathname = '/index.html';
+        }
+    }
+    
+    // Don't serve /src/ files - these should be handled by Vite dev server
+    // If someone tries to access /src/ through the API server, return 404
+    // They should be accessing the app through Vite on port 3001
+    if (pathname.startsWith('/src/')) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.end('Please access the React app through Vite dev server on port 3001');
+        return;
     }
 
     const safePath = path

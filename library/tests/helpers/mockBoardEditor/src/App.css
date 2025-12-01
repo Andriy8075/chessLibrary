@@ -1,0 +1,32 @@
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.app-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.app-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.editor-panel {
+    flex: 1;
+}
+
+.route-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
