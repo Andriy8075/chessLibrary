@@ -2,8 +2,8 @@ export class MockBoardEditor {
     constructor() {
         this.selectedPiece = null;
         this.selectedColor = null;
-        this.mode = 'place'; // 'place', 'main', 'moves', 'target'
-        this.activeTab = 'findAllPossibleMoves'; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck'
+        this.mode = 'place'; // 'place', 'main', 'moves', 'target', 'cellFrom', 'cellTo'
+        this.activeTab = 'findAllPossibleMoves'; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck', 'wouldMoveCauseCheck'
         this.currentBoardType = 'findAllPossibleMoves';
 
         // When true, we are editing an empty file that has no board type yet.
@@ -27,6 +27,9 @@ export class MockBoardEditor {
         this.attackingColor = null;
         this.kingColor = null;
         this.kingCheckResult = null;
+        this.cellFrom = null; // For wouldMoveCauseCheck board type
+        this.cellTo = null; // For wouldMoveCauseCheck board type
+        this.wouldMoveCauseCheckResult = null; // true or false for wouldMoveCauseCheck
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -96,8 +99,8 @@ export class MockBoardEditor {
         // Rebuild pieces array from board
         this.updatePiecesList();
 
-        // Main piece & moves for non-simple boards (but not isSquareAttacked or isKingInCheck)
-        if (this.activeTab !== 'simpleBoard' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck') {
+        // Main piece & moves for non-simple boards (but not isSquareAttacked, isKingInCheck, or wouldMoveCauseCheck)
+        if (this.activeTab !== 'simpleBoard' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck' && this.activeTab !== 'wouldMoveCauseCheck') {
             if (schema.mainPiecePosition) {
                 const cell = {
                     row: schema.mainPiecePosition.row,
@@ -156,6 +159,33 @@ export class MockBoardEditor {
             }
 
             this.setExpectedResult(schema.expectedResult, 'kingCheckResultTrue', 'kingCheckResultFalse', 'kingCheckResult');
+        }
+
+        // Cell from, cell to, and expected result for wouldMoveCauseCheck
+        if (this.activeTab === 'wouldMoveCauseCheck') {
+            if (schema.cellFrom) {
+                this.cellFrom = {
+                    row: schema.cellFrom.row,
+                    col: schema.cellFrom.col
+                };
+                this.updateCellFromDisplay();
+            } else {
+                this.cellFrom = null;
+                this.updateCellFromDisplay();
+            }
+
+            if (schema.cellTo) {
+                this.cellTo = {
+                    row: schema.cellTo.row,
+                    col: schema.cellTo.col
+                };
+                this.updateCellToDisplay();
+            } else {
+                this.cellTo = null;
+                this.updateCellToDisplay();
+            }
+
+            this.setExpectedResult(schema.expectedResult, 'wouldMoveCauseCheckResultTrue', 'wouldMoveCauseCheckResultFalse', 'wouldMoveCauseCheckResult');
         }
 
         // Extra info (en passant, pieces made moves)
@@ -230,6 +260,22 @@ export class MockBoardEditor {
             }
             if (this.kingCheckResult !== null && this.kingCheckResult !== undefined) {
                 schema.expectedResult = this.kingCheckResult === true;
+            }
+        } else if (this.activeTab === 'wouldMoveCauseCheck') {
+            if (this.cellFrom) {
+                schema.cellFrom = {
+                    row: this.cellFrom.row,
+                    col: this.cellFrom.col
+                };
+            }
+            if (this.cellTo) {
+                schema.cellTo = {
+                    row: this.cellTo.row,
+                    col: this.cellTo.col
+                };
+            }
+            if (this.wouldMoveCauseCheckResult !== null && this.wouldMoveCauseCheckResult !== undefined) {
+                schema.expectedResult = this.wouldMoveCauseCheckResult === true;
             }
         } else if (this.activeTab !== 'simpleBoard') {
             if (this.mainPiece && this.mainPiece.position) {
@@ -396,6 +442,25 @@ export class MockBoardEditor {
                 }
             });
         });
+
+        // Would Move Cause Check controls
+        const clearCellFromBtn = document.getElementById('clearCellFrom');
+        if (clearCellFromBtn) {
+            clearCellFromBtn.addEventListener('click', () => this.clearCellFrom());
+        }
+
+        const clearCellToBtn = document.getElementById('clearCellTo');
+        if (clearCellToBtn) {
+            clearCellToBtn.addEventListener('click', () => this.clearCellTo());
+        }
+
+        document.querySelectorAll('input[name="wouldMoveCauseCheckResult"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.wouldMoveCauseCheckResult = radio.value === 'true';
+                }
+            });
+        });
     }
 
     updateTabVisibility() {
@@ -420,12 +485,14 @@ export class MockBoardEditor {
 
         const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
         const isKingInCheckPanel = document.querySelector('.is-king-in-check-panel');
+        const wouldMoveCauseCheckPanel = document.querySelector('.would-move-cause-check-panel');
 
         if (this.activeTab === 'findAllPossibleMoves') {
             // Full moves testing: place + main + moves, no extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
             if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -438,6 +505,7 @@ export class MockBoardEditor {
             if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
             if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -450,6 +518,7 @@ export class MockBoardEditor {
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
             if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
 
             if (mainBtn) {
                 mainBtn.disabled = true;
@@ -470,6 +539,8 @@ export class MockBoardEditor {
             // Is Square Attacked: only placing pieces + target square selection
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'flex';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
 
             if (mainBtn) {
                 mainBtn.disabled = true;
@@ -510,6 +581,7 @@ export class MockBoardEditor {
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
             if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'flex';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'none';
 
             if (mainBtn) {
                 mainBtn.disabled = true;
@@ -521,6 +593,66 @@ export class MockBoardEditor {
             }
 
             // Force mode to place
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else if (this.activeTab === 'wouldMoveCauseCheck') {
+            // Would Move Cause Check: only placing pieces + cell from/to selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
+            if (isKingInCheckPanel) isKingInCheckPanel.style.display = 'none';
+            if (wouldMoveCauseCheckPanel) wouldMoveCauseCheckPanel.style.display = 'flex';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Add cellFrom mode button if it doesn't exist
+            let cellFromBtn = document.querySelector('.mode-btn[data-mode="cellFrom"]');
+            if (!cellFromBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    cellFromBtn = document.createElement('button');
+                    cellFromBtn.className = 'mode-btn';
+                    cellFromBtn.dataset.mode = 'cellFrom';
+                    cellFromBtn.textContent = 'Select Cell From';
+                    modeSelector.appendChild(cellFromBtn);
+                    cellFromBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        cellFromBtn.classList.add('active');
+                        this.mode = 'cellFrom';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Add cellTo mode button if it doesn't exist
+            let cellToBtn = document.querySelector('.mode-btn[data-mode="cellTo"]');
+            if (!cellToBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    cellToBtn = document.createElement('button');
+                    cellToBtn.className = 'mode-btn';
+                    cellToBtn.dataset.mode = 'cellTo';
+                    cellToBtn.textContent = 'Select Cell To';
+                    modeSelector.appendChild(cellToBtn);
+                    cellToBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        cellToBtn.classList.add('active');
+                        this.mode = 'cellTo';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Force mode to place initially
             this.mode = 'place';
             if (placeBtn) {
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -560,6 +692,16 @@ export class MockBoardEditor {
             this.targetSquare = { row, col };
             this.updateTargetSquareDisplay();
             this.updateBoardDisplay();
+        } else if (this.mode === 'cellFrom') {
+            // Set cell from for wouldMoveCauseCheck
+            this.cellFrom = { row, col };
+            this.updateCellFromDisplay();
+            this.updateBoardDisplay();
+        } else if (this.mode === 'cellTo') {
+            // Set cell to for wouldMoveCauseCheck
+            this.cellTo = { row, col };
+            this.updateCellToDisplay();
+            this.updateBoardDisplay();
         }
     }
 
@@ -582,6 +724,24 @@ export class MockBoardEditor {
             this.mainPiece.position.col === cell.col) {
             this.mainPiece = null;
             this.validMoves = [];
+        }
+        if (this.targetSquare &&
+            this.targetSquare.row === cell.row &&
+            this.targetSquare.col === cell.col) {
+            this.targetSquare = null;
+            this.updateTargetSquareDisplay();
+        }
+        if (this.cellFrom &&
+            this.cellFrom.row === cell.row &&
+            this.cellFrom.col === cell.col) {
+            this.cellFrom = null;
+            this.updateCellFromDisplay();
+        }
+        if (this.cellTo &&
+            this.cellTo.row === cell.row &&
+            this.cellTo.col === cell.col) {
+            this.cellTo = null;
+            this.updateCellToDisplay();
         }
         this.updatePiecesList();
         this.updateInfo();
@@ -632,7 +792,7 @@ export class MockBoardEditor {
                 const piece = this.getPiece({ row, col });
 
                 // Clear previous state
-                square.classList.remove('has-piece', 'main-piece', 'valid-move', 'target-square');
+                square.classList.remove('has-piece', 'main-piece', 'valid-move', 'target-square', 'cell-from', 'cell-to');
                 square.innerHTML = '';
 
                 // Add piece if exists
@@ -661,6 +821,20 @@ export class MockBoardEditor {
                     this.targetSquare.row === row &&
                     this.targetSquare.col === col) {
                     square.classList.add('target-square');
+                }
+
+                // Mark cell from for wouldMoveCauseCheck
+                if (this.cellFrom &&
+                    this.cellFrom.row === row &&
+                    this.cellFrom.col === col) {
+                    square.classList.add('cell-from');
+                }
+
+                // Mark cell to for wouldMoveCauseCheck
+                if (this.cellTo &&
+                    this.cellTo.row === row &&
+                    this.cellTo.col === col) {
+                    square.classList.add('cell-to');
                 }
             }
         }
@@ -753,6 +927,40 @@ export class MockBoardEditor {
     clearTargetSquare() {
         this.targetSquare = null;
         this.updateTargetSquareDisplay();
+        this.updateBoardDisplay();
+    }
+
+    updateCellFromDisplay() {
+        const displayEl = document.getElementById('cellFromDisplay');
+        if (displayEl) {
+            if (this.cellFrom) {
+                displayEl.textContent = `Row: ${this.cellFrom.row}, Col: ${this.cellFrom.col}`;
+            } else {
+                displayEl.textContent = 'No cell selected';
+            }
+        }
+    }
+
+    clearCellFrom() {
+        this.cellFrom = null;
+        this.updateCellFromDisplay();
+        this.updateBoardDisplay();
+    }
+
+    updateCellToDisplay() {
+        const displayEl = document.getElementById('cellToDisplay');
+        if (displayEl) {
+            if (this.cellTo) {
+                displayEl.textContent = `Row: ${this.cellTo.row}, Col: ${this.cellTo.col}`;
+            } else {
+                displayEl.textContent = 'No cell selected';
+            }
+        }
+    }
+
+    clearCellTo() {
+        this.cellTo = null;
+        this.updateCellToDisplay();
         this.updateBoardDisplay();
     }
 

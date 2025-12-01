@@ -59,14 +59,14 @@ h1 {
     gap: 20px;
 }
 
-.piece-selector, .mode-selector, .info-panel, .save-panel, .extra-info-panel, .is-square-attacked-panel, .file-explorer-panel {
+.piece-selector, .mode-selector, .info-panel, .save-panel, .extra-info-panel, .is-square-attacked-panel, .is-king-in-check-panel, .would-move-cause-check-panel, .file-explorer-panel {
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.piece-selector h3, .mode-selector h3, .info-panel h3, .save-panel h3, .extra-info-panel h3, .is-square-attacked-panel h3 {
+.piece-selector h3, .mode-selector h3, .info-panel h3, .save-panel h3, .extra-info-panel h3, .is-square-attacked-panel h3, .is-king-in-check-panel h3, .would-move-cause-check-panel h3 {
     margin-bottom: 15px;
     color: #333;
     font-size: 18px;
@@ -312,6 +312,16 @@ h1 {
     background-color: #ffe0b2 !important;
 }
 
+.square.cell-from {
+    box-shadow: inset 0 0 0 4px #4caf50;
+    background-color: #c8e6c9 !important;
+}
+
+.square.cell-to {
+    box-shadow: inset 0 0 0 4px #2196f3;
+    background-color: #bbdefb !important;
+}
+
 .square img {
     width: 70px;
     height: 70px;
@@ -320,7 +330,7 @@ h1 {
     z-index: 1;
 }
 
-.extra-info-panel, .is-square-attacked-panel, .is-king-in-check-panel {
+.extra-info-panel, .is-square-attacked-panel, .is-king-in-check-panel, .would-move-cause-check-panel {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -408,24 +418,24 @@ h1 {
     gap: 15px;
 }
 
-.target-square-section, .expected-result-section {
+.target-square-section, .expected-result-section, .cell-from-section, .cell-to-section {
     border-top: 1px solid #eee;
     padding-top: 15px;
 }
 
-.target-square-section:first-child, .expected-result-section:first-child, .attacking-color-section:first-child, .king-color-section:first-child, .king-check-result-section:first-child {
+.target-square-section:first-child, .expected-result-section:first-child, .attacking-color-section:first-child, .king-color-section:first-child, .king-check-result-section:first-child, .cell-from-section:first-child, .cell-to-section:first-child {
     border-top: none;
     padding-top: 0;
 }
 
-.target-square-section h4, .expected-result-section h4, .attacking-color-section h4, .king-color-section h4, .king-check-result-section h4 {
+.target-square-section h4, .expected-result-section h4, .attacking-color-section h4, .king-color-section h4, .king-check-result-section h4, .cell-from-section h4, .cell-to-section h4 {
     margin-bottom: 10px;
     color: #555;
     font-size: 14px;
     font-weight: 600;
 }
 
-.is-king-in-check-controls {
+.is-king-in-check-controls, .would-move-cause-check-controls {
     display: flex;
     flex-direction: column;
     gap: 15px;

@@ -41,6 +41,7 @@
                 <button class="tab-btn" data-tab="simpleBoard">Simple Board</button>
                 <button class="tab-btn" data-tab="isSquareAttacked">Is Square Attacked</button>
                 <button class="tab-btn" data-tab="isKingInCheck">Is King In Check</button>
+                <button class="tab-btn" data-tab="wouldMoveCauseCheck">Would Move Cause Check</button>
             </div>
 
             <div class="controls">
@@ -212,6 +213,35 @@
                         </label>
                         <label class="radio-label">
                             <input type="radio" name="kingCheckResult" value="false" id="kingCheckResultFalse">
+                            False
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="would-move-cause-check-panel">
+                <h3>Would Move Cause Check</h3>
+                <div class="would-move-cause-check-controls">
+                    <div class="cell-from-section">
+                        <h4>Cell From</h4>
+                        <p>Click "Select Cell From" mode, then click a square on the board</p>
+                        <div id="cellFromDisplay">No cell selected</div>
+                        <button type="button" id="clearCellFrom" class="clear-btn">Clear</button>
+                    </div>
+                    <div class="cell-to-section">
+                        <h4>Cell To</h4>
+                        <p>Click "Select Cell To" mode, then click a square on the board</p>
+                        <div id="cellToDisplay">No cell selected</div>
+                        <button type="button" id="clearCellTo" class="clear-btn">Clear</button>
+                    </div>
+                    <div class="expected-result-section">
+                        <h4>Expected Result</h4>
+                        <label class="radio-label">
+                            <input type="radio" name="wouldMoveCauseCheckResult" value="true" id="wouldMoveCauseCheckResultTrue">
+                            True
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="wouldMoveCauseCheckResult" value="false" id="wouldMoveCauseCheckResultFalse">
                             False
                         </label>
                     </div>
