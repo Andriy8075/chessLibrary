@@ -1,53 +1,23 @@
 export class MockBoardEditor {
     constructor() {
-        this.board = Array(8).fill(null).map(() => Array(8).fill(null));
         this.selectedPiece = null;
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves', 'target'
         this.activeTab = 'findAllPossibleMoves'; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck'
         this.currentBoardType = 'findAllPossibleMoves';
-        this.mainPiece = null;
-        this.validMoves = [];
-        this.pieces = [];
-        this.targetSquare = null; // For isSquareAttacked board type
-        this.expectedResult = null; // true or false for isSquareAttacked
-        this.attackingColor = null; // 'white' or 'black' for isSquareAttacked
-        this.kingColor = null; // 'white' or 'black' for isKingInCheck
-        this.kingCheckResult = null; // true or false for isKingInCheck
-        this.extraInfo = {
-            enPassantTarget: null,
-            piecesMadeMoves: {
-                whiteKing: false,
-                blackKing: false,
-                whiteKingsideRook: false,
-                whiteQueensideRook: false,
-                blackKingsideRook: false,
-                blackQueensideRook: false
-            }
-        };
 
         // When true, we are editing an empty file that has no board type yet.
         // In this mode only the three tab buttons are shown until the user
         // chooses one, which sets the board type.
         this.awaitingBoardType = false;
 
+        // Initialize board state
+        this.resetBoardState();
+
         this.init();
     }
 
-    loadFromSchema(schema) {
-        if (!schema || !Array.isArray(schema.pieces)) {
-            return;
-        }
-
-        // We have a concrete schema, so we are no longer waiting for type
-        this.awaitingBoardType = false;
-
-        const editorPanel = document.getElementById('editorPanel');
-        if (editorPanel && editorPanel.classList.contains('hidden')) {
-            editorPanel.classList.remove('hidden');
-        }
-
-        // Reset internal state
+    resetBoardState() {
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
         this.mainPiece = null;
         this.validMoves = [];
@@ -68,6 +38,23 @@ export class MockBoardEditor {
                 blackQueensideRook: false
             }
         };
+    }
+
+    loadFromSchema(schema) {
+        if (!schema || !Array.isArray(schema.pieces)) {
+            return;
+        }
+
+        // We have a concrete schema, so we are no longer waiting for type
+        this.awaitingBoardType = false;
+
+        const editorPanel = document.getElementById('editorPanel');
+        if (editorPanel && editorPanel.classList.contains('hidden')) {
+            editorPanel.classList.remove('hidden');
+        }
+
+        // Reset internal state
+        this.resetBoardState();
 
         // Remember board type and determine tab
         // Board types now match tab names directly
@@ -714,26 +701,7 @@ export class MockBoardEditor {
         }
 
         // Reset internal state to a blank board
-        this.board = Array(8).fill(null).map(() => Array(8).fill(null));
-        this.mainPiece = null;
-        this.validMoves = [];
-        this.pieces = [];
-        this.targetSquare = null;
-        this.expectedResult = null;
-        this.attackingColor = null;
-        this.kingColor = null;
-        this.kingCheckResult = null;
-        this.extraInfo = {
-            enPassantTarget: null,
-            piecesMadeMoves: {
-                whiteKing: false,
-                blackKing: false,
-                whiteKingsideRook: false,
-                whiteQueensideRook: false,
-                blackKingsideRook: false,
-                blackQueensideRook: false
-            }
-        };
+        this.resetBoardState();
 
         // Clear extra-info inputs
         const rowInput = document.getElementById('enPassantRow');

@@ -1,0 +1,127 @@
+{
+    "boardType": "isKingInCheck",
+    "pieces": [
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 3,
+                "col": 3
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 3,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 3,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 3,
+                "col": 6
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 3
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 6
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 6
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 6
+            }
+        }
+    ],
+    "color": "white",
+    "expectedResult": true
+}
