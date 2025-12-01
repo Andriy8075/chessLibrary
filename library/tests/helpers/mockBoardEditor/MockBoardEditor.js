@@ -1,5 +1,3 @@
-import { generateMockBoardFile } from './fileGenerator.js';
-
 export class MockBoardEditor {
     constructor() {
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -268,8 +266,6 @@ export class MockBoardEditor {
             });
         });
 
-        // Save button
-        document.getElementById('saveBtn').addEventListener('click', () => this.saveMockBoard());
 
         // En Passant controls
         document.getElementById('enPassantRow').addEventListener('input', () => this.updateEnPassant());
@@ -459,16 +455,7 @@ export class MockBoardEditor {
     }
 
     updateInfo() {
-        document.getElementById('mainPieceInfo').textContent =
-            this.mainPiece
-                ? `Main Piece: ${this.mainPiece.color} ${this.mainPiece.type} at (${this.mainPiece.position.row}, ${this.mainPiece.position.col})`
-                : 'Main Piece: None';
-
-        document.getElementById('piecesCount').textContent =
-            `Pieces: ${this.pieces.length}`;
-
-        document.getElementById('movesCount').textContent =
-            `Moves: ${this.validMoves.length}`;
+        // Board info panel removed - no UI to update
     }
 
     updateEnPassant() {
@@ -488,90 +475,6 @@ export class MockBoardEditor {
         this.extraInfo.enPassantTarget = null;
     }
 
-    generateMockBoardFile(fileName) {
-        return generateMockBoardFile({
-            fileName,
-            activeTab: this.activeTab,
-            pieces: this.pieces,
-            validMoves: this.validMoves,
-            mainPiece: this.mainPiece,
-            extraInfo: this.extraInfo
-        });
-    }
-
-    async saveMockBoard() {
-        const fileName = document.getElementById('fileName').value.trim();
-        const statusDiv = document.getElementById('saveStatus');
-
-        if (!fileName) {
-            statusDiv.textContent = 'Please enter a file name';
-            statusDiv.className = 'error';
-            return;
-        }
-
-        if (this.pieces.length === 0) {
-            statusDiv.textContent = 'Please add at least one piece to the board';
-            statusDiv.className = 'error';
-            return;
-        }
-
-        // Sanitize file name
-        const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9]/g, '');
-        if (!sanitizedFileName) {
-            statusDiv.textContent = 'Invalid file name';
-            statusDiv.className = 'error';
-            return;
-        }
-
-        statusDiv.textContent = 'Generating file...';
-        statusDiv.className = '';
-
-        try {
-            const fileContent = this.generateMockBoardFile(sanitizedFileName);
-            const blob = new Blob([fileContent], { type: 'application/json' });
-
-            // Try to use File System Access API (modern browsers)
-            if ('showSaveFilePicker' in window) {
-                try {
-                    const fileHandle = await window.showSaveFilePicker({
-                        suggestedName: `${sanitizedFileName}.json`,
-                        types: [{
-                            description: 'JSON files',
-                            accept: { 'application/json': ['.json'] }
-                        }]
-                    });
-
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(fileContent);
-                    await writable.close();
-
-                    statusDiv.textContent = 'File saved successfully!';
-                    statusDiv.className = 'success';
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        throw err;
-                    }
-                    // User cancelled, fall through to download
-                }
-            } else {
-                // Fallback: download file
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${sanitizedFileName}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                statusDiv.textContent = 'File downloaded! Save it to library/tests/mockBoards/';
-                statusDiv.className = 'success';
-            }
-        } catch (error) {
-            statusDiv.textContent = `Error: ${error.message}`;
-            statusDiv.className = 'error';
-        }
-    }
 }
 
 

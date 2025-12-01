@@ -15,7 +15,6 @@ export class FileExplorer {
         this.newFileBtn = document.getElementById('newFileBtn');
         this.deleteFolderBtn = document.getElementById('deleteFolderBtn');
         this.fileTreeEl = document.getElementById('fileTree');
-        this.fileEditor = document.getElementById('fileEditor');
         this.currentFilePathEl = document.getElementById('currentFilePath');
         this.saveFileBtn = document.getElementById('saveFileBtn');
         this.revertFileBtn = document.getElementById('revertFileBtn');
@@ -215,29 +214,23 @@ export class FileExplorer {
         }
 
         if (parsed && parsed.boardType && Array.isArray(parsed.pieces) && this.editor && typeof this.editor.loadFromSchema === 'function') {
-            // Load into the board editor instead of plain text editing
+            // Load into the board editor
             this.editor.loadFromSchema(parsed);
 
             this.currentFileIsBoardJson = true;
             this.currentBoardType = parsed.boardType;
 
-            // Show path but keep editor read-only for board JSON files
+            // Show path
             this.currentFilePathEl.textContent = `${path} (board file)`;
-            this.fileEditor.disabled = true;
-            this.fileEditor.value = '';
 
-            // Saving will use editor state instead of textarea
+            // Enable save/revert buttons
             this.saveFileBtn.disabled = false;
             this.revertFileBtn.disabled = false;
         } else {
-            // Fallback: treat as plain text file
-            this.fileEditor.disabled = false;
-            this.fileEditor.value = text;
-
-            this.currentFilePathEl.textContent = path;
-
-            this.saveFileBtn.disabled = false;
-            this.revertFileBtn.disabled = false;
+            // Not a valid board JSON file
+            this.currentFilePathEl.textContent = `${path} (not a board file)`;
+            this.saveFileBtn.disabled = true;
+            this.revertFileBtn.disabled = true;
         }
 
         if (this.deleteFolderBtn) {
@@ -315,10 +308,6 @@ export class FileExplorer {
             this.currentFilePath = '';
             this.currentFileIsBoardJson = false;
             this.currentBoardType = null;
-            if (this.fileEditor) {
-                this.fileEditor.value = '';
-                this.fileEditor.disabled = true;
-            }
             if (this.currentFilePathEl) {
                 this.currentFilePathEl.textContent = 'No file opened';
             }
@@ -360,9 +349,9 @@ export class FileExplorer {
     }
 
     async handleSaveFile() {
-        if (!this.currentFilePath) return;
+        if (!this.currentFilePath || !this.currentFileIsBoardJson) return;
 
-        if (this.currentFileIsBoardJson && this.editor && typeof this.editor.getCurrentSchema === 'function') {
+        if (this.editor && typeof this.editor.getCurrentSchema === 'function') {
             const schema = this.editor.getCurrentSchema(this.currentBoardType);
             const jsonText = JSON.stringify(schema, null, 4);
             await fetch('/api/boards/file', {
@@ -370,17 +359,11 @@ export class FileExplorer {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ path: this.currentFilePath, content: jsonText })
             });
-        } else {
-            await fetch('/api/boards/file', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path: this.currentFilePath, content: this.fileEditor.value })
-            });
         }
     }
 
     async handleRevertFile() {
-        if (!this.currentFilePath) return;
+        if (!this.currentFilePath || !this.currentFileIsBoardJson) return;
 
         let text = '';
         try {
@@ -393,10 +376,8 @@ export class FileExplorer {
             return;
         }
 
-        this.fileEditor.value = text;
-
-        // Also re-load board state if this is a board JSON file
-        if (this.currentFileIsBoardJson && this.editor && typeof this.editor.loadFromSchema === 'function') {
+        // Re-load board state
+        if (this.editor && typeof this.editor.loadFromSchema === 'function') {
             try {
                 const parsed = JSON.parse(text);
                 if (parsed && parsed.boardType && Array.isArray(parsed.pieces)) {

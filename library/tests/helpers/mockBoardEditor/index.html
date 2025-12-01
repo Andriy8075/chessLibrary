@@ -26,7 +26,6 @@
 
             <div class="file-editor-panel">
                 <div id="currentFilePath" class="current-file-path">No file opened</div>
-                <textarea id="fileEditor" rows="10" spellcheck="false" placeholder="Select a file to view and edit its contents" disabled></textarea>
                 <div class="file-editor-controls">
                     <button type="button" id="saveFileBtn" disabled>Save File</button>
                     <button type="button" id="revertFileBtn" disabled>Revert Changes</button>
@@ -107,13 +106,6 @@
                 <button class="mode-btn" data-mode="moves">Mark Moves</button>
             </div>
 
-            <div class="info-panel">
-                <h3>Board Info</h3>
-                <div id="mainPieceInfo">Main Piece: None</div>
-                <div id="piecesCount">Pieces: 0</div>
-                <div id="movesCount">Moves: 0</div>
-            </div>
-
             <div class="extra-info-panel">
                 <h3>Extra Board Info</h3>
                 
@@ -158,16 +150,6 @@
                             Black Queenside Rook
                         </label>
                     </div>
-                </div>
-            </div>
-
-            <div class="save-panel">
-                <h3>Save Mock Board</h3>
-                <input type="text" id="fileName" placeholder="Enter file name (e.g., MyBoard)" value="">
-                <button id="saveBtn">Download File</button>
-                <div id="saveStatus"></div>
-                <div class="save-instructions">
-                    <small>Save the downloaded file to: <code>library/tests/mockBoards/</code></small>
                 </div>
             </div>
 
