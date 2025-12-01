@@ -1,12 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const MockBoard = require('./MockBoard');
-const pieceClassProvider = require('./pieceClassProvider');
-
+const mockBoardsFolder = require('./mockBoardsFolder');
 // specify path to folder with mock boards RELATIVELY TO test/boards FOLDER
 function loadMockBoards(folderPath) {
     const boards = [];
-    const testPath = path.join(__dirname, '../boards');
+    const testPath = mockBoardsFolder
     const files = fs.readdirSync(path.join(testPath, folderPath));
     for (const file of files) {
         const boardSchema = require(path.join(testPath, folderPath, file));
