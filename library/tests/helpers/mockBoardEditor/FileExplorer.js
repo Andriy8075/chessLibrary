@@ -7,6 +7,7 @@ export class FileExplorer {
         this.editor = editor;
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
+        this.expandedPaths = new Set();
 
         this.init();
     }
@@ -71,6 +72,7 @@ export class FileExplorer {
 
             this.pathHandleMap.clear();
             this.pathHandleMap.set('', this.rootHandle);
+            this.expandedPaths.clear();
 
             this.newFolderBtn.disabled = false;
             this.newFileBtn.disabled = false;
@@ -115,11 +117,13 @@ export class FileExplorer {
             this.pathHandleMap.set(relativePath, handle);
 
             if (handle.kind === 'directory') {
-                li.className = 'file-item folder-item collapsed';
+                const isExpanded = this.expandedPaths.has(relativePath);
+
+                li.className = 'file-item folder-item ' + (isExpanded ? 'expanded' : 'collapsed');
                 li.textContent = name;
 
                 const childUl = document.createElement('ul');
-                childUl.style.display = 'none';
+                childUl.style.display = isExpanded ? 'block' : 'none';
 
                 await this.addDirectoryEntries(relativePath, handle, childUl);
                 li.appendChild(childUl);
@@ -128,13 +132,15 @@ export class FileExplorer {
                     e.stopPropagation();
                     this.selectFolder(relativePath, li);
 
-                    const isExpanded = li.classList.toggle('expanded');
-                    if (isExpanded) {
+                    const nowExpanded = li.classList.toggle('expanded');
+                    if (nowExpanded) {
                         li.classList.remove('collapsed');
                         childUl.style.display = 'block';
+                        this.expandedPaths.add(relativePath);
                     } else {
                         li.classList.add('collapsed');
                         childUl.style.display = 'none';
+                        this.expandedPaths.delete(relativePath);
                     }
                 });
             } else {
