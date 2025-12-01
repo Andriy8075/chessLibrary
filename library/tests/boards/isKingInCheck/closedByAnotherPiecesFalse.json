@@ -2,7 +2,15 @@
     "boardType": "isKingInCheck",
     "pieces": [
         {
-            "type": "rook",
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "bishop",
             "color": "black",
             "position": {
                 "row": 5,
@@ -10,11 +18,11 @@
             }
         },
         {
-            "type": "king",
-            "color": "white",
+            "type": "queen",
+            "color": "black",
             "position": {
-                "row": 7,
-                "col": 4
+                "row": 5,
+                "col": 6
             }
         }
     ],

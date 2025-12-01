@@ -6,13 +6,8 @@ export function generateMockBoardFile({
     mainPiece,
     extraInfo
 }) {
-    // Decide board type based on active tab
-    let boardType = 'findAllPossibleMoves';
-    if (activeTab === 'simple') {
-        boardType = 'simpleBoard';
-    } else if (activeTab === 'enPassant') {
-        boardType = 'enPassant';
-    }
+    // Board types now match tab names directly
+    const boardType = activeTab || 'findAllPossibleMoves';
 
     const data = {
         boardType,
@@ -27,7 +22,7 @@ export function generateMockBoardFile({
     };
 
     // For simple board we keep only pieces and boardType
-    if (activeTab !== 'simple') {
+    if (activeTab !== 'simpleBoard') {
         if (mainPiece) {
             data.mainPiecePosition = {
                 row: mainPiece.position.row,

@@ -4,7 +4,7 @@ export class MockBoardEditor {
         this.selectedPiece = null;
         this.selectedColor = null;
         this.mode = 'place'; // 'place', 'main', 'moves', 'target'
-        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple', 'isSquareAttacked', 'isKingInCheck'
+        this.activeTab = 'findAllPossibleMoves'; // 'findAllPossibleMoves', 'enPassant', 'simpleBoard', 'isSquareAttacked', 'isKingInCheck'
         this.currentBoardType = 'findAllPossibleMoves';
         this.mainPiece = null;
         this.validMoves = [];
@@ -70,19 +70,10 @@ export class MockBoardEditor {
         };
 
         // Remember board type and determine tab
+        // Board types now match tab names directly
         this.currentBoardType = schema.boardType || this.currentBoardType;
-        const type = this.currentBoardType || '';
-        if (type === 'simpleBoard') {
-            this.activeTab = 'simple';
-        } else if (type === 'enPassant') {
-            this.activeTab = 'enPassant';
-        } else if (type === 'isSquareAttacked') {
-            this.activeTab = 'isSquareAttacked';
-        } else if (type === 'isKingInCheck') {
-            this.activeTab = 'isKingInCheck';
-        } else {
-            this.activeTab = 'moves';
-        }
+        // Types now match tab names directly
+        this.activeTab = this.currentBoardType || 'findAllPossibleMoves';
 
         // Update tab buttons to match the active tab
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -107,7 +98,7 @@ export class MockBoardEditor {
         this.updatePiecesList();
 
         // Main piece & moves for non-simple boards (but not isSquareAttacked or isKingInCheck)
-        if (this.activeTab !== 'simple' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck') {
+        if (this.activeTab !== 'simpleBoard' && this.activeTab !== 'isSquareAttacked' && this.activeTab !== 'isKingInCheck') {
             if (schema.mainPiecePosition) {
                 const cell = {
                     row: schema.mainPiecePosition.row,
@@ -219,18 +210,11 @@ export class MockBoardEditor {
     }
 
     getCurrentSchema(boardTypeOverride) {
+        // Board types now match tab names directly
         const boardType =
             boardTypeOverride ||
             this.currentBoardType ||
-            (this.activeTab === 'simple'
-                ? 'simpleBoard'
-                : this.activeTab === 'enPassant'
-                    ? 'enPassant'
-                    : this.activeTab === 'isSquareAttacked'
-                        ? 'isSquareAttacked'
-                        : this.activeTab === 'isKingInCheck'
-                            ? 'isKingInCheck'
-                            : 'findAllPossibleMoves');
+            this.activeTab;
 
         const schema = {
             boardType,
@@ -264,7 +248,7 @@ export class MockBoardEditor {
             if (this.kingCheckResult !== null && this.kingCheckResult !== undefined) {
                 schema.expectedResult = this.kingCheckResult === true;
             }
-        } else if (this.activeTab !== 'simple') {
+        } else if (this.activeTab !== 'simpleBoard') {
             if (this.mainPiece && this.mainPiece.position) {
                 schema.mainPiecePosition = {
                     row: this.mainPiece.position.row,
@@ -341,18 +325,8 @@ export class MockBoardEditor {
 
                 this.activeTab = btn.dataset.tab;
 
-                // Map tab to boardType string
-                if (this.activeTab === 'simple') {
-                    this.currentBoardType = 'simpleBoard';
-                } else if (this.activeTab === 'enPassant') {
-                    this.currentBoardType = 'enPassant';
-                } else if (this.activeTab === 'isSquareAttacked') {
-                    this.currentBoardType = 'isSquareAttacked';
-                } else if (this.activeTab === 'isKingInCheck') {
-                    this.currentBoardType = 'isKingInCheck';
-                } else {
-                    this.currentBoardType = 'findAllPossibleMoves';
-                }
+                // Board types now match tab names directly
+                this.currentBoardType = this.activeTab;
 
                 // If we were waiting for a type for a new file, we can now
                 // reveal the rest of the controls.
@@ -464,7 +438,7 @@ export class MockBoardEditor {
         const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
         const isKingInCheckPanel = document.querySelector('.is-king-in-check-panel');
 
-        if (this.activeTab === 'moves') {
+        if (this.activeTab === 'findAllPossibleMoves') {
             // Full moves testing: place + main + moves, no extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
@@ -488,7 +462,7 @@ export class MockBoardEditor {
                     btn.classList.remove('disabled');
                 }
             });
-        } else if (this.activeTab === 'simple') {
+        } else if (this.activeTab === 'simpleBoard') {
             // Simple board: only placing pieces
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
             if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
@@ -790,7 +764,7 @@ export class MockBoardEditor {
 
         // No board type yet; tabs act as selector
         this.currentBoardType = null;
-        this.activeTab = 'moves';
+        this.activeTab = 'findAllPossibleMoves';
         this.awaitingBoardType = true;
 
         // Remove any active styling from tabs so the user must choose
