@@ -1,0 +1,23 @@
+{
+    "boardType": "findAllPossibleMoves",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 2,
+                "col": 2
+            }
+        }
+    ],
+    "mainPiecePosition": {
+        "row": 2,
+        "col": 2
+    },
+    "moves": [
+        {
+            "row": 1,
+            "col": 2
+        }
+    ]
+}

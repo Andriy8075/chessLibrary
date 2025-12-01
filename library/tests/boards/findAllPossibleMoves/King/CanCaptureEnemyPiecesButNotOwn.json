@@ -1,0 +1,91 @@
+{
+    "boardType": "findAllPossibleMoves",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 4,
+                "col": 2
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 3
+            }
+        },
+        {
+            "type": "knight",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 2
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "bishop",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 2
+            }
+        },
+        {
+            "type": "knight",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 3
+            }
+        }
+    ],
+    "mainPiecePosition": {
+        "row": 5,
+        "col": 3
+    },
+    "moves": [
+        {
+            "row": 4,
+            "col": 2
+        },
+        {
+            "row": 5,
+            "col": 2
+        },
+        {
+            "row": 6,
+            "col": 2
+        },
+        {
+            "row": 6,
+            "col": 3
+        },
+        {
+            "row": 6,
+            "col": 4
+        },
+        {
+            "row": 5,
+            "col": 4
+        }
+    ]
+}
