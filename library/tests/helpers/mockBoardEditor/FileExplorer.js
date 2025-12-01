@@ -13,6 +13,7 @@ export class FileExplorer {
     async init() {
         this.newFolderBtn = document.getElementById('newFolderBtn');
         this.newFileBtn = document.getElementById('newFileBtn');
+        this.editBtn = document.getElementById('editBtn');
         this.deleteFolderBtn = document.getElementById('deleteFolderBtn');
         this.fileTreeEl = document.getElementById('fileTree');
         this.currentFilePathEl = document.getElementById('currentFilePath');
@@ -32,6 +33,11 @@ export class FileExplorer {
             e.preventDefault();
             e.stopPropagation();
             this.handleNewFile();
+        });
+        this.editBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleEditSelected();
         });
         this.deleteFolderBtn?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -53,6 +59,7 @@ export class FileExplorer {
         await this.loadTree();
         this.newFolderBtn.disabled = false;
         this.newFileBtn.disabled = false;
+        if (this.editBtn) this.editBtn.disabled = true;
         if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
     }
 
@@ -82,6 +89,7 @@ export class FileExplorer {
         const rootLi = document.createElement('li');
         rootLi.className = 'file-item folder-item ' + (isExpanded ? 'expanded' : 'collapsed');
         rootLi.textContent = this.treeRoot.name;
+        rootLi.dataset.path = rootPath;
 
         const childUl = document.createElement('ul');
         childUl.style.display = isExpanded ? 'block' : 'none';
@@ -127,6 +135,7 @@ export class FileExplorer {
 
                 li.className = 'file-item folder-item ' + (isExpanded ? 'expanded' : 'collapsed');
                 li.textContent = entry.name;
+                li.dataset.path = relativePath;
 
                 const childUl = document.createElement('ul');
                 childUl.style.display = isExpanded ? 'block' : 'none';
@@ -152,6 +161,7 @@ export class FileExplorer {
             } else {
                 li.className = 'file-item file-leaf';
                 li.textContent = entry.name;
+                li.dataset.path = relativePath;
                 li.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.openFile(relativePath, li);
@@ -169,6 +179,66 @@ export class FileExplorer {
         });
     }
 
+    // Select a file or folder by path after tree is rendered
+    selectItemByPath(targetPath) {
+        if (!targetPath) return;
+
+        // Expand all parent folders to make the item visible
+        const parts = targetPath.split('/');
+        for (let i = 0; i < parts.length - 1; i++) {
+            const parentPath = parts.slice(0, i + 1).join('/');
+            this.expandedPaths.add(parentPath);
+        }
+
+        // Re-render to show expanded folders
+        this.renderTree();
+
+        // Use a small delay to ensure DOM is updated, then find and select
+        setTimeout(() => {
+            this.findAndSelectItem(targetPath);
+        }, 50);
+    }
+
+    findAndSelectItem(targetPath) {
+        if (!this.treeRoot) return;
+
+        // Find the item in the tree data structure to determine if it's a folder or file
+        const findInTree = (node, pathParts, currentPath) => {
+            if (!node || !node.children) return null;
+
+            for (const child of node.children) {
+                const childPath = currentPath ? `${currentPath}/${child.name}` : child.name;
+
+                if (childPath === targetPath) {
+                    return { item: child, path: childPath };
+                }
+
+                if (child.kind === 'directory' && pathParts.length > 0 && child.name === pathParts[0]) {
+                    const result = findInTree(child, pathParts.slice(1), childPath);
+                    if (result) return result;
+                }
+            }
+            return null;
+        };
+
+        const pathParts = targetPath.split('/');
+        const found = findInTree(this.treeRoot, pathParts, '');
+
+        // Now find the DOM element using the data-path attribute
+        const item = this.fileTreeEl.querySelector(`[data-path="${targetPath}"]`);
+
+        if (item && found) {
+            // Select the item
+            if (found.item.kind === 'directory') {
+                this.selectFolder(targetPath, item);
+            } else {
+                this.openFile(targetPath, item);
+            }
+            // Scroll into view
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
     selectFolder(path, liEl) {
         this.clearSelection();
         liEl.classList.add('selected');
@@ -177,6 +247,10 @@ export class FileExplorer {
         this.currentFilePath = '';
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
+        if (this.editBtn) {
+            // Root cannot be edited, but a valid folder can
+            this.editBtn.disabled = !path;
+        }
         if (this.deleteFolderBtn) {
             // Root cannot be deleted, but a valid folder can
             this.deleteFolderBtn.disabled = !path;
@@ -254,6 +328,10 @@ export class FileExplorer {
             this.revertFileBtn.disabled = true;
         }
 
+        if (this.editBtn) {
+            // A file is selected, allow edit
+            this.editBtn.disabled = false;
+        }
         if (this.deleteFolderBtn) {
             // A file is selected, allow delete
             this.deleteFolderBtn.disabled = false;
@@ -303,6 +381,108 @@ export class FileExplorer {
         }
     }
 
+    async handleEditSelected() {
+        // Prefer editing a selected file if present
+        if (this.currentFilePath) {
+            const filePath = this.currentFilePath;
+            const parts = filePath.split('/');
+            const oldName = parts.pop();
+            const parentPath = parts.join('/');
+
+            const newName = window.prompt(`Rename file "${oldName}" to:`, oldName);
+            if (!newName || newName === oldName) return;
+
+            try {
+                const response = await fetch('/api/boards/entry', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: filePath, newName })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                const newPath = result.newPath || (parentPath ? `${parentPath}/${newName}` : newName);
+
+                // Update current file path if rename was successful
+                this.currentFilePath = newPath;
+                
+                // If this is a board file that's currently loaded, reload it from the new path
+                if (this.currentFileIsBoardJson && this.editor) {
+                    try {
+                        const fileRes = await fetch(`/api/boards/file?path=${encodeURIComponent(newPath)}`);
+                        if (fileRes.ok) {
+                            const fileData = await fileRes.json();
+                            const text = fileData.content || '';
+                            const parsed = JSON.parse(text);
+                            if (parsed && parsed.boardType && Array.isArray(parsed.pieces) && 
+                                typeof this.editor.loadFromSchema === 'function') {
+                                this.editor.loadFromSchema(parsed);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to reload renamed file', e);
+                    }
+                }
+
+                if (this.currentFilePathEl) {
+                    const suffix = this.currentFileIsBoardJson ? ' (board file)' : '';
+                    this.currentFilePathEl.textContent = `${newPath}${suffix}`;
+                }
+
+                await this.loadTree();
+                // Reselect the renamed file
+                this.selectItemByPath(newPath);
+            } catch (e) {
+                console.error('Failed to rename file', e);
+                alert('Failed to rename file: ' + (e.message || 'Unknown error'));
+            }
+            return;
+        }
+
+        // Otherwise, edit selected folder (if not root)
+        if (!this.selectedFolderPath) return;
+
+        const folderPath = this.selectedFolderPath;
+        if (!folderPath) return;
+
+        const parts = folderPath.split('/');
+        const oldName = parts.pop();
+        const parentPath = parts.join('/');
+
+        const newName = window.prompt(`Rename folder "${oldName}" to:`, oldName);
+        if (!newName || newName === oldName) return;
+
+        try {
+            const response = await fetch('/api/boards/entry', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: folderPath, newName })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || `HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            const newPath = result.newPath || (parentPath ? `${parentPath}/${newName}` : newName);
+
+            // Update selected folder path if rename was successful
+            this.selectedFolderPath = newPath;
+
+            await this.loadTree();
+            // Reselect the renamed folder
+            this.selectItemByPath(newPath);
+        } catch (e) {
+            console.error('Failed to rename folder', e);
+            alert('Failed to rename folder: ' + (e.message || 'Unknown error'));
+        }
+    }
+
     async handleDeleteSelected() {
         // Prefer deleting a selected file if present
         if (this.currentFilePath) {
@@ -334,6 +514,7 @@ export class FileExplorer {
             }
             if (this.saveFileBtn) this.saveFileBtn.disabled = true;
             if (this.revertFileBtn) this.revertFileBtn.disabled = true;
+            if (this.editBtn) this.editBtn.disabled = true;
             if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
 
             await this.loadTree();
@@ -365,6 +546,7 @@ export class FileExplorer {
         }
 
         this.selectedFolderPath = null;
+        if (this.editBtn) this.editBtn.disabled = true;
         if (this.deleteFolderBtn) this.deleteFolderBtn.disabled = true;
         await this.loadTree();
     }
