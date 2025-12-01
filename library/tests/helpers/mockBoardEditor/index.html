@@ -38,6 +38,7 @@
                 <button class="tab-btn active" data-tab="moves">Find All Possible Moves</button>
                 <button class="tab-btn" data-tab="enPassant">En Passant</button>
                 <button class="tab-btn" data-tab="simple">Simple Board</button>
+                <button class="tab-btn" data-tab="isSquareAttacked">Is Square Attacked</button>
             </div>
 
             <div class="controls">
@@ -148,6 +149,29 @@
                         <label class="checkbox-label">
                             <input type="checkbox" id="blackQueensideRookMoved" data-key="blackQueensideRook">
                             Black Queenside Rook
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="is-square-attacked-panel">
+                <h3>Is Square Attacked</h3>
+                <div class="is-square-attacked-controls">
+                    <div class="target-square-section">
+                        <h4>Target Square</h4>
+                        <p>Click "Select Target Square" mode, then click a square on the board</p>
+                        <div id="targetSquareDisplay">No square selected</div>
+                        <button type="button" id="clearTargetSquare" class="clear-btn">Clear</button>
+                    </div>
+                    <div class="expected-result-section">
+                        <h4>Expected Result</h4>
+                        <label class="radio-label">
+                            <input type="radio" name="expectedResult" value="true" id="expectedResultTrue">
+                            True (Square is attacked)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="expectedResult" value="false" id="expectedResultFalse">
+                            False (Square is not attacked)
                         </label>
                     </div>
                 </div>

@@ -3,12 +3,14 @@ export class MockBoardEditor {
         this.board = Array(8).fill(null).map(() => Array(8).fill(null));
         this.selectedPiece = null;
         this.selectedColor = null;
-        this.mode = 'place'; // 'place', 'main', 'moves'
-        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple'
+        this.mode = 'place'; // 'place', 'main', 'moves', 'target'
+        this.activeTab = 'moves'; // 'moves', 'enPassant', 'simple', 'isSquareAttacked'
         this.currentBoardType = 'findAllPossibleMoves';
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
+        this.targetSquare = null; // For isSquareAttacked board type
+        this.expectedResult = null; // true or false for isSquareAttacked
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -47,6 +49,8 @@ export class MockBoardEditor {
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
+        this.targetSquare = null;
+        this.expectedResult = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -66,6 +70,8 @@ export class MockBoardEditor {
             this.activeTab = 'simple';
         } else if (type === 'enPassant') {
             this.activeTab = 'enPassant';
+        } else if (type === 'isSquareAttacked') {
+            this.activeTab = 'isSquareAttacked';
         } else {
             this.activeTab = 'moves';
         }
@@ -92,8 +98,8 @@ export class MockBoardEditor {
         // Rebuild pieces array from board
         this.updatePiecesList();
 
-        // Main piece & moves for non-simple boards
-        if (this.activeTab !== 'simple') {
+        // Main piece & moves for non-simple boards (but not isSquareAttacked)
+        if (this.activeTab !== 'simple' && this.activeTab !== 'isSquareAttacked') {
             if (schema.mainPiecePosition) {
                 const cell = {
                     row: schema.mainPiecePosition.row,
@@ -110,6 +116,30 @@ export class MockBoardEditor {
                     row: m.row,
                     col: m.col
                 }));
+            }
+        }
+
+        // Target square and expected result for isSquareAttacked
+        if (this.activeTab === 'isSquareAttacked') {
+            if (schema.targetSquare) {
+                this.targetSquare = {
+                    row: schema.targetSquare.row,
+                    col: schema.targetSquare.col
+                };
+                this.updateTargetSquareDisplay();
+            } else {
+                this.targetSquare = null;
+                this.updateTargetSquareDisplay();
+            }
+
+            if (schema.expectedResult !== undefined) {
+                this.expectedResult = schema.expectedResult === true;
+                const trueRadio = document.getElementById('expectedResultTrue');
+                const falseRadio = document.getElementById('expectedResultFalse');
+                if (trueRadio) trueRadio.checked = this.expectedResult === true;
+                if (falseRadio) falseRadio.checked = this.expectedResult === false;
+            } else {
+                this.expectedResult = null;
             }
         }
 
@@ -155,7 +185,9 @@ export class MockBoardEditor {
                 ? 'simpleBoard'
                 : this.activeTab === 'enPassant'
                     ? 'enPassant'
-                    : 'findAllPossibleMoves');
+                    : this.activeTab === 'isSquareAttacked'
+                        ? 'isSquareAttacked'
+                        : 'findAllPossibleMoves');
 
         const schema = {
             boardType,
@@ -169,7 +201,17 @@ export class MockBoardEditor {
             }))
         };
 
-        if (this.activeTab !== 'simple') {
+        if (this.activeTab === 'isSquareAttacked') {
+            if (this.targetSquare) {
+                schema.targetSquare = {
+                    row: this.targetSquare.row,
+                    col: this.targetSquare.col
+                };
+            }
+            if (this.expectedResult !== null && this.expectedResult !== undefined) {
+                schema.expectedResult = this.expectedResult === true;
+            }
+        } else if (this.activeTab !== 'simple') {
             if (this.mainPiece && this.mainPiece.position) {
                 schema.mainPiecePosition = {
                     row: this.mainPiece.position.row,
@@ -251,6 +293,8 @@ export class MockBoardEditor {
                     this.currentBoardType = 'simpleBoard';
                 } else if (this.activeTab === 'enPassant') {
                     this.currentBoardType = 'enPassant';
+                } else if (this.activeTab === 'isSquareAttacked') {
+                    this.currentBoardType = 'isSquareAttacked';
                 } else {
                     this.currentBoardType = 'findAllPossibleMoves';
                 }
@@ -302,6 +346,20 @@ export class MockBoardEditor {
                 this.extraInfo.piecesMadeMoves[key] = checkbox.checked;
             });
         });
+
+        // Is Square Attacked controls
+        const clearTargetSquareBtn = document.getElementById('clearTargetSquare');
+        if (clearTargetSquareBtn) {
+            clearTargetSquareBtn.addEventListener('click', () => this.clearTargetSquare());
+        }
+
+        document.querySelectorAll('input[name="expectedResult"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.expectedResult = radio.value === 'true';
+                }
+            });
+        });
     }
 
     updateTabVisibility() {
@@ -324,9 +382,12 @@ export class MockBoardEditor {
         // Otherwise ensure controls are visible
         if (controls) controls.style.display = '';
 
+        const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
+
         if (this.activeTab === 'moves') {
             // Full moves testing: place + main + moves, no extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -337,6 +398,7 @@ export class MockBoardEditor {
         } else if (this.activeTab === 'enPassant') {
             // En passant testing: same as moves, but with extra info
             if (extraInfoPanel) extraInfoPanel.style.display = 'flex';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
 
             [mainBtn, movesBtn].forEach(btn => {
                 if (btn) {
@@ -347,6 +409,8 @@ export class MockBoardEditor {
         } else if (this.activeTab === 'simple') {
             // Simple board: only placing pieces
             if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            const isSquareAttackedPanel = document.querySelector('.is-square-attacked-panel');
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'none';
 
             if (mainBtn) {
                 mainBtn.disabled = true;
@@ -358,6 +422,45 @@ export class MockBoardEditor {
             }
 
             // Force mode to place
+            this.mode = 'place';
+            if (placeBtn) {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                placeBtn.classList.add('active');
+            }
+        } else if (this.activeTab === 'isSquareAttacked') {
+            // Is Square Attacked: only placing pieces + target square selection
+            if (extraInfoPanel) extraInfoPanel.style.display = 'none';
+            if (isSquareAttackedPanel) isSquareAttackedPanel.style.display = 'flex';
+
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.classList.add('disabled');
+            }
+            if (movesBtn) {
+                movesBtn.disabled = true;
+                movesBtn.classList.add('disabled');
+            }
+
+            // Add target mode button if it doesn't exist
+            let targetBtn = document.querySelector('.mode-btn[data-mode="target"]');
+            if (!targetBtn) {
+                const modeSelector = document.querySelector('.mode-selector');
+                if (modeSelector) {
+                    targetBtn = document.createElement('button');
+                    targetBtn.className = 'mode-btn';
+                    targetBtn.dataset.mode = 'target';
+                    targetBtn.textContent = 'Select Target Square';
+                    modeSelector.appendChild(targetBtn);
+                    targetBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        targetBtn.classList.add('active');
+                        this.mode = 'target';
+                        this.updateBoardDisplay();
+                    });
+                }
+            }
+
+            // Force mode to place initially
             this.mode = 'place';
             if (placeBtn) {
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -392,6 +495,11 @@ export class MockBoardEditor {
             } else {
                 alert('Please select a main piece first!');
             }
+        } else if (this.mode === 'target') {
+            // Set target square for isSquareAttacked
+            this.targetSquare = { row, col };
+            this.updateTargetSquareDisplay();
+            this.updateBoardDisplay();
         }
     }
 
@@ -464,7 +572,7 @@ export class MockBoardEditor {
                 const piece = this.getPiece({ row, col });
 
                 // Clear previous state
-                square.classList.remove('has-piece', 'main-piece', 'valid-move');
+                square.classList.remove('has-piece', 'main-piece', 'valid-move', 'target-square');
                 square.innerHTML = '';
 
                 // Add piece if exists
@@ -486,6 +594,13 @@ export class MockBoardEditor {
                 // Mark valid moves
                 if (this.validMoves.some(m => m.row === row && m.col === col)) {
                     square.classList.add('valid-move');
+                }
+
+                // Mark target square for isSquareAttacked
+                if (this.targetSquare &&
+                    this.targetSquare.row === row &&
+                    this.targetSquare.col === col) {
+                    square.classList.add('target-square');
                 }
             }
         }
@@ -526,6 +641,8 @@ export class MockBoardEditor {
         this.mainPiece = null;
         this.validMoves = [];
         this.pieces = [];
+        this.targetSquare = null;
+        this.expectedResult = null;
         this.extraInfo = {
             enPassantTarget: null,
             piecesMadeMoves: {
@@ -549,6 +666,12 @@ export class MockBoardEditor {
                 cb.checked = false;
             });
 
+        // Clear isSquareAttacked inputs
+        this.updateTargetSquareDisplay();
+        document.querySelectorAll('input[name="expectedResult"]').forEach(radio => {
+            radio.checked = false;
+        });
+
         // No board type yet; tabs act as selector
         this.currentBoardType = null;
         this.activeTab = 'moves';
@@ -560,6 +683,23 @@ export class MockBoardEditor {
         });
 
         this.updateTabVisibility();
+    }
+
+    updateTargetSquareDisplay() {
+        const displayEl = document.getElementById('targetSquareDisplay');
+        if (displayEl) {
+            if (this.targetSquare) {
+                displayEl.textContent = `Row: ${this.targetSquare.row}, Col: ${this.targetSquare.col}`;
+            } else {
+                displayEl.textContent = 'No square selected';
+            }
+        }
+    }
+
+    clearTargetSquare() {
+        this.targetSquare = null;
+        this.updateTargetSquareDisplay();
+        this.updateBoardDisplay();
     }
 
 }
