@@ -3,9 +3,9 @@ import { FileExplorer } from './FileExplorer.js';
 
 // Initialize editor when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new MockBoardEditor();
+    const editor = new MockBoardEditor();
     if ('showDirectoryPicker' in window) {
-        new FileExplorer();
+        new FileExplorer(editor);
     }
 });
 

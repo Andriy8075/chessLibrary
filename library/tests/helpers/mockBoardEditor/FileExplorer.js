@@ -1,9 +1,10 @@
 export class FileExplorer {
-    constructor() {
+    constructor(editor) {
         this.rootHandle = null;
         this.currentFileHandle = null;
         this.currentFilePath = '';
         this.pathHandleMap = new Map(); // path -> handle
+        this.editor = editor;
 
         this.init();
     }
@@ -163,13 +164,35 @@ export class FileExplorer {
         const file = await handle.getFile();
         const text = await file.text();
 
-        this.fileEditor.disabled = false;
-        this.fileEditor.value = text;
+        // Try to interpret as a mock board JSON and load into editor.
+        let parsed = null;
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {
+            parsed = null;
+        }
 
-        this.currentFilePathEl.textContent = path;
+        if (parsed && parsed.boardType && Array.isArray(parsed.pieces) && this.editor && typeof this.editor.loadFromSchema === 'function') {
+            // Load into the board editor instead of plain text editing
+            this.editor.loadFromSchema(parsed);
 
-        this.saveFileBtn.disabled = false;
-        this.revertFileBtn.disabled = false;
+            // Show path but keep editor read-only for board JSON files
+            this.currentFilePathEl.textContent = `${path} (board file)`;
+            this.fileEditor.disabled = true;
+            this.fileEditor.value = '';
+
+            this.saveFileBtn.disabled = true;
+            this.revertFileBtn.disabled = true;
+        } else {
+            // Fallback: treat as plain text file
+            this.fileEditor.disabled = false;
+            this.fileEditor.value = text;
+
+            this.currentFilePathEl.textContent = path;
+
+            this.saveFileBtn.disabled = false;
+            this.revertFileBtn.disabled = false;
+        }
     }
 
     getTargetDirectoryHandleForNewItem() {

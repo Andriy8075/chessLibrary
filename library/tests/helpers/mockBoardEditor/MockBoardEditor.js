@@ -25,6 +25,115 @@ export class MockBoardEditor {
         this.init();
     }
 
+    loadFromSchema(schema) {
+        if (!schema || !Array.isArray(schema.pieces)) {
+            return;
+        }
+
+        // Reset internal state
+        this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.mainPiece = null;
+        this.validMoves = [];
+        this.pieces = [];
+        this.extraInfo = {
+            enPassantTarget: null,
+            piecesMadeMoves: {
+                whiteKing: false,
+                blackKing: false,
+                whiteKingsideRook: false,
+                whiteQueensideRook: false,
+                blackKingsideRook: false,
+                blackQueensideRook: false
+            }
+        };
+
+        // Determine tab by boardType
+        const type = schema.boardType || '';
+        if (type === 'simpleBoard') {
+            this.activeTab = 'simple';
+        } else if (type === 'enPassant') {
+            this.activeTab = 'enPassant';
+        } else {
+            this.activeTab = 'moves';
+        }
+
+        // Update tab buttons to match the active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === this.activeTab);
+        });
+
+        // Place pieces
+        (schema.pieces || []).forEach(p => {
+            if (!p.position) return;
+            const row = p.position.row;
+            const col = p.position.col;
+            if (row < 1 || row > 8 || col < 1 || col > 8) return;
+            const cell = { row, col };
+            this.board[row - 1][col - 1] = {
+                type: p.type,
+                color: p.color,
+                position: cell
+            };
+        });
+
+        // Rebuild pieces array from board
+        this.updatePiecesList();
+
+        // Main piece & moves for non-simple boards
+        if (this.activeTab !== 'simple') {
+            if (schema.mainPiecePosition) {
+                const cell = {
+                    row: schema.mainPiecePosition.row,
+                    col: schema.mainPiecePosition.col
+                };
+                const piece = this.getPiece(cell);
+                if (piece) {
+                    this.mainPiece = { ...piece, position: cell };
+                }
+            }
+
+            if (Array.isArray(schema.moves)) {
+                this.validMoves = schema.moves.map(m => ({
+                    row: m.row,
+                    col: m.col
+                }));
+            }
+        }
+
+        // Extra info (en passant, pieces made moves)
+        if (schema.extraInfo) {
+            if (schema.extraInfo.enPassantTarget) {
+                this.extraInfo.enPassantTarget = {
+                    row: schema.extraInfo.enPassantTarget.row,
+                    col: schema.extraInfo.enPassantTarget.col
+                };
+
+                const rowInput = document.getElementById('enPassantRow');
+                const colInput = document.getElementById('enPassantCol');
+                if (rowInput) rowInput.value = this.extraInfo.enPassantTarget.row;
+                if (colInput) colInput.value = this.extraInfo.enPassantTarget.col;
+            } else {
+                const rowInput = document.getElementById('enPassantRow');
+                const colInput = document.getElementById('enPassantCol');
+                if (rowInput) rowInput.value = '';
+                if (colInput) colInput.value = '';
+            }
+
+            if (schema.extraInfo.piecesMadeMoves) {
+                Object.keys(this.extraInfo.piecesMadeMoves).forEach(key => {
+                    this.extraInfo.piecesMadeMoves[key] = !!schema.extraInfo.piecesMadeMoves[key];
+                    const checkbox = document.querySelector(`.pieces-moved-controls input[data-key="${key}"]`);
+                    if (checkbox) {
+                        checkbox.checked = this.extraInfo.piecesMadeMoves[key];
+                    }
+                });
+            }
+        }
+
+        // Apply tab-specific UI and redraw board
+        this.updateTabVisibility();
+    }
+
     init() {
         this.createBoard();
         this.setupEventListeners();
