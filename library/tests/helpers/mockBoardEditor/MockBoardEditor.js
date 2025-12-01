@@ -348,16 +348,16 @@ export class MockBoardEditor {
 
         try {
             const fileContent = this.generateMockBoardFile(sanitizedFileName);
-            const blob = new Blob([fileContent], { type: 'text/javascript' });
+            const blob = new Blob([fileContent], { type: 'application/json' });
 
             // Try to use File System Access API (modern browsers)
             if ('showSaveFilePicker' in window) {
                 try {
                     const fileHandle = await window.showSaveFilePicker({
-                        suggestedName: `${sanitizedFileName}.js`,
+                        suggestedName: `${sanitizedFileName}.json`,
                         types: [{
-                            description: 'JavaScript files',
-                            accept: { 'text/javascript': ['.js'] }
+                            description: 'JSON files',
+                            accept: { 'application/json': ['.json'] }
                         }]
                     });
 
@@ -378,7 +378,7 @@ export class MockBoardEditor {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `${sanitizedFileName}.js`;
+                a.download = `${sanitizedFileName}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
