@@ -4,7 +4,8 @@ export class FileExplorer {
         this.currentFilePath = '';
         this.currentFileIsBoardJson = false;
         this.currentBoardType = null;
-        this.expandedPaths = new Set();
+        // Start with root (boards folder) expanded by default (path === '')
+        this.expandedPaths = new Set(['']);
 
         this.init();
     }
@@ -76,7 +77,36 @@ export class FileExplorer {
         const ul = document.createElement('ul');
         ul.className = 'file-tree-root';
 
-        this.addDirectoryEntries(this.treeRoot, ul);
+        const rootPath = this.treeRoot.path || '';
+        const isExpanded = this.expandedPaths.has(rootPath);
+
+        const rootLi = document.createElement('li');
+        rootLi.className = 'file-item folder-item ' + (isExpanded ? 'expanded' : 'collapsed');
+        rootLi.textContent = this.treeRoot.name;
+
+        const childUl = document.createElement('ul');
+        childUl.style.display = isExpanded ? 'block' : 'none';
+
+        this.addDirectoryEntries(this.treeRoot, childUl);
+        rootLi.appendChild(childUl);
+
+        rootLi.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectFolder(rootPath, rootLi);
+
+            const nowExpanded = rootLi.classList.toggle('expanded');
+            if (nowExpanded) {
+                rootLi.classList.remove('collapsed');
+                childUl.style.display = 'block';
+                this.expandedPaths.add(rootPath);
+            } else {
+                rootLi.classList.add('collapsed');
+                childUl.style.display = 'none';
+                this.expandedPaths.delete(rootPath);
+            }
+        });
+
+        ul.appendChild(rootLi);
 
         this.fileTreeEl.appendChild(ul);
     }
