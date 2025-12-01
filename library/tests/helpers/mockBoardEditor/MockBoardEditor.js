@@ -40,6 +40,18 @@ export class MockBoardEditor {
         };
     }
 
+    setExpectedResult(value, trueRadioId, falseRadioId, propertyName) {
+        if (value !== undefined && value !== null) {
+            this[propertyName] = value === true;
+            const trueRadio = document.getElementById(trueRadioId);
+            const falseRadio = document.getElementById(falseRadioId);
+            if (trueRadio) trueRadio.checked = this[propertyName] === true;
+            if (falseRadio) falseRadio.checked = this[propertyName] === false;
+        } else {
+            this[propertyName] = null;
+        }
+    }
+
     loadFromSchema(schema) {
         if (!schema || !Array.isArray(schema.pieces)) {
             return;
@@ -118,15 +130,7 @@ export class MockBoardEditor {
                 this.updateTargetSquareDisplay();
             }
 
-            if (schema.expectedResult !== undefined) {
-                this.expectedResult = schema.expectedResult === true;
-                const trueRadio = document.getElementById('expectedResultTrue');
-                const falseRadio = document.getElementById('expectedResultFalse');
-                if (trueRadio) trueRadio.checked = this.expectedResult === true;
-                if (falseRadio) falseRadio.checked = this.expectedResult === false;
-            } else {
-                this.expectedResult = null;
-            }
+            this.setExpectedResult(schema.expectedResult, 'expectedResultTrue', 'expectedResultFalse', 'expectedResult');
 
             if (schema.attackingColor) {
                 this.attackingColor = schema.attackingColor;
@@ -151,15 +155,7 @@ export class MockBoardEditor {
                 this.kingColor = null;
             }
 
-            if (schema.expectedResult !== undefined) {
-                this.kingCheckResult = schema.expectedResult === true;
-                const trueRadio = document.getElementById('kingCheckResultTrue');
-                const falseRadio = document.getElementById('kingCheckResultFalse');
-                if (trueRadio) trueRadio.checked = this.kingCheckResult === true;
-                if (falseRadio) falseRadio.checked = this.kingCheckResult === false;
-            } else {
-                this.kingCheckResult = null;
-            }
+            this.setExpectedResult(schema.expectedResult, 'kingCheckResultTrue', 'kingCheckResultFalse', 'kingCheckResult');
         }
 
         // Extra info (en passant, pieces made moves)

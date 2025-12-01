@@ -1,0 +1,91 @@
+{
+    "boardType": "isSquareAttacked",
+    "pieces": [
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 4
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 5
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 6
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 5
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 6
+            }
+        },
+        {
+            "type": "knight",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 3
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 4
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 5
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 6
+            }
+        }
+    ],
+    "targetSquare": {
+        "row": 5,
+        "col": 5
+    },
+    "expectedResult": true,
+    "attackingColor": "black"
+}
