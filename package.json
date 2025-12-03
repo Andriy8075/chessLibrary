@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:react\"",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:react\" \"npm run dev:react-api\"",
     "dev:web": "cd web && npm run dev",
     "dev:react": "cd library/tests/helpers/mockBoardEditor && npm run dev",
-    "dev:react-server": "cd library/tests/helpers/mockBoardEditor && node devServer.js"
+    "dev:react-api": "cd library/tests/helpers/mockBoardEditor && MOCK_EDITOR_PORT=3002 node devServer.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

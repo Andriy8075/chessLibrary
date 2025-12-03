@@ -83,13 +83,28 @@ export default defineConfig({
       interval: isDocker ? 1000 : undefined
     },
     hmr: {
-      host: 'localhost',
-      port: 3001
+      host: isDocker ? 'localhost' : 'localhost',
+      port: 3001,
+      protocol: 'ws'
     },
     proxy: {
-      '/api': {
+      // Only proxy /api routes, explicitly exclude Vite internal paths
+      '^/api': {
         target: 'http://localhost:3002',
-        changeOrigin: true
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, req, res) => {
+            // Don't log connection errors repeatedly - they're expected if API server isn't running
+            if (err.code !== 'ECONNREFUSED') {
+              console.error('Proxy error:', err.message);
+            }
+          });
+        },
+        // Better error handling when backend is not available
+        timeout: 5000,
+        proxyTimeout: 5000
       }
     },
     // Allow serving files from parent directories if needed
@@ -108,6 +123,10 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src')
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    force: false // Set to true to force re-optimization if needed
   }
 });
 
