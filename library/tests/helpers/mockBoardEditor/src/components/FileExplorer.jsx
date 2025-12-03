@@ -16,7 +16,7 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
       const response = await fetch('/api/boards/tree');
       if (response.ok) {
         const data = await response.json();
-        setTree(data);
+        setTree(data.root);
       }
     } catch (e) {
       console.error('Failed to load tree', e);

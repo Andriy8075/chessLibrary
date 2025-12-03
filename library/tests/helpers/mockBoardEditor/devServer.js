@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 
 const boardsRoot = mockBoardsFolder;
 const rootDir = __dirname;
-const port = process.env.MOCK_EDITOR_PORT ? parseInt(process.env.MOCK_EDITOR_PORT, 10) : 3001;
+const port = process.env.MOCK_EDITOR_PORT ? parseInt(process.env.MOCK_EDITOR_PORT, 10) : 3002;
 
 // Check if we should serve React app (if index-react.html exists)
 const useReact = fs.existsSync(path.join(rootDir, 'index-react.html'));
