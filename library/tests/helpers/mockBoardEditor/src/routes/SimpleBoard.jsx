@@ -2,17 +2,15 @@ import React from 'react';
 import PieceSelector from '../components/PieceSelector';
 import ModeSelector from '../components/ModeSelector';
 import ChessBoard from '../components/ChessBoard';
+import squareClickFunctions from '../hooks/squareClickFunctions';
 
 function SimpleBoard({ editor }) {
   const handleSquareClick = (row, col) => {
     const cell = { row, col };
 
-    if (editor.mode === 'place') {
-      if (editor.selectedPiece === 'remove') {
-        editor.removePiece(cell);
-      } else if (editor.selectedPiece && editor.selectedColor) {
-        editor.placePiece(cell, editor.selectedPiece, editor.selectedColor);
-      }
+    const func = squareClickFunctions[editor.mode];
+    if (func) {
+      func(editor, cell);
     }
   };
 
