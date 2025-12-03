@@ -154,21 +154,22 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
     }
   };
 
-  const renderTree = (node, basePath = '') => {
+  const renderTree = (node) => {
     if (!node) return null;
 
-    const path = basePath ? `${basePath}/${node.name}` : node.name;
-    const isExpanded = expandedPaths.has(path);
-    const isSelected = selectedPath === path || selectedFolderPath === path;
+    // Use the path from the API response, which is already relative to boardsRoot
+    const nodePath = node.path || '';
+    const isExpanded = expandedPaths.has(nodePath);
+    const isSelected = selectedPath === nodePath || selectedFolderPath === nodePath;
 
     if (node.kind === 'directory') {
       return (
-        <div key={path} className="tree-item">
+        <div key={nodePath} className="tree-item">
           <div
             className={`tree-folder ${isSelected ? 'selected' : ''}`}
             onClick={() => {
-              toggleExpand(path);
-              selectFolder(path);
+              toggleExpand(nodePath);
+              selectFolder(nodePath);
             }}
           >
             <span className={`folder-icon ${isExpanded ? 'expanded' : 'collapsed'}`}>▶</span>
@@ -176,7 +177,7 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
           </div>
           {isExpanded && node.children && (
             <div className="tree-children">
-              {node.children.map(child => renderTree(child, path))}
+              {node.children.map(child => renderTree(child))}
             </div>
           )}
         </div>
@@ -184,9 +185,9 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
     } else {
       return (
         <div
-          key={path}
+          key={nodePath}
           className={`tree-file ${isSelected ? 'selected' : ''}`}
-          onClick={() => openFile(path)}
+          onClick={() => openFile(nodePath)}
         >
           {node.name}
         </div>
