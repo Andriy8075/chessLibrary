@@ -39,53 +39,19 @@ class GameEndDetector {
         }
     }
 
-    static enoughPiecesAfterMoveToContinueGame(cellTo, board) {
-        // Check if move has already been executed (piece is at destination)
-        const pieceAtDest = board.getPieceOnCell(cellTo);
-        const pieceAtSource = board.getPieceOnCell(cellFrom);
+    static enoughPiecesAfterMoveToContinueGame(board) {
         
         let arrangement;
         let pieces = [];
-        
-        if (pieceAtDest && !pieceAtSource) {
-            // Move has already been executed - check current state
             arrangement = board.getArrangement();
             
-            for (let row = 1; row <= 8; row++) {
-                for (let col = 1; col <= 8; col++) {
-                    const p = arrangement[row - 1][col - 1];
-                    if (p) {
-                        pieces.push(p);
-                    }
+        for (let row = 1; row <= 8; row++) {
+            for (let col = 1; col <= 8; col++) {
+                const p = arrangement[row - 1][col - 1];
+                if (p) {
+                    pieces.push(p);
                 }
             }
-        } else if (pieceAtSource) {
-            // Move has not been executed yet - simulate it
-            const capturedPiece = board.getPieceOnCell(cellTo);
-            
-            board._movePiece(cellFrom, cellTo);
-            if (capturedPiece) {
-                board._removePiece(cellTo);
-            }
-            
-            arrangement = board.getArrangement();
-            
-            for (let row = 1; row <= 8; row++) {
-                for (let col = 1; col <= 8; col++) {
-                    const p = arrangement[row - 1][col - 1];
-                    if (p) {
-                        pieces.push(p);
-                    }
-                }
-            }
-            
-            board._movePiece(cellTo, cellFrom);
-            if (capturedPiece) {
-                board._placePiece(capturedPiece, cellTo);
-            }
-        } else {
-            // No piece at either location - invalid state
-            return true;
         }
         
         if (pieces.length <= 2) {
@@ -94,7 +60,9 @@ class GameEndDetector {
         
         const whitePieces = pieces.filter(p => p.color === 'white');
         const blackPieces = pieces.filter(p => p.color === 'black');
-        
+
+        // using FIDE rules for insufficient material. 
+        // Draw only if checkmate is impossible even with cooperation of both sides.
         if (whitePieces.length === 1 && blackPieces.length === 2) {
             const minorPiece = blackPieces.find(p => p.constructor.name === 'Bishop' || p.constructor.name === 'Knight');
             if (minorPiece) return false;

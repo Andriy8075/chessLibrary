@@ -1,0 +1,34 @@
+{
+    "boardType": "checkForCheckmateOrStalemateAfterMove",
+    "pieces": [
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 3
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 7
+            }
+        }
+    ],
+    "cellTo": {
+        "row": 6,
+        "col": 7
+    },
+    "expectedResult": "stalemate"
+}
