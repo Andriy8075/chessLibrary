@@ -3,6 +3,7 @@ import PieceSelector from '../components/PieceSelector';
 import ModeSelector from '../components/ModeSelector';
 import ChessBoard from '../components/ChessBoard';
 import ExpectedResult from '../components/ExpectedResult';
+import PromotionPieceSelector from '../components/PromotionPieceSelector';
 import EnPassantInfo from '../components/EnPassantInfo';
 import squareClickFunctions from '../hooks/squareClickFunctions';
 import './route-common.css';
@@ -72,6 +73,11 @@ function TryMove({ editor }) {
             onChange={editor.setTryMoveResult}
             trueId="tryMoveResultTrue"
             falseId="tryMoveResultFalse"
+          />
+          <PromotionPieceSelector
+            value={editor.tryMovePromotionPiece}
+            onChange={editor.setTryMovePromotionPiece}
+            namePrefix="tryMove"
           />
         </div>
       </div>

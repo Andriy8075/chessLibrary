@@ -1,0 +1,39 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 2,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 8
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 2,
+        "col": 4
+    },
+    "cellTo": {
+        "row": 1,
+        "col": 4
+    },
+    "expectedResult": true,
+    "promotionPiece": "knight"
+}
