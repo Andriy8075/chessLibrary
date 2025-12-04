@@ -1,6 +1,7 @@
 .is-square-attacked-panel,
 .is-king-in-check-panel,
-.would-move-cause-check-panel {
+.would-move-cause-check-panel,
+.try-move-panel {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -12,7 +13,8 @@
 
 .is-square-attacked-panel h3,
 .is-king-in-check-panel h3,
-.would-move-cause-check-panel h3 {
+.would-move-cause-check-panel h3,
+.try-move-panel h3 {
     margin-bottom: 15px;
     color: #333;
     font-size: 18px;
@@ -20,7 +22,8 @@
 
 .is-square-attacked-controls,
 .is-king-in-check-controls,
-.would-move-cause-check-controls {
+.would-move-cause-check-controls,
+.try-move-controls {
     display: flex;
     flex-direction: column;
     gap: 15px;

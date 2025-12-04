@@ -17,6 +17,7 @@ export function useBoardEditor() {
   const [cellFrom, setCellFrom] = useState(null);
   const [cellTo, setCellTo] = useState(null);
   const [wouldMoveCauseCheckResult, setWouldMoveCauseCheckResult] = useState(null);
+  const [tryMoveResult, setTryMoveResult] = useState(null);
   const [hasLegalMovesColor, setHasLegalMovesColor] = useState(null);
   const [hasLegalMovesResult, setHasLegalMovesResult] = useState(null);
   const [checkForCheckmateOrStalemateAfterMoveResult, setCheckForCheckmateOrStalemateAfterMoveResult] = useState(null);
@@ -46,6 +47,7 @@ export function useBoardEditor() {
     setCellFrom(null);
     setCellTo(null);
     setWouldMoveCauseCheckResult(null);
+    setTryMoveResult(null);
     setHasLegalMovesColor(null);
     setHasLegalMovesResult(null);
     setCheckForCheckmateOrStalemateAfterMoveResult(null);
@@ -75,6 +77,7 @@ export function useBoardEditor() {
     setCellFrom(null);
     setCellTo(null);
     setWouldMoveCauseCheckResult(null);
+    setTryMoveResult(null);
     setHasLegalMovesColor(null);
     setHasLegalMovesResult(null);
     setCheckForCheckmateOrStalemateAfterMoveResult(null);
@@ -216,6 +219,22 @@ export function useBoardEditor() {
       if (schema.expectedResult !== undefined) {
         setWouldMoveCauseCheckResult(schema.expectedResult === true);
       }
+    } else if (schema.boardType === 'tryMove') {
+      if (schema.cellFrom) {
+        setCellFrom({
+          row: schema.cellFrom.row,
+          col: schema.cellFrom.col
+        });
+      }
+      if (schema.cellTo) {
+        setCellTo({
+          row: schema.cellTo.row,
+          col: schema.cellTo.col
+        });
+      }
+      if (schema.expectedResult !== undefined) {
+        setTryMoveResult(schema.expectedResult === true);
+      }
     } else if (schema.boardType === 'hasLegalMoves') {
       if (schema.color) {
         setHasLegalMovesColor(schema.color);
@@ -332,6 +351,22 @@ export function useBoardEditor() {
       if (wouldMoveCauseCheckResult !== null && wouldMoveCauseCheckResult !== undefined) {
         schema.expectedResult = wouldMoveCauseCheckResult === true;
       }
+    } else if (boardType === 'tryMove') {
+      if (cellFrom) {
+        schema.cellFrom = {
+          row: cellFrom.row,
+          col: cellFrom.col
+        };
+      }
+      if (cellTo) {
+        schema.cellTo = {
+          row: cellTo.row,
+          col: cellTo.col
+        };
+      }
+      if (tryMoveResult !== null && tryMoveResult !== undefined) {
+        schema.expectedResult = tryMoveResult === true;
+      }
     } else if (boardType === 'hasLegalMoves') {
       if (hasLegalMovesColor) {
         schema.color = hasLegalMovesColor;
@@ -391,7 +426,7 @@ export function useBoardEditor() {
     }
 
     return schema;
-  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, enoughPiecesResult, mainPiece, validMoves, extraInfo]);
+  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, tryMoveResult, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, enoughPiecesResult, mainPiece, validMoves, extraInfo]);
 
   return {
     board,
@@ -422,6 +457,8 @@ export function useBoardEditor() {
     setCellFrom,
     setCellTo,
     setWouldMoveCauseCheckResult,
+    tryMoveResult,
+    setTryMoveResult,
     hasLegalMovesColor,
     setHasLegalMovesColor,
     hasLegalMovesResult,

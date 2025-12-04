@@ -10,6 +10,7 @@ const BOARD_TYPES = [
   { id: 'isSquareAttacked', label: 'Is Square Attacked' },
   { id: 'isKingInCheck', label: 'Is King In Check' },
   { id: 'wouldMoveCauseCheck', label: 'Would Move Cause Check' },
+  { id: 'tryMove', label: 'Try Move' },
   { id: 'hasLegalMoves', label: 'Has Legal Moves' },
   { id: 'checkForCheckmateOrStalemateAfterMove', label: 'Check For Checkmate Or Stalemate After Move' }
 ];
