@@ -35,7 +35,7 @@ function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetS
         >
           {piece && (
             <img
-              src={`/images/${piece.color}${piece.type.charAt(0).toUpperCase() + piece.type.slice(1)}.png`}
+              src={`/${piece.color}${piece.type.charAt(0).toUpperCase() + piece.type.slice(1)}.png`}
               alt={`${piece.color} ${piece.type}`}
             />
           )}

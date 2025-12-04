@@ -106,6 +106,7 @@ function App() {
                 <Route path="/tryMove" element={<TryMove editor={editor} />} />
                 <Route path="/hasLegalMoves" element={<HasLegalMoves editor={editor} />} />
                 <Route path="/checkForCheckmateOrStalemateAfterMove" element={<CheckForCheckmateOrStalemateAfterMove editor={editor} />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </>
           )}

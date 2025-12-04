@@ -304,6 +304,8 @@ const server = http.createServer((req, res) => {
     }
 
     // Serve static files from production build directory
+    // For SPA routing: if file doesn't exist, serve index.html
+    let filePath;
     if (pathname === '/') {
         pathname = '/index.html';
     }
@@ -311,9 +313,33 @@ const server = http.createServer((req, res) => {
     const safePath = path
         .normalize(pathname)
         .replace(/^(\.\.[/\\])+/, '');
-    const filePath = path.join(distDir, safePath);
+    filePath = path.join(distDir, safePath);
 
     fs.stat(filePath, (err, stats) => {
+        // If file doesn't exist and it's not an API route, serve index.html for SPA routing
+        if ((err || !stats.isFile()) && !pathname.startsWith('/api/')) {
+            // Try to serve index.html for client-side routing
+            const indexPath = path.join(distDir, 'index.html');
+            fs.stat(indexPath, (indexErr, indexStats) => {
+                if (indexErr || !indexStats.isFile()) {
+                    res.statusCode = 404;
+                    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+                    res.end('Not found');
+                    return;
+                }
+                
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                const stream = fs.createReadStream(indexPath);
+                stream.on('error', () => {
+                    res.statusCode = 500;
+                    res.end('Internal server error');
+                });
+                stream.pipe(res);
+            });
+            return;
+        }
+        
         if (err || !stats.isFile()) {
             res.statusCode = 404;
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');
