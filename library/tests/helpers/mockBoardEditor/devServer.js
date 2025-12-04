@@ -13,8 +13,21 @@ const boardsRoot = mockBoardsFolder;
 const rootDir = __dirname;
 const port = process.env.MOCK_EDITOR_PORT ? parseInt(process.env.MOCK_EDITOR_PORT, 10) : 3002;
 
-// Check if we should serve React app (if index-react.html exists)
-const useReact = fs.existsSync(path.join(rootDir, 'index-react.html'));
+// Production build directory - required
+const distDir = path.join(rootDir, 'dist');
+
+// Check if production build exists
+if (!fs.existsSync(distDir)) {
+    console.error('ERROR: Production build not found. Please run "npm run build" first.');
+    console.error(`Expected build directory: ${distDir}`);
+    process.exit(1);
+}
+
+if (!fs.existsSync(path.join(distDir, 'index.html'))) {
+    console.error('ERROR: Production build is incomplete. index.html not found in dist folder.');
+    console.error(`Expected file: ${path.join(distDir, 'index.html')}`);
+    process.exit(1);
+}
 
 function getContentType(filePath) {
     const ext = path.extname(filePath).toLowerCase();
@@ -290,32 +303,15 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // Serve static files from production build directory
     if (pathname === '/') {
-        // For React app, redirect to Vite dev server
-        // The API server should only serve the HTML file if Vite is not running
-        // Otherwise, users should access the app through Vite on port 3001
-        if (useReact && fs.existsSync(path.join(rootDir, 'index-react.html'))) {
-            // If accessing root, serve the HTML but note that /src/ files should come from Vite
-            pathname = '/index-react.html';
-        } else {
-            pathname = '/index.html';
-        }
-    }
-    
-    // Don't serve /src/ files - these should be handled by Vite dev server
-    // If someone tries to access /src/ through the API server, return 404
-    // They should be accessing the app through Vite on port 3001
-    if (pathname.startsWith('/src/')) {
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-        res.end('Please access the React app through Vite dev server on port 3001');
-        return;
+        pathname = '/index.html';
     }
 
     const safePath = path
         .normalize(pathname)
         .replace(/^(\.\.[/\\])+/, '');
-    const filePath = path.join(rootDir, safePath);
+    const filePath = path.join(distDir, safePath);
 
     fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) {

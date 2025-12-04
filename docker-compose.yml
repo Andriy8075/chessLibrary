@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   web:
     image: node:20-alpine
@@ -8,7 +6,6 @@ services:
       - .:/app
     ports:
       - "3000:3000"
-      - "3001:3001"
       - "3002:3002"
     environment:
       - DOCKER=true
