@@ -74,6 +74,18 @@ function App() {
     }
   };
 
+  // Redirect to root if no file is opened and user tries to access a specific route
+  const location = useLocation();
+  useEffect(() => {
+    // Main routes that are allowed without a file being opened
+    const mainRoutes = ['/', '/findAllPossibleMoves'];
+    
+    // If no board file is opened and user is on a non-main route, redirect to root
+    if (!currentFileIsBoardJson && !mainRoutes.includes(location.pathname)) {
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, currentFileIsBoardJson, navigate]);
+
   return (
     <div className="app-container">
       <h1>Mock Board Editor</h1>
