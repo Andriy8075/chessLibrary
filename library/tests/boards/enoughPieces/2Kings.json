@@ -1,0 +1,22 @@
+{
+    "boardType": "enoughPieces",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 6
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 7,
+                "col": 3
+            }
+        }
+    ],
+    "expectedResult": false
+}

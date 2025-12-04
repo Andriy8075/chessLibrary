@@ -20,6 +20,7 @@ export function useBoardEditor() {
   const [hasLegalMovesColor, setHasLegalMovesColor] = useState(null);
   const [hasLegalMovesResult, setHasLegalMovesResult] = useState(null);
   const [checkForCheckmateOrStalemateAfterMoveResult, setCheckForCheckmateOrStalemateAfterMoveResult] = useState(null);
+  const [enoughPiecesResult, setEnoughPiecesResult] = useState(null);
   const [extraInfo, setExtraInfo] = useState({
     enPassantTarget: null,
     piecesMadeMoves: {
@@ -48,6 +49,7 @@ export function useBoardEditor() {
     setHasLegalMovesColor(null);
     setHasLegalMovesResult(null);
     setCheckForCheckmateOrStalemateAfterMoveResult(null);
+    setEnoughPiecesResult(null);
     setExtraInfo({
       enPassantTarget: null,
       piecesMadeMoves: {
@@ -59,6 +61,36 @@ export function useBoardEditor() {
         blackQueensideRook: false
       }
     });
+  }, []);
+
+  const switchBoardType = useCallback((newBoardType) => {
+    // Preserve pieces when switching board types - only reset board-type-specific state
+    setMainPiece(null);
+    setValidMoves([]);
+    setTargetSquare(null);
+    setExpectedResult(null);
+    setAttackingColor(null);
+    setKingColor(null);
+    setKingCheckResult(null);
+    setCellFrom(null);
+    setCellTo(null);
+    setWouldMoveCauseCheckResult(null);
+    setHasLegalMovesColor(null);
+    setHasLegalMovesResult(null);
+    setCheckForCheckmateOrStalemateAfterMoveResult(null);
+    setEnoughPiecesResult(null);
+    setExtraInfo({
+      enPassantTarget: null,
+      piecesMadeMoves: {
+        whiteKing: false,
+        blackKing: false,
+        whiteKingsideRook: false,
+        whiteQueensideRook: false,
+        blackKingsideRook: false,
+        blackQueensideRook: false
+      }
+    });
+    setCurrentBoardType(newBoardType);
   }, []);
 
   const getPiece = useCallback((cell) => {
@@ -202,6 +234,10 @@ export function useBoardEditor() {
         // expectedResult can be null, 'checkmate', or 'stalemate'
         setCheckForCheckmateOrStalemateAfterMoveResult(schema.expectedResult || null);
       }
+    } else if (schema.boardType === 'enoughPieces') {
+      if (schema.expectedResult !== undefined) {
+        setEnoughPiecesResult(schema.expectedResult === true);
+      }
     } else if (schema.boardType !== 'simpleBoard') {
       // For findAllPossibleMoves and enPassant
       if (schema.mainPiecePosition) {
@@ -314,6 +350,10 @@ export function useBoardEditor() {
         // expectedResult can be null, 'checkmate', or 'stalemate'
         schema.expectedResult = checkForCheckmateOrStalemateAfterMoveResult;
       }
+    } else if (boardType === 'enoughPieces') {
+      if (enoughPiecesResult !== null && enoughPiecesResult !== undefined) {
+        schema.expectedResult = enoughPiecesResult === true;
+      }
     } else if (boardType !== 'simpleBoard') {
       if (mainPiece && mainPiece.position) {
         schema.mainPiecePosition = {
@@ -351,7 +391,7 @@ export function useBoardEditor() {
     }
 
     return schema;
-  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, mainPiece, validMoves, extraInfo]);
+  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, enoughPiecesResult, mainPiece, validMoves, extraInfo]);
 
   return {
     board,
@@ -388,6 +428,8 @@ export function useBoardEditor() {
     setHasLegalMovesResult,
     checkForCheckmateOrStalemateAfterMoveResult,
     setCheckForCheckmateOrStalemateAfterMoveResult,
+    enoughPiecesResult,
+    setEnoughPiecesResult,
     setExtraInfo,
     setCurrentBoardType,
     resetBoardState,
@@ -397,7 +439,8 @@ export function useBoardEditor() {
     toggleValidMove,
     getPieces,
     loadFromSchema,
-    getCurrentSchema
+    getCurrentSchema,
+    switchBoardType
   };
 }
 

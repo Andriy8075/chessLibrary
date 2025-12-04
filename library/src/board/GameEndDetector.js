@@ -41,9 +41,8 @@ class GameEndDetector {
 
     static enoughPiecesAfterMoveToContinueGame(board) {
         
-        let arrangement;
-        let pieces = [];
-            arrangement = board.getArrangement();
+        const pieces = [];
+        const arrangement = board.getArrangement();
             
         for (let row = 1; row <= 8; row++) {
             for (let col = 1; col <= 8; col++) {

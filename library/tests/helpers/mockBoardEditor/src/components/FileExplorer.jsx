@@ -88,14 +88,18 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
     const name = window.prompt('File name:');
     if (!name) return;
 
+    // Add .json extension if not specified (check if it ends with a file extension pattern)
+    const hasExtension = /\.\w+$/.test(name);
+    const fileName = hasExtension ? name : `${name}.json`;
+
     const parentPath = selectedFolderPath || '';
-    const newPath = parentPath ? `${parentPath}/${name}` : name;
+    const newPath = parentPath ? `${parentPath}/${fileName}` : fileName;
 
     try {
       const response = await fetch('/api/boards/file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ parentPath, name, content: '' })
+        body: JSON.stringify({ parentPath, name: fileName, content: '' })
       });
       if (response.ok) {
         await loadTree();

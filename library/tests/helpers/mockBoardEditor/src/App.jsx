@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import FileExplorer from './components/FileExplorer';
 import BoardTypeSelector from './components/BoardTypeSelector';
+import BoardTypeSwitcher from './components/BoardTypeSwitcher';
 import FindAllPossibleMoves from './routes/FindAllPossibleMoves';
 import EnPassant from './routes/EnPassant';
 import SimpleBoard from './routes/SimpleBoard';
+import EnoughPieces from './routes/EnoughPieces';
 import IsSquareAttacked from './routes/IsSquareAttacked';
 import IsKingInCheck from './routes/IsKingInCheck';
 import WouldMoveCauseCheck from './routes/WouldMoveCauseCheck';
@@ -46,6 +48,13 @@ function App() {
     navigate(`/${boardType}`);
   };
 
+  const handleBoardTypeSwitch = (boardType) => {
+    // Preserve pieces when switching board types
+    editor.switchBoardType(boardType);
+    setAwaitingBoardType(false);
+    navigate(`/${boardType}`);
+  };
+
   const handleSaveFile = async () => {
     if (!currentFilePath || !currentFileIsBoardJson) return;
     
@@ -79,17 +88,24 @@ function App() {
           {awaitingBoardType ? (
             <BoardTypeSelector onSelect={handleBoardTypeSelected} />
           ) : (
-            <Routes>
-              <Route path="/" element={<Navigate to="/findAllPossibleMoves" replace />} />
-              <Route path="/findAllPossibleMoves" element={<FindAllPossibleMoves editor={editor} />} />
-              <Route path="/enPassant" element={<EnPassant editor={editor} />} />
-              <Route path="/simpleBoard" element={<SimpleBoard editor={editor} />} />
-              <Route path="/isSquareAttacked" element={<IsSquareAttacked editor={editor} />} />
-              <Route path="/isKingInCheck" element={<IsKingInCheck editor={editor} />} />
-              <Route path="/wouldMoveCauseCheck" element={<WouldMoveCauseCheck editor={editor} />} />
-              <Route path="/hasLegalMoves" element={<HasLegalMoves editor={editor} />} />
-              <Route path="/checkForCheckmateOrStalemateAfterMove" element={<CheckForCheckmateOrStalemateAfterMove editor={editor} />} />
-            </Routes>
+            <>
+              <BoardTypeSwitcher
+                currentBoardType={editor.currentBoardType}
+                onBoardTypeChange={handleBoardTypeSwitch}
+              />
+              <Routes>
+                <Route path="/" element={<Navigate to="/findAllPossibleMoves" replace />} />
+                <Route path="/findAllPossibleMoves" element={<FindAllPossibleMoves editor={editor} />} />
+                <Route path="/enPassant" element={<EnPassant editor={editor} />} />
+                <Route path="/simpleBoard" element={<SimpleBoard editor={editor} />} />
+                <Route path="/enoughPieces" element={<EnoughPieces editor={editor} />} />
+                <Route path="/isSquareAttacked" element={<IsSquareAttacked editor={editor} />} />
+                <Route path="/isKingInCheck" element={<IsKingInCheck editor={editor} />} />
+                <Route path="/wouldMoveCauseCheck" element={<WouldMoveCauseCheck editor={editor} />} />
+                <Route path="/hasLegalMoves" element={<HasLegalMoves editor={editor} />} />
+                <Route path="/checkForCheckmateOrStalemateAfterMove" element={<CheckForCheckmateOrStalemateAfterMove editor={editor} />} />
+              </Routes>
+            </>
           )}
         </div>
       </div>
