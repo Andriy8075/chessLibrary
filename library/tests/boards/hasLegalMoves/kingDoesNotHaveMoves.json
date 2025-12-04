@@ -1,0 +1,31 @@
+{
+    "boardType": "hasLegalMoves",
+    "pieces": [
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 5
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 7,
+                "col": 7
+            }
+        }
+    ],
+    "color": "black",
+    "expectedResult": false
+}
