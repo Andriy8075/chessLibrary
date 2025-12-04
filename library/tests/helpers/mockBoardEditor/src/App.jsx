@@ -9,8 +9,7 @@ import IsSquareAttacked from './routes/IsSquareAttacked';
 import IsKingInCheck from './routes/IsKingInCheck';
 import WouldMoveCauseCheck from './routes/WouldMoveCauseCheck';
 import HasLegalMoves from './routes/HasLegalMoves';
-import CheckmateAfterMove from './routes/CheckmateAfterMove';
-import StalemateAfterMove from './routes/StalemateAfterMove';
+import CheckForCheckmateOrStalemateAfterMove from './routes/CheckForCheckmateOrStalemateAfterMove';
 import { useBoardEditor } from './hooks/useBoardEditor';
 import './App.css';
 
@@ -89,8 +88,7 @@ function App() {
               <Route path="/isKingInCheck" element={<IsKingInCheck editor={editor} />} />
               <Route path="/wouldMoveCauseCheck" element={<WouldMoveCauseCheck editor={editor} />} />
               <Route path="/hasLegalMoves" element={<HasLegalMoves editor={editor} />} />
-              <Route path="/checkmateAfterMove" element={<CheckmateAfterMove editor={editor} />} />
-              <Route path="/stalemateAfterMove" element={<StalemateAfterMove editor={editor} />} />
+              <Route path="/checkForCheckmateOrStalemateAfterMove" element={<CheckForCheckmateOrStalemateAfterMove editor={editor} />} />
             </Routes>
           )}
         </div>

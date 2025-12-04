@@ -1,0 +1,34 @@
+{
+    "boardType": "checkForCheckmateOrStalemateAfterMove",
+    "pieces": [
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 7,
+                "col": 3
+            }
+        },
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 2
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 6
+            }
+        }
+    ],
+    "cellTo": {
+        "row": 8,
+        "col": 2
+    },
+    "expectedResult": "checkmate"
+}

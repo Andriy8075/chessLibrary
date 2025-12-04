@@ -283,16 +283,19 @@ class Board {
         }
     }
 
-    checkForStalemateAfterMove(cellFrom, cellTo) {
-        return GameEndDetector.checkForStalemateAfterMove(cellFrom, cellTo, this);
-    }
+    checkForGameEndAfterMove(cellTo) {
 
-    checkForCheckmateAfterMove(cellFrom, cellTo) {
-        return GameEndDetector.checkForCheckmateAfterMove(cellFrom, cellTo, this);
-    }
+        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(cellTo, this);
+        if (!enoughPieces) return 'insufficientMaterial';
 
-    enoughPiecesAfterMoveToContinueGame(cellFrom, cellTo) {
-        return GameEndDetector.enoughPiecesAfterMoveToContinueGame(cellFrom, cellTo, this);
+        const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(cellTo, this);
+        if (checkmateOrStalemate) return checkmateOrStalemate;
+
+        // const fiftyMoveRule = this.checkForFiftyMoveRuleAfterMove(cellTo);
+        // const threefoldRepetition = this.checkForThreefoldRepetitionAfterMove(cellTo);
+
+        return null;
+
     }
 
     _movePiece(cellFrom, cellTo) {

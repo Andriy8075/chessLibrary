@@ -10,8 +10,7 @@ const BOARD_TYPES = [
   { id: 'isKingInCheck', label: 'Is King In Check' },
   { id: 'wouldMoveCauseCheck', label: 'Would Move Cause Check' },
   { id: 'hasLegalMoves', label: 'Has Legal Moves' },
-  { id: 'checkmateAfterMove', label: 'Checkmate After Move' },
-  { id: 'stalemateAfterMove', label: 'Stalemate After Move' }
+  { id: 'checkForCheckmateOrStalemateAfterMove', label: 'Check For Checkmate Or Stalemate After Move' }
 ];
 
 function BoardTypeSelector({ onSelect }) {

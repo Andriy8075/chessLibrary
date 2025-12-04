@@ -2,12 +2,11 @@ import React from 'react';
 import PieceSelector from '../components/PieceSelector';
 import ModeSelector from '../components/ModeSelector';
 import ChessBoard from '../components/ChessBoard';
-import ColorSelector from '../components/ColorSelector';
-import ExpectedResult from '../components/ExpectedResult';
+import CheckmateStalemateResultSelector from '../components/CheckmateStalemateResultSelector';
 import squareClickFunctions from '../hooks/squareClickFunctions';
 import './route-common.css';
 
-function CheckmateAfterMove({ editor }) {
+function CheckForCheckmateOrStalemateAfterMove({ editor }) {
   const handleSquareClick = (row, col) => {
     const cell = { row, col };
 
@@ -29,31 +28,18 @@ function CheckmateAfterMove({ editor }) {
         <ModeSelector
           mode={editor.mode}
           onModeChange={editor.setMode}
-          availableModes={['place', 'cellFrom', 'cellTo']}
+          availableModes={['place', 'cellTo']}
         />
       </div>
       <ChessBoard
         board={editor.board}
         mode={editor.mode}
         onSquareClick={handleSquareClick}
-        cellFrom={editor.cellFrom}
         cellTo={editor.cellTo}
       />
-      <div className="checkmate-after-move-panel">
-        <h3>Checkmate After Move</h3>
-        <div className="checkmate-after-move-controls">
-          <div className="cell-from-section">
-            <h4>Cell From</h4>
-            <p>Click "Select Cell From" mode, then click a square on the board</p>
-            <div id="cellFromDisplay">
-              {editor.cellFrom
-                ? `Row: ${editor.cellFrom.row}, Col: ${editor.cellFrom.col}`
-                : 'No cell selected'}
-            </div>
-            <button type="button" onClick={() => editor.setCellFrom(null)} className="clear-btn">
-              Clear
-            </button>
-          </div>
+      <div className="check-for-checkmate-or-stalemate-after-move-panel">
+        <h3>Check For Checkmate Or Stalemate After Move</h3>
+        <div className="check-for-checkmate-or-stalemate-after-move-controls">
           <div className="cell-to-section">
             <h4>Cell To</h4>
             <p>Click "Select Cell To" mode, then click a square on the board</p>
@@ -66,18 +52,10 @@ function CheckmateAfterMove({ editor }) {
               Clear
             </button>
           </div>
-          <ColorSelector
-            value={editor.checkmateAfterMoveColor}
-            onChange={editor.setCheckmateAfterMoveColor}
-            whiteId="checkmateAfterMoveColorWhite"
-            blackId="checkmateAfterMoveColorBlack"
-            label="Color"
-          />
-          <ExpectedResult
-            value={editor.checkmateAfterMoveResult}
-            onChange={editor.setCheckmateAfterMoveResult}
-            trueId="checkmateAfterMoveResultTrue"
-            falseId="checkmateAfterMoveResultFalse"
+          <CheckmateStalemateResultSelector
+            value={editor.checkForCheckmateOrStalemateAfterMoveResult}
+            onChange={editor.setCheckForCheckmateOrStalemateAfterMoveResult}
+            namePrefix="checkForCheckmateOrStalemateAfterMove"
           />
         </div>
       </div>
@@ -85,5 +63,5 @@ function CheckmateAfterMove({ editor }) {
   );
 }
 
-export default CheckmateAfterMove;
+export default CheckForCheckmateOrStalemateAfterMove;
 

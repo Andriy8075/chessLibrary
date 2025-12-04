@@ -1,5 +1,6 @@
 const Board = require('./board/Board');
 const validateMoveRequest = require('./validators/moveRequestValidator');
+const GameEnd = require('./utils/GameEnd');
 
 class Game {
     constructor() {
@@ -134,19 +135,18 @@ class Game {
         const opponentColor = this.state.currentTurn === 'white' ? 'black' : 'white';
         const isCheck = this.state.board.isKingInCheck(opponentColor);
 
-        const isCheckmate = this.state.board.checkForCheckmateAfterMove(cellFrom, cellTo);
+        const gameEnd = this.state.board.checkForGameEndAfterMove(cellTo);
 
-        const isStalemate = this.state.board.checkForStalemateAfterMove(cellFrom, cellTo);
-
-        const enoughPieces = this.state.board.enoughPiecesAfterMoveToContinueGame(cellFrom, cellTo);
-
-        if (isCheckmate) {
-            this.state.gameStatus = 'checkmate';
-            this.state.winner = this.state.currentTurn;
-        } else if (isStalemate) {
-            this.state.gameStatus = 'draw';
-        } else if (!enoughPieces) {
-            this.state.gameStatus = 'draw';
+        if (gameEnd) {
+            if (gameEnd === GameEnd.CHECKMATE) {
+                this.state.gameStatus = 'checkmate';
+                this.state.winner = this.state.currentTurn;
+            } else if (gameEnd === GameEnd.STALEMATE 
+                || gameEnd === GameEnd.INSUFFICIENT_MATERIAL 
+                || gameEnd === GameEnd.FIFTY_MOVE_RULE 
+                || gameEnd === GameEnd.THREEFOLD_REPETITION) {
+                this.state.gameStatus = 'draw';
+            }
         }
 
         if (this.state.gameStatus === 'active') {
