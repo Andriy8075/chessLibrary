@@ -19,7 +19,7 @@ function createBoard(state) {
     for (let displayRow = 0; displayRow < 8; displayRow++) {
         for (let displayCol = 0; displayCol < 8; displayCol++) {
             const boardRow = isBlackPlayer ? displayRow : 7 - displayRow;
-            const boardCol = isBlackPlayer ? displayCol : 7 - displayCol;
+            const boardCol = displayCol;
             
             const square = document.createElement('div');
             const isLight = (displayRow + displayCol) % 2 === 0;

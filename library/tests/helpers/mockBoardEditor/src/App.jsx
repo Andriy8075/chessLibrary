@@ -22,9 +22,11 @@ function App() {
   const [awaitingBoardType, setAwaitingBoardType] = useState(false);
   const [currentFilePath, setCurrentFilePath] = useState(null);
   const [currentFileIsBoardJson, setCurrentFileIsBoardJson] = useState(false);
+  const [saveMessage, setSaveMessage] = useState(null);
 
   const handleFileOpen = (filePath, schema) => {
     setCurrentFilePath(filePath);
+    setSaveMessage(null); // Clear save message when opening a new file
     
     if (schema && schema.boardType && Array.isArray(schema.pieces)) {
       setCurrentFileIsBoardJson(true);
@@ -70,8 +72,15 @@ function App() {
     });
 
     if (!response.ok) {
-      alert('Failed to save file');
+      setSaveMessage({ type: 'error', text: 'Failed to save file' });
+    } else {
+      setSaveMessage({ type: 'success', text: 'File saved successfully' });
     }
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      setSaveMessage(null);
+    }, 3000);
   };
 
   // Redirect to root if no file is opened and user tries to access a specific route
@@ -95,6 +104,7 @@ function App() {
           onFileOpen={handleFileOpen}
           currentFilePath={currentFilePath}
           onSave={handleSaveFile}
+          saveMessage={saveMessage}
         />
         
         <div className="editor-panel">

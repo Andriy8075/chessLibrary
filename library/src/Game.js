@@ -154,34 +154,20 @@ class Game {
         const isCheck = this.state.board.isKingInCheck(opponentColor);
 
         const gameEnd = this.state.board.checkForGameEndAfterMove(cellTo);
+        const isCheckmate = gameEnd === 'checkmate';
+        const isStalemate = gameEnd === 'stalemate';
+        const isInsufficientMaterial = gameEnd === 'insufficientMaterial';
+        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(this.state.board);
 
-        if (gameEnd) {
-            if (gameEnd === GameEnd.CHECKMATE) {
-                this.state.gameStatus = 'checkmate';
-                this.state.winner = this.state.currentTurn;
-            } else if (gameEnd === GameEnd.STALEMATE 
-                || gameEnd === GameEnd.INSUFFICIENT_MATERIAL ) {
-                this.state.gameStatus = 'draw';
-            }
-        }
-
-        // Check for 50-move rule and threefold repetition
-        const fiftyMoveRule = GameEndDetector.checkForFiftyMoveRuleAfterMove(this.state.moveHistory);
-        if (fiftyMoveRule) {
+        if (isCheckmate) {
+            this.state.gameStatus = 'checkmate';
+            this.state.winner = this.state.currentTurn;
+        } else if (isStalemate) {
+            this.state.gameStatus = 'draw';
+        } else if (isInsufficientMaterial) {
             this.state.gameStatus = 'draw';
         }
-
-        // Check for threefold repetition before storing new position
-        const threefoldRepetition = GameEndDetector.checkForThreefoldRepetitionAfterMove(
-            this.state.board, 
-            this.state.moveHistory, 
-            this.state.positionHistory
-        );
-        if (threefoldRepetition) {
-            this.state.gameStatus = 'draw';
-        }
-
-        // Store position signature after move for future threefold repetition checks
+        
         const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
         this.state.positionHistory.push(positionSignature);
 

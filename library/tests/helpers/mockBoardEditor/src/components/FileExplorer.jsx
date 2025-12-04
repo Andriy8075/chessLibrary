@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './FileExplorer.css';
 
-function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
+function FileExplorer({ onFileOpen, currentFilePath, onSave, saveMessage }) {
   const [tree, setTree] = useState(null);
   const [expandedPaths, setExpandedPaths] = useState(new Set(['']));
   const [selectedPath, setSelectedPath] = useState(null);
@@ -220,6 +220,11 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
           <button type="button" onClick={onSave} disabled={!currentFilePath}>
             Save File
           </button>
+          {saveMessage && (
+            <div className={`save-message ${saveMessage.type}`}>
+              {saveMessage.text}
+            </div>
+          )}
         </div>
       </div>
     </div>

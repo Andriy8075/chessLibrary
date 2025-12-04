@@ -1,0 +1,38 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 1,
+                "col": 5
+            }
+        },
+        {
+            "type": "rook",
+            "color": "white",
+            "position": {
+                "row": 1,
+                "col": 8
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 1,
+        "col": 5
+    },
+    "cellTo": {
+        "row": 1,
+        "col": 7
+    },
+    "expectedResult": true
+}

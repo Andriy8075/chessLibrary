@@ -285,7 +285,7 @@ class Board {
 
     checkForGameEndAfterMove(cellTo) {
 
-        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(cellTo, this);
+        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(this);
         if (!enoughPieces) return 'insufficientMaterial';
 
         const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(cellTo, this);
