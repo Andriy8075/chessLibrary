@@ -8,7 +8,8 @@ function ModeSelector({ mode, onModeChange, availableModes }) {
     { id: 'moves', label: 'Mark Moves' },
     { id: 'target', label: 'Select Target Square' },
     { id: 'cellFrom', label: 'Select Cell From' },
-    { id: 'cellTo', label: 'Select Cell To' }
+    { id: 'cellTo', label: 'Select Cell To' },
+    { id: 'enPassantTarget', label: 'Select En Passant Target' }
   ];
 
   return (

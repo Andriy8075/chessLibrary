@@ -27,7 +27,7 @@ function EnPassant({ editor }) {
         <ModeSelector
           mode={editor.mode}
           onModeChange={editor.setMode}
-          availableModes={['place', 'main', 'moves']}
+          availableModes={['place', 'main', 'moves', 'enPassantTarget']}
         />
       </div>
       <ChessBoard
@@ -36,6 +36,7 @@ function EnPassant({ editor }) {
         onSquareClick={handleSquareClick}
         mainPiece={editor.mainPiece}
         validMoves={editor.validMoves}
+        enPassantTarget={editor.extraInfo.enPassantTarget}
       />
       <EnPassantInfo
         enPassantTarget={editor.extraInfo.enPassantTarget}

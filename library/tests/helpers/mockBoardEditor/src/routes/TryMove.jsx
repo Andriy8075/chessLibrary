@@ -3,6 +3,7 @@ import PieceSelector from '../components/PieceSelector';
 import ModeSelector from '../components/ModeSelector';
 import ChessBoard from '../components/ChessBoard';
 import ExpectedResult from '../components/ExpectedResult';
+import EnPassantInfo from '../components/EnPassantInfo';
 import squareClickFunctions from '../hooks/squareClickFunctions';
 import './route-common.css';
 
@@ -28,7 +29,7 @@ function TryMove({ editor }) {
         <ModeSelector
           mode={editor.mode}
           onModeChange={editor.setMode}
-          availableModes={['place', 'cellFrom', 'cellTo']}
+          availableModes={['place', 'cellFrom', 'cellTo', 'enPassantTarget']}
         />
       </div>
       <ChessBoard
@@ -37,6 +38,7 @@ function TryMove({ editor }) {
         onSquareClick={handleSquareClick}
         cellFrom={editor.cellFrom}
         cellTo={editor.cellTo}
+        enPassantTarget={editor.extraInfo.enPassantTarget}
       />
       <div className="try-move-panel">
         <h3>Try Move</h3>
@@ -73,6 +75,16 @@ function TryMove({ editor }) {
           />
         </div>
       </div>
+      <EnPassantInfo
+        enPassantTarget={editor.extraInfo.enPassantTarget}
+        onEnPassantChange={(target) => {
+          editor.setExtraInfo(prev => ({ ...prev, enPassantTarget: target }));
+        }}
+        piecesMadeMoves={editor.extraInfo.piecesMadeMoves}
+        onPiecesMovedChange={(moves) => {
+          editor.setExtraInfo(prev => ({ ...prev, piecesMadeMoves: moves }));
+        }}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import './ChessBoard.css';
 
-function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetSquare, cellFrom, cellTo }) {
+function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetSquare, cellFrom, cellTo, enPassantTarget }) {
   const squares = [];
 
   for (let row = 8; row >= 1; row--) {
@@ -12,6 +12,7 @@ function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetS
       const isTargetSquare = targetSquare && targetSquare.row === row && targetSquare.col === col;
       const isCellFrom = cellFrom && cellFrom.row === row && cellFrom.col === col;
       const isCellTo = cellTo && cellTo.row === row && cellTo.col === col;
+      const isEnPassantTarget = enPassantTarget && enPassantTarget.row === row && enPassantTarget.col === col;
 
       const squareClasses = [
         'square',
@@ -20,7 +21,8 @@ function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetS
         isValidMove ? 'valid-move' : '',
         isTargetSquare ? 'target-square' : '',
         isCellFrom ? 'cell-from' : '',
-        isCellTo ? 'cell-to' : ''
+        isCellTo ? 'cell-to' : '',
+        isEnPassantTarget ? 'en-passant-target' : ''
       ].filter(Boolean).join(' ');
 
       squares.push(

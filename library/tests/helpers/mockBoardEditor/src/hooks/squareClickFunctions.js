@@ -28,6 +28,9 @@ const squareClickFunctions = {
     'target': (editor, cell) => {
         editor.setTargetSquare(cell);
     },
+    'enPassantTarget': (editor, cell) => {
+        editor.setExtraInfo(prev => ({ ...prev, enPassantTarget: cell }));
+    },
 }
 
 export { squareClickFunctions as default };

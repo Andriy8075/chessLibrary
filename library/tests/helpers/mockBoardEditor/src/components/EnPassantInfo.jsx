@@ -7,38 +7,15 @@ function EnPassantInfo({ enPassantTarget, onEnPassantChange, piecesMadeMoves, on
       <h3>Extra Info</h3>
       <div className="en-passant-section">
         <h4>En Passant Target</h4>
-        <div className="en-passant-inputs">
-          <label>
-            Row:
-            <input
-              type="number"
-              id="enPassantRow"
-              min="1"
-              max="8"
-              value={enPassantTarget?.row || ''}
-              onChange={(e) => {
-                const row = e.target.value ? parseInt(e.target.value, 10) : null;
-                const col = enPassantTarget?.col || null;
-                onEnPassantChange(row && col ? { row, col } : null);
-              }}
-            />
-          </label>
-          <label>
-            Col:
-            <input
-              type="number"
-              id="enPassantCol"
-              min="1"
-              max="8"
-              value={enPassantTarget?.col || ''}
-              onChange={(e) => {
-                const col = e.target.value ? parseInt(e.target.value, 10) : null;
-                const row = enPassantTarget?.row || null;
-                onEnPassantChange(row && col ? { row, col } : null);
-              }}
-            />
-          </label>
+        <p>Click "Select En Passant Target" mode, then click a square on the board</p>
+        <div id="enPassantTargetDisplay">
+          {enPassantTarget
+            ? `Row: ${enPassantTarget.row}, Col: ${enPassantTarget.col}`
+            : 'No cell selected'}
         </div>
+        <button type="button" onClick={() => onEnPassantChange(null)} className="clear-btn">
+          Clear
+        </button>
       </div>
       <div className="pieces-moved-section">
         <h4>Pieces Made Moves</h4>

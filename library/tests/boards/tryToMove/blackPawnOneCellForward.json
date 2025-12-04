@@ -1,0 +1,38 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 7,
+                "col": 1
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 7,
+                "col": 5
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 8
+            }
+        }
+    ],
+    "cellFrom": {
+        "row": 7,
+        "col": 5
+    },
+    "cellTo": {
+        "row": 6,
+        "col": 5
+    },
+    "expectedResult": true
+}
