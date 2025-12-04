@@ -21,7 +21,7 @@ class King extends Piece {
 
     canCastle(cellTo) {
         const kingStartRow = this.color === 'white' ? 1 : 8;
-        if (this.cell.row !== kingStartRow || this.cell.col !== 4) return false;
+        if (this.cell.row !== kingStartRow || this.cell.col !== 5) return false;
         if (cellTo.row !== kingStartRow) return false;
 
         if (this.board.hasPieceMoved(this.color, 'king')) return false;
@@ -29,22 +29,22 @@ class King extends Piece {
         const colDiff = cellTo.col - this.cell.col;
         if (Math.abs(colDiff) !== 2) return false;
 
-        const isKingside = colDiff < 0;
+        const isKingside = colDiff > 0;
 
         if (this.board.hasPieceMoved(this.color, isKingside ? 'kingsideRook' : 'queensideRook')) return false;
         if (this.board.hasPieceMoved(this.color, 'king')) return false;
 
         // check for pieces between king and rook
-        const pathStartCol = isKingside ? 2 : 5;
-        const pathEndCol = isKingside ? 3 : 7;
+        const pathStartCol = isKingside ? 6 : 3;
+        const pathEndCol = isKingside ? 7 : 4;
         for (let col = pathStartCol; col <= pathEndCol; col++) {
             const pathCell = { row: kingStartRow, col };
             if (this.board.getPieceOnCell(pathCell)) return false;
         }
 
         // check for checks for king, rook and pieces
-        const startCol = isKingside ? 1 : 4;
-        const endCol = isKingside ? 4 : 8;
+        const startCol = isKingside ? 5 : 1;
+        const endCol = isKingside ? 8 : 5;
 
         for (let col = startCol; col <= endCol; col++) {
             const pathCell = { row: kingStartRow, col };
@@ -90,13 +90,13 @@ class King extends Piece {
         }
 
         const kingStartRow = this.color === 'white' ? 1 : 8;
-        if (this.cell.row === kingStartRow && this.cell.col === 4) {
-            const kingsideCell = { row: kingStartRow, col: 6 };
+        if (this.cell.row === kingStartRow && this.cell.col === 5) {
+            const kingsideCell = { row: kingStartRow, col: 7 };
             if (this.canCastle(kingsideCell)) {
                 possibleMoves.push(kingsideCell);
             }
 
-            const queensideCell = { row: kingStartRow, col: 2 };
+            const queensideCell = { row: kingStartRow, col: 3 };
             if (this.canCastle(queensideCell)) {
                 possibleMoves.push(queensideCell);
             }

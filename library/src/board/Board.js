@@ -49,11 +49,11 @@ class Board {
         this._placePiece(new Bishop('black', { row: 8, col: 3 }, this), { row: 8, col: 3 });
         this._placePiece(new Bishop('black', { row: 8, col: 6 }, this), { row: 8, col: 6 });
 
-        this._placePiece(new King('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
-        this._placePiece(new King('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
+        this._placePiece(new King('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
+        this._placePiece(new King('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
 
-        this._placePiece(new Queen('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
-        this._placePiece(new Queen('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
+        this._placePiece(new Queen('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
+        this._placePiece(new Queen('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
     }
 
     getArrangement() {
@@ -216,13 +216,13 @@ class Board {
 
     _executeCastling(cellFrom, cellTo) {
         const king = this.getPieceOnCell(cellFrom);
-        const isKingside = cellTo.col < cellFrom.col;
-        const rookCol = isKingside ? 1 : 8;
+        const isKingside = cellTo.col > cellFrom.col;
+        const rookCol = isKingside ? 8 : 1;
         const rookCell = { row: cellFrom.row, col: rookCol };
 
         this._movePiece(cellFrom, cellTo);
 
-        const newRookCol = isKingside ? 3 : 5;
+        const newRookCol = isKingside ? 6 : 4;
         const newRookCell = { row: cellFrom.row, col: newRookCol };
         this._movePiece(rookCell, newRookCell);
 
@@ -259,7 +259,7 @@ class Board {
                     case 1:
                         this._markPieceMoved('white', 'queensideRook');
                         break;
-                    case 4:
+                    case 5:
                         this._markPieceMoved('white', 'king');
                         break;
                     case 8:
@@ -272,7 +272,7 @@ class Board {
                     case 1:
                         this._markPieceMoved('black', 'queensideRook');
                         break;
-                    case 4:
+                    case 5:
                         this._markPieceMoved('black', 'king');
                         break;
                     case 8:

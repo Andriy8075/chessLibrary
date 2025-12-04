@@ -3,9 +3,9 @@ const MockBoard = require('../../helpers/MockBoard');
 describe('Board._updatePieceMovementTracking', () => {
     it('should update the piece movement tracking for white king', () => {
         const board = new MockBoard([
-            {type: 'King', color: 'white', position: { row: 1, col: 4 }},
+            {type: 'King', color: 'white', position: { row: 1, col: 5 }},
         ]);
-        board._updatePieceMovementTracking({ row: 1, col: 4 });
+        board._updatePieceMovementTracking({ row: 1, col: 5 });
         expect(board.hasPieceMoved('white', 'king')).toBe(true);
         expect(board.hasPieceMoved('white', 'queensideRook')).toBe(false);
         expect(board.hasPieceMoved('white', 'kingsideRook')).toBe(false);
@@ -42,9 +42,9 @@ describe('Board._updatePieceMovementTracking', () => {
 
     it('should update the piece movement tracking for black king', () => {
         const board = new MockBoard([
-            {type: 'King', color: 'black', position: { row: 8, col: 4 }},
+            {type: 'King', color: 'black', position: { row: 8, col: 5 }},
         ]);
-        board._updatePieceMovementTracking({ row: 8, col: 4 });
+        board._updatePieceMovementTracking({ row: 8, col: 5 });
         expect(board.hasPieceMoved('white', 'king')).toBe(false);
         expect(board.hasPieceMoved('white', 'queensideRook')).toBe(false);
         expect(board.hasPieceMoved('white', 'kingsideRook')).toBe(false);
