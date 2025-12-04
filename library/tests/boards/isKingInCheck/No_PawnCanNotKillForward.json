@@ -1,0 +1,23 @@
+{
+    "boardType": "isKingInCheck",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 6,
+                "col": 3
+            }
+        }
+    ],
+    "color": "black",
+    "expectedResult": false
+}

@@ -69,13 +69,12 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
     if (!name) return;
 
     const parentPath = selectedFolderPath || '';
-    const newPath = parentPath ? `${parentPath}/${name}` : name;
 
     try {
       const response = await fetch('/api/boards/folder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: newPath })
+        body: JSON.stringify({ parentPath, name })
       });
       if (response.ok) {
         await loadTree();
@@ -96,7 +95,7 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave }) {
       const response = await fetch('/api/boards/file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: newPath, content: '' })
+        body: JSON.stringify({ parentPath, name, content: '' })
       });
       if (response.ok) {
         await loadTree();

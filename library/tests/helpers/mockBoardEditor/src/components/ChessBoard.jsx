@@ -1,26 +1,26 @@
 import React from 'react';
 import './ChessBoard.css';
 
-function ChessBoard({ board, squaresHighlighting: squaresHighlights }) {
+function ChessBoard({ board, mode, onSquareClick, mainPiece, validMoves, targetSquare, cellFrom, cellTo }) {
   const squares = [];
 
   for (let row = 8; row >= 1; row--) {
     for (let col = 1; col <= 8; col++) {
       const piece = board[row - 1][col - 1];
-      // const isMainPiece = squaresHighlights.mainPiece && squaresHighlights.mainPiece.position.row === row && squaresHighlights.mainPiece.position.col === col;
-      // const isValidMove = squaresHighlights.validMoves.some(m => m.row === row && m.col === col);
-      // const isTargetSquare = squaresHighlights.targetSquare && squaresHighlights.targetSquare.row === row && squaresHighlights.targetSquare.col === col;
-      // const isCellFrom = squaresHighlights.cellFrom && squaresHighlights.cellFrom.row === row && squaresHighlights.cellFrom.col === col;
-      // const isCellTo = squaresHighlights.cellTo && squaresHighlights.cellTo.row === row && squaresHighlights.cellTo.col === col;
+      const isMainPiece = mainPiece && mainPiece.position.row === row && mainPiece.position.col === col;
+      const isValidMove = validMoves && validMoves.some(m => m.row === row && m.col === col);
+      const isTargetSquare = targetSquare && targetSquare.row === row && targetSquare.col === col;
+      const isCellFrom = cellFrom && cellFrom.row === row && cellFrom.col === col;
+      const isCellTo = cellTo && cellTo.row === row && cellTo.col === col;
 
       const squareClasses = [
-         'square',
-      //   piece ? 'has-piece' : '',
-      //   isMainPiece ? 'main-piece' : '',
-      //   isValidMove ? 'valid-move' : '',
-      //   isTargetSquare ? 'target-square' : '',
-      //   isCellFrom ? 'cell-from' : '',
-      //   isCellTo ? 'cell-to' : ''
+        'square',
+        piece ? 'has-piece' : '',
+        isMainPiece ? 'main-piece' : '',
+        isValidMove ? 'valid-move' : '',
+        isTargetSquare ? 'target-square' : '',
+        isCellFrom ? 'cell-from' : '',
+        isCellTo ? 'cell-to' : ''
       ].filter(Boolean).join(' ');
 
       squares.push(
