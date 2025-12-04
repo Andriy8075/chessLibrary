@@ -8,7 +8,10 @@ const BOARD_TYPES = [
   { id: 'simpleBoard', label: 'Simple Board' },
   { id: 'isSquareAttacked', label: 'Is Square Attacked' },
   { id: 'isKingInCheck', label: 'Is King In Check' },
-  { id: 'wouldMoveCauseCheck', label: 'Would Move Cause Check' }
+  { id: 'wouldMoveCauseCheck', label: 'Would Move Cause Check' },
+  { id: 'hasLegalMoves', label: 'Has Legal Moves' },
+  { id: 'checkmateAfterMove', label: 'Checkmate After Move' },
+  { id: 'stalemateAfterMove', label: 'Stalemate After Move' }
 ];
 
 function BoardTypeSelector({ onSelect }) {
