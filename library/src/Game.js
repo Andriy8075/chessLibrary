@@ -1,6 +1,7 @@
 const Board = require('./board/Board');
 const validateMoveRequest = require('./validators/moveRequestValidator');
 const GameEnd = require('./utils/GameEnd');
+const GameEndDetector = require('./board/GameEndDetector');
 
 class Game {
     constructor() {
@@ -11,8 +12,13 @@ class Game {
             gameStatus: 'active',
             winner: null,
             drawProposed: null,
-            moveHistory: []
+            moveHistory: [],
+            positionHistory: []
         };
+        
+        // Initialize position history with starting position
+        const initialPosition = GameEndDetector._getPositionSignature(this.state.board, this.state.currentTurn);
+        this.state.positionHistory.push(initialPosition);
     }
 
     getState() {
@@ -106,6 +112,16 @@ class Game {
         }
 
         const promotionPiece = request.promotion;
+        
+        // Check for capture before move is executed
+        const capturedPiece = this.state.board.getPieceOnCell(cellTo);
+        const pieceAtFrom = this.state.board.getPieceOnCell(cellFrom);
+        const wasPawnMove = pieceAtFrom && pieceAtFrom.constructor.name === 'Pawn';
+        const isEnPassantMove = wasPawnMove && this.state.board.getEnPassantTarget() && 
+            this.state.board.getEnPassantTarget().col === cellTo.col;
+        
+        const wasCapture = !!capturedPiece || isEnPassantMove;
+        
         const moveSuccess = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
 
         if (!moveSuccess) {
@@ -129,7 +145,9 @@ class Game {
             from: cellFrom,
             to: cellTo,
             piece: movedPiece.constructor.name,
-            color: movedPiece.color
+            color: movedPiece.color,
+            wasCapture: wasCapture,
+            wasPawnMove: wasPawnMove
         });
 
         const opponentColor = this.state.currentTurn === 'white' ? 'black' : 'white';
@@ -142,12 +160,30 @@ class Game {
                 this.state.gameStatus = 'checkmate';
                 this.state.winner = this.state.currentTurn;
             } else if (gameEnd === GameEnd.STALEMATE 
-                || gameEnd === GameEnd.INSUFFICIENT_MATERIAL 
-                || gameEnd === GameEnd.FIFTY_MOVE_RULE 
-                || gameEnd === GameEnd.THREEFOLD_REPETITION) {
+                || gameEnd === GameEnd.INSUFFICIENT_MATERIAL ) {
                 this.state.gameStatus = 'draw';
             }
         }
+
+        // Check for 50-move rule and threefold repetition
+        const fiftyMoveRule = GameEndDetector.checkForFiftyMoveRuleAfterMove(this.state.moveHistory);
+        if (fiftyMoveRule) {
+            this.state.gameStatus = 'draw';
+        }
+
+        // Check for threefold repetition before storing new position
+        const threefoldRepetition = GameEndDetector.checkForThreefoldRepetitionAfterMove(
+            this.state.board, 
+            this.state.moveHistory, 
+            this.state.positionHistory
+        );
+        if (threefoldRepetition) {
+            this.state.gameStatus = 'draw';
+        }
+
+        // Store position signature after move for future threefold repetition checks
+        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
+        this.state.positionHistory.push(positionSignature);
 
         if (this.state.gameStatus === 'active') {
             this.state.currentTurn = opponentColor;

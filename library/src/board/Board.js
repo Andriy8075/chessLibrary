@@ -291,9 +291,6 @@ class Board {
         const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(cellTo, this);
         if (checkmateOrStalemate) return checkmateOrStalemate;
 
-        // const fiftyMoveRule = this.checkForFiftyMoveRuleAfterMove(cellTo);
-        // const threefoldRepetition = this.checkForThreefoldRepetitionAfterMove(cellTo);
-
         return null;
 
     }
