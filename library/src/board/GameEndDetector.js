@@ -39,7 +39,7 @@ class GameEndDetector {
         }
     }
 
-    static enoughPiecesAfterMoveToContinueGame(board) {
+    static isInsufficientMaterial(board) {
         
         const pieces = [];
         const arrangement = board.getArrangement();
@@ -54,7 +54,7 @@ class GameEndDetector {
         }
         
         if (pieces.length <= 2) {
-            return false;
+            return 'insufficientMaterial';
         }
         
         const whitePieces = pieces.filter(p => p.color === 'white');
@@ -64,11 +64,11 @@ class GameEndDetector {
         // Draw only if checkmate is impossible even with cooperation of both sides.
         if (whitePieces.length === 1 && blackPieces.length === 2) {
             const minorPiece = blackPieces.find(p => p.constructor.name === 'Bishop' || p.constructor.name === 'Knight');
-            if (minorPiece) return false;
+            if (minorPiece) return 'insufficientMaterial';
         }
         if (blackPieces.length === 1 && whitePieces.length === 2) {
             const minorPiece = whitePieces.find(p => p.constructor.name === 'Bishop' || p.constructor.name === 'Knight');
-            if (minorPiece) return false;
+            if (minorPiece) return 'insufficientMaterial';
         }
         
         if (whitePieces.length === 2 && blackPieces.length === 2) {
@@ -78,12 +78,12 @@ class GameEndDetector {
                 const whiteBishopSquareColor = (whiteBishop.cell.row + whiteBishop.cell.col) % 2;
                 const blackBishopSquareColor = (blackBishop.cell.row + blackBishop.cell.col) % 2;
                 if (whiteBishopSquareColor === blackBishopSquareColor) {
-                    return false;
+                    return 'insufficientMaterial';
                 }
             }
         }
         
-        return true;
+        return null;
     }
 
     static checkForFiftyMoveRuleAfterMove(moveHistory) {
@@ -149,23 +149,10 @@ class GameEndDetector {
         return positionStr;
     }
 
-    static checkForThreefoldRepetitionAfterMove(board, moveHistory, positionHistory) {
-        if (!positionHistory || positionHistory.length < 3) {
-            return null;
-        }
-
-        // Get current position signature
-        // Need to determine current turn - it's the opposite of the last move's color
-        let currentTurn = 'white';
-        if (moveHistory && moveHistory.length > 0) {
-            const lastMove = moveHistory[moveHistory.length - 1];
-            currentTurn = lastMove.color === 'white' ? 'black' : 'white';
-        }
+    static checkForThreefoldRepetitionAfterMove(positionHistory) {
         
-        const currentPositionSignature = this._getPositionSignature(board, currentTurn);
+        const currentPositionSignature = positionHistory[positionHistory.length - 1];
         
-        // Count occurrences of current position in history (before adding current one)
-        // If it has appeared 2 times already, after adding it will be the 3rd time (threefold repetition)
         let occurrenceCount = 0;
         for (let i = 0; i < positionHistory.length; i++) {
             if (positionHistory[i] === currentPositionSignature) {
@@ -173,7 +160,6 @@ class GameEndDetector {
             }
         }
         
-        // If position has appeared 2 times before, adding current will make it the 3rd occurrence
         if (occurrenceCount >= 2) {
             return 'threefoldRepetition';
         }
@@ -183,23 +169,10 @@ class GameEndDetector {
 
     static checkForGameEndAfterMove(gameState) {
         const { board, currentTurn, moveHistory, positionHistory } = gameState;
-        const checkmateOrStalemate = this.checkForCheckmateOrStalemateAfterMove(currentTurn, board);
-        if(checkmateOrStalemate) {
-            return checkmateOrStalemate;
-        }
-        const insufficientMaterial = this.enoughPiecesAfterMoveToContinueGame(board);
-        if(insufficientMaterial) {
-            return 'insufficientMaterial';
-        }
-        const fiftyMoveRule = this.checkForFiftyMoveRuleAfterMove(moveHistory);
-        if(fiftyMoveRule) {
-            return fiftyMoveRule;
-        }
-        const threefoldRepetition = this.checkForThreefoldRepetitionAfterMove(board, moveHistory, positionHistory);
-        if(threefoldRepetition) {
-            return threefoldRepetition;
-        }
-        return null;
+        return this.checkForThreefoldRepetitionAfterMove(positionHistory) ||
+        this.checkForFiftyMoveRuleAfterMove(moveHistory) ||
+        this.checkForCheckmateOrStalemateAfterMove(currentTurn, board) ||
+        this.enoughPiecesAfterMoveToContinueGame(board) || null;
     }
 }
 
