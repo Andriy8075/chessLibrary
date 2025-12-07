@@ -2,9 +2,9 @@ const loadMockBoards = require('../../helpers/loadMockBoards');
 const GameEndDetector = require('../../../src/board/GameEndDetector');
 
 test('board cases', () => {
-    const boards = loadMockBoards('checkmateOrStalemateAfterMove');
-    for (const board of boards) {
-        const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(board.cellTo, board.board);
-        expect(checkmateOrStalemate).toBe(board.expectedResult);
+    const testCases = loadMockBoards('checkmateOrStalemateAfterMove');
+    for (const testCase of testCases) {
+        const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(testCase.cellTo, testCase.board);
+        expect(checkmateOrStalemate).toBe(testCase.expectedResult);
     }
 });

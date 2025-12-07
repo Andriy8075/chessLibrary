@@ -2,9 +2,9 @@ const loadMockBoards = require('../../helpers/loadMockBoards');
 const GameEndDetector = require('../../../src/board/GameEndDetector');
 
 test('board cases', () => {
-    const boards = loadMockBoards('enoughPieces');
-    for (const board of boards) {
-        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(board.board);
-        expect(enoughPieces).toBe(board.expectedResult);
+    const testCases = loadMockBoards('enoughPieces');
+    for (const testCase of testCases) {
+        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(testCase.board);
+        expect(enoughPieces).toBe(testCase.expectedResult);
     }
 });

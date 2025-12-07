@@ -3,20 +3,20 @@ const ensureCorrectPromotion = require('./ensureCorrectPromotion');
 const ensurePassantUpdatedCorrectly = require('./ensurePassantUpdatedCorrectly');
 
 test('board cases', () => {
-    const boards = loadMockBoards('tryToMove');
-    for (const board of boards) {
+    const testCases = loadMockBoards('tryToMove');
+    for (const testCase of testCases) {
         let result
-        if (board.promotionPiece) {
-            result = board.board.tryToMove(board.cellFrom, board.cellTo, board.promotionPiece);
+        if (testCase.promotionPiece) {
+            result = testCase.board.tryToMove(testCase.cellFrom, testCase.cellTo, testCase.promotionPiece);
         } else {
-            result = board.board.tryToMove(board.cellFrom, board.cellTo);
+            result = testCase.board.tryToMove(testCase.cellFrom, testCase.cellTo);
         }
 
-        expect(result).toBe(board.expectedResult);
+        expect(result).toBe(testCase.expectedResult);
 
         if (result) {
-            ensurePassantUpdatedCorrectly(board);
-            ensureCorrectPromotion(board);
+            ensurePassantUpdatedCorrectly(testCase);
+            ensureCorrectPromotion(testCase);
         }
     }
 });

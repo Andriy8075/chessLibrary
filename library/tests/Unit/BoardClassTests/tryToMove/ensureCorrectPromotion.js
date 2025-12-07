@@ -1,8 +1,8 @@
-function ensureCorrectPromotion(board) {
-    const cellFrom = board.cellFrom;
-    const cellTo = board.cellTo;
-    const movedPiece = board.board.getPieceOnCell(board.cellTo);
-    const promotionPiece = board.promotionPiece;
+function ensureCorrectPromotion(testCase) {
+    const cellFrom = testCase.cellFrom;
+    const cellTo = testCase.cellTo;
+    const movedPiece = testCase.board.getPieceOnCell(testCase.cellTo);
+    const promotionPiece = testCase.promotionPiece;
 
     if (movedPiece.constructor.name.toLowerCase() === 'pawn' &&
     cellTo.row === (cellFrom.color === 'white' ? 8 : 1)) {

@@ -2,9 +2,9 @@ const loadMockBoards = require('../../helpers/loadMockBoards');
 const MoveValidator = require('../../../src/board/MoveValidator');
 
 test('board cases', () => {
-    const boards = loadMockBoards('wouldEnPassantMoveCauseCheck');
-    for (const board of boards) {
-        const wouldMoveCauseCheck = MoveValidator.wouldEnPassantMoveCauseCheck(board.cellFrom, board.cellTo, board.board);
-        expect(wouldMoveCauseCheck).toBe(board.expectedResult);
+    const testCases = loadMockBoards('wouldEnPassantMoveCauseCheck');
+    for (const testCase of testCases) {
+        const wouldMoveCauseCheck = MoveValidator.wouldEnPassantMoveCauseCheck(testCase.cellFrom, testCase.cellTo, testCase.board);
+        expect(wouldMoveCauseCheck).toBe(testCase.expectedResult);
     }
 });
