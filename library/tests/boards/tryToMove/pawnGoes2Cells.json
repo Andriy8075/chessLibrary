@@ -1,0 +1,89 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 2,
+                "col": 8
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfo": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "piecesAfter": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 8
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfoAfter": {
+        "enPassantTarget": {
+            "row": 3,
+            "col": 8
+        },
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "cellFrom": {
+        "row": 2,
+        "col": 8
+    },
+    "cellTo": {
+        "row": 4,
+        "col": 8
+    },
+    "expectedResult": true
+}
