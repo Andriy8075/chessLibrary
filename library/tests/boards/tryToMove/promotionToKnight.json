@@ -1,0 +1,87 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 2,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfo": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "piecesAfter": [
+        {
+            "type": "knight",
+            "color": "black",
+            "position": {
+                "row": 1,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfoAfter": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "cellFrom": {
+        "row": 2,
+        "col": 4
+    },
+    "cellTo": {
+        "row": 1,
+        "col": 4
+    },
+    "expectedResult": true,
+    "promotionPiece": "knight"
+}
