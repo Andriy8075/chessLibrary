@@ -1,0 +1,68 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 4,
+                "col": 1
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 3
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 4,
+                "col": 4
+            }
+        },
+        {
+            "type": "queen",
+            "color": "white",
+            "position": {
+                "row": 4,
+                "col": 8
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        }
+    ],
+    "extraInfo": {
+        "enPassantTarget": {
+            "row": 3,
+            "col": 3
+        },
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "cellFrom": {
+        "row": 4,
+        "col": 4
+    },
+    "cellTo": {
+        "row": 3,
+        "col": 3
+    },
+    "expectedResult": false
+}
