@@ -162,6 +162,9 @@ class Game {
             result.check = true;
         }
 
+        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
+        this.state.positionHistory.push(positionSignature);
+
         const gameEnd = GameEndDetector.checkForGameEndAfterMove(this.state);
         if(gameEnd) {
             result.gameEnd = gameEnd;
