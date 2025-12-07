@@ -133,7 +133,7 @@ class Game {
         }
 
         const movedPiece = this.state.board.getPieceOnCell(cellTo);
-        this.state.lastMove = {
+        this.state.lastMove = { // to delete
             from: cellFrom,
             to: cellTo,
             piece: movedPiece
@@ -150,51 +150,62 @@ class Game {
             wasPawnMove: wasPawnMove
         });
 
-        const opponentColor = this.state.currentTurn === 'white' ? 'black' : 'white';
-        const isCheck = this.state.board.isKingInCheck(opponentColor);
-
-        const gameEnd = this.state.board.checkForGameEndAfterMove(cellTo);
-        const isCheckmate = gameEnd === 'checkmate';
-        const isStalemate = gameEnd === 'stalemate';
-        const isInsufficientMaterial = gameEnd === 'insufficientMaterial';
-        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(this.state.board);
-
-        if (isCheckmate) {
-            this.state.gameStatus = 'checkmate';
-            this.state.winner = this.state.currentTurn;
-        } else if (isStalemate) {
-            this.state.gameStatus = 'draw';
-        } else if (isInsufficientMaterial) {
-            this.state.gameStatus = 'draw';
-        }
-        
-        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
-        this.state.positionHistory.push(positionSignature);
-
-        if (this.state.gameStatus === 'active') {
-            this.state.currentTurn = opponentColor;
-        }
-
         const result = {
             success: true,
             state: this.state
         };
 
+        const opponentColor = this.state.currentTurn === 'white' ? 'black' : 'white';
+        const isCheck = this.state.board.isKingInCheck(opponentColor);
+
         if (isCheck) {
             result.check = true;
         }
 
-        if (isCheckmate) {
-            result.checkmate = true;
+        const gameEnd = GameEndDetector.checkForGameEndAfterMove(this.state);
+        if(gameEnd) {
+            result.gameEnd = gameEnd;
+            if(gameEnd === 'checkmate') {
+                this.state.gameStatus = 'checkmate';
+                this.state.winner = this.state.currentTurn;
+            } else{
+                this.state.gameStatus = 'draw';
+            }
         }
 
-        if (isStalemate) {
-            result.stalemate = true;
-        }
 
-        if (!enoughPieces) {
-            result.draw = true;
-        }
+        // const gameEnd = this.state.board.checkForGameEndAfterMove(cellTo);
+        // const isCheckmate = gameEnd === 'checkmate';
+        // const isStalemate = gameEnd === 'stalemate';
+        // const isInsufficientMaterial = gameEnd === 'insufficientMaterial';
+
+        // if (isCheckmate) {
+        //     this.state.gameStatus = 'checkmate';
+        //     this.state.winner = this.state.currentTurn;
+        // } else if (isStalemate) {
+        //     this.state.gameStatus = 'draw';
+        // } else if (isInsufficientMaterial) {
+        //     this.state.gameStatus = 'draw';
+        // }
+        
+        // const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
+        // this.state.positionHistory.push(positionSignature);
+
+        // if (this.state.gameStatus === 'active') {
+        //     this.state.currentTurn = opponentColor;
+        // }
+
+        // if (isCheckmate) {
+        //     result.checkmate = true;
+        // }
+
+        // if (isStalemate) {
+        //     result.stalemate = true;
+        // }
+
+        // if (isInsufficientMaterial) {
+        //     result.insufficientMaterial = true;
+        // }
 
         return result;
     }

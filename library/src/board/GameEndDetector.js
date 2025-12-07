@@ -180,6 +180,27 @@ class GameEndDetector {
         
         return null;
     }
+
+    static checkForGameEndAfterMove(gameState) {
+        const { board, currentTurn, moveHistory, positionHistory } = gameState;
+        const checkmateOrStalemate = this.checkForCheckmateOrStalemateAfterMove(currentTurn, board);
+        if(checkmateOrStalemate) {
+            return checkmateOrStalemate;
+        }
+        const insufficientMaterial = this.enoughPiecesAfterMoveToContinueGame(board);
+        if(insufficientMaterial) {
+            return 'insufficientMaterial';
+        }
+        const fiftyMoveRule = this.checkForFiftyMoveRuleAfterMove(moveHistory);
+        if(fiftyMoveRule) {
+            return fiftyMoveRule;
+        }
+        const threefoldRepetition = this.checkForThreefoldRepetitionAfterMove(board, moveHistory, positionHistory);
+        if(threefoldRepetition) {
+            return threefoldRepetition;
+        }
+        return null;
+    }
 }
 
 module.exports = GameEndDetector;
