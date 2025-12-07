@@ -1,0 +1,86 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 2,
+                "col": 8
+            }
+        },
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 5
+            }
+        }
+    ],
+    "extraInfo": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "piecesAfter": [
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 2,
+                "col": 8
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        },
+        {
+            "type": "rook",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 4
+            }
+        }
+    ],
+    "extraInfoAfter": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": true,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": true
+        }
+    },
+    "cellFrom": {
+        "row": 8,
+        "col": 5
+    },
+    "cellTo": {
+        "row": 8,
+        "col": 3
+    },
+    "expectedResult": true
+}
