@@ -1,14 +1,16 @@
-function ensureCorrectPromotion(testCase) {
-    const cellFrom = testCase.cellFrom;
-    const cellTo = testCase.cellTo;
+function wasPromotion(testCase) {
     const movedPiece = testCase.board.getPieceOnCell(testCase.cellTo);
-    const promotionPiece = testCase.promotionPiece;
-
-    if (movedPiece.constructor.name.toLowerCase() === 'pawn' &&
-    cellTo.row === (cellFrom.color === 'white' ? 8 : 1)) {
-        expect(movedPiece.constructor.name.toLowerCase()).toBe(promotionPiece ? promotionPiece.toLowerCase() : 'queen');
-    }
+    const { cellTo, cellFrom } = testCase;
+    return movedPiece.constructor.name.toLowerCase() === 'pawn' &&
+        cellTo.row === (cellFrom.color === 'white' ? 8 : 1);
 }
 
-module.exports = ensureCorrectPromotion;
+function ensureCorrectPromotion(testCase) {
+    const movedPiece = testCase.board.getPieceOnCell(testCase.cellTo);
+    const promotionPiece = testCase.promotionPiece;
+    
+    expect(movedPiece.constructor.name.toLowerCase()).toBe(promotionPiece ? promotionPiece.toLowerCase() : 'queen');
+}
+
+module.exports = {wasPromotion, ensureCorrectPromotion};
 

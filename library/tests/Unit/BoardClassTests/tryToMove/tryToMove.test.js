@@ -1,5 +1,5 @@
 const loadMockBoards = require('../../../helpers/loadMockBoards');
-const ensureCorrectPromotion = require('./ensureCorrectPromotion');
+const { ensureCorrectPromotion, wasPromotion } = require('./ensureCorrectPromotion');
 const ensurePassantUpdatedCorrectly = require('./ensurePassantUpdatedCorrectly');
 
 test('board cases', () => {
@@ -16,7 +16,9 @@ test('board cases', () => {
 
         if (result) {
             ensurePassantUpdatedCorrectly(testCase);
-            ensureCorrectPromotion(testCase);
+            if (wasPromotion(testCase)) {
+                ensureCorrectPromotion(testCase);
+            }
         }
     }
 });
