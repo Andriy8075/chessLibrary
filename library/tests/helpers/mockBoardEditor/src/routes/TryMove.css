@@ -1,0 +1,149 @@
+.try-move-dual-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.try-move-result-selector {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.try-move-result-selector h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.try-move-result-selector > p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.result-hint {
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  color: #555;
+  font-style: italic;
+  margin-top: 5px !important;
+}
+
+.dual-board-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dual-board-layout.single-board {
+  justify-content: center;
+}
+
+.board-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 400px;
+}
+
+.board-section-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.board-before-section .board-section-title {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.board-after-section .board-section-title {
+  background: #f1f8e9;
+  color: #558b2f;
+}
+
+.copy-buttons-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  min-width: 150px;
+  padding: 20px 0;
+}
+
+.copy-btn {
+  padding: 12px 20px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+.copy-btn:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.copy-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.copy-to-after-btn {
+  background: #4caf50;
+}
+
+.copy-to-after-btn:hover {
+  background: #45a049;
+}
+
+.copy-to-before-btn {
+  background: #ff9800;
+}
+
+.copy-to-before-btn:hover {
+  background: #f57c00;
+}
+
+@media (max-width: 1200px) {
+  .dual-board-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dual-board-layout.single-board {
+    flex-direction: column;
+  }
+
+  .copy-buttons-section {
+    flex-direction: row;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .copy-btn {
+    flex: 1;
+  }
+}
+

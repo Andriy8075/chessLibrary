@@ -1,0 +1,97 @@
+{
+    "boardType": "tryMove",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 5,
+                "col": 3
+            }
+        },
+        {
+            "type": "pawn",
+            "color": "black",
+            "position": {
+                "row": 5,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfo": {
+        "enPassantTarget": {
+            "row": 6,
+            "col": 4
+        },
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "piecesAfter": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 6,
+                "col": 4
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "extraInfoAfter": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
+    "cellFrom": {
+        "row": 5,
+        "col": 3
+    },
+    "cellTo": {
+        "row": 6,
+        "col": 4
+    },
+    "expectedResult": true
+}

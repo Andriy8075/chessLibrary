@@ -149,12 +149,14 @@ class Board {
 
         if (King.isValidCastlingMove(cellFrom, cellTo, this)) {
             this._executeCastling(cellFrom, cellTo);
+            this._updateEnPassantTarget(piece, cellFrom, cellTo);
             return true;
         }
 
         if (Pawn.isValidEnPassantMove(cellFrom, cellTo, this)) {
             if(MoveValidator.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, this)) return false;
             this._executeEnPassant(cellFrom, cellTo);
+            this._updateEnPassantTarget(piece, cellFrom, cellTo);
             return true;
         }
 

@@ -2,23 +2,15 @@
     "boardType": "tryMove",
     "pieces": [
         {
-            "type": "pawn",
+            "type": "bishop",
             "color": "white",
             "position": {
                 "row": 4,
-                "col": 3
+                "col": 6
             }
         },
         {
-            "type": "pawn",
-            "color": "black",
-            "position": {
-                "row": 4,
-                "col": 4
-            }
-        },
-        {
-            "type": "king",
+            "type": "rook",
             "color": "black",
             "position": {
                 "row": 8,
@@ -27,26 +19,39 @@
         },
         {
             "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 5
+            }
+        },
+        {
+            "type": "king",
             "color": "white",
             "position": {
                 "row": 8,
-                "col": 3
+                "col": 8
             }
         }
     ],
+    "extraInfo": {
+        "enPassantTarget": null,
+        "piecesMadeMoves": {
+            "whiteKing": false,
+            "blackKing": false,
+            "whiteKingsideRook": false,
+            "whiteQueensideRook": false,
+            "blackKingsideRook": false,
+            "blackQueensideRook": false
+        }
+    },
     "cellFrom": {
-        "row": 4,
-        "col": 4
+        "row": 8,
+        "col": 5
     },
     "cellTo": {
-        "row": 3,
+        "row": 8,
         "col": 3
     },
-    "expectedResult": true,
-    "extraInfo": {
-        "enPassantTarget": {
-            "row": 3,
-            "col": 3
-        }
-    }
+    "expectedResult": false
 }

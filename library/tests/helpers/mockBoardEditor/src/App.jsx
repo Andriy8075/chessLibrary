@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import FileExplorer from './components/FileExplorer';
 import BoardTypeSelector from './components/BoardTypeSelector';
@@ -19,24 +19,40 @@ import './App.css';
 function App() {
   const navigate = useNavigate();
   const editor = useBoardEditor();
+  const tryMoveRef = useRef(null);
   const [awaitingBoardType, setAwaitingBoardType] = useState(false);
   const [currentFilePath, setCurrentFilePath] = useState(null);
   const [currentFileIsBoardJson, setCurrentFileIsBoardJson] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [tryMoveSchema, setTryMoveSchema] = useState(null);
 
   const handleFileOpen = (filePath, schema) => {
     setCurrentFilePath(filePath);
     setSaveMessage(null); // Clear save message when opening a new file
     
-    if (schema && schema.boardType && Array.isArray(schema.pieces)) {
-      setCurrentFileIsBoardJson(true);
-      editor.setCurrentBoardType(schema.boardType);
-      editor.loadFromSchema(schema);
-      navigate(`/${schema.boardType}`);
-      setAwaitingBoardType(false);
+    if (schema && schema.boardType) {
+      if (schema.boardType === 'tryMove') {
+        // Handle tryMove with dual board structure
+        setCurrentFileIsBoardJson(true);
+        editor.setCurrentBoardType('tryMove');
+        setTryMoveSchema(schema);
+        navigate('/tryMove');
+        setAwaitingBoardType(false);
+      } else if (Array.isArray(schema.pieces)) {
+        // Handle other board types with single board structure
+        setCurrentFileIsBoardJson(true);
+        editor.setCurrentBoardType(schema.boardType);
+        editor.loadFromSchema(schema);
+        navigate(`/${schema.boardType}`);
+        setAwaitingBoardType(false);
+      } else {
+        setCurrentFileIsBoardJson(false);
+        setAwaitingBoardType(false);
+      }
     } else if (!schema || Object.keys(schema).length === 0) {
       setCurrentFileIsBoardJson(true);
       editor.resetBoardState();
+      setTryMoveSchema(null);
       setAwaitingBoardType(true);
       navigate('/');
     } else {
@@ -61,7 +77,15 @@ function App() {
   const handleSaveFile = async () => {
     if (!currentFilePath || !currentFileIsBoardJson) return;
     
-    const schema = editor.getCurrentSchema();
+    let schema;
+    if (editor.currentBoardType === 'tryMove' && tryMoveRef.current) {
+      // Get schema from TryMove component
+      schema = tryMoveRef.current.getCurrentSchema();
+    } else {
+      // Get schema from regular editor
+      schema = editor.getCurrentSchema();
+    }
+    
     const response = await fetch('/api/boards/file', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -125,7 +149,7 @@ function App() {
                 <Route path="/isSquareAttacked" element={<IsSquareAttacked editor={editor} />} />
                 <Route path="/isKingInCheck" element={<IsKingInCheck editor={editor} />} />
                 <Route path="/wouldMoveCauseCheck" element={<WouldMoveCauseCheck editor={editor} />} />
-                <Route path="/tryMove" element={<TryMove editor={editor} />} />
+                <Route path="/tryMove" element={<TryMove ref={tryMoveRef} initialSchema={tryMoveSchema} />} />
                 <Route path="/hasLegalMoves" element={<HasLegalMoves editor={editor} />} />
                 <Route path="/checkForCheckmateOrStalemateAfterMove" element={<CheckForCheckmateOrStalemateAfterMove editor={editor} />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
