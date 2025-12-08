@@ -103,8 +103,14 @@ function handleGameResponse(data) {
             'stalemate': () => {
                 statusMessages.push('Stalemate! Game is a draw.');
             },
-            'draw': () => {
-                statusMessages.push('Game is a draw.');
+            'insufficientMaterial': () => {
+                statusMessages.push('Insufficient material! Game is a draw.');
+            },
+            'threefoldRepetition': () => {
+                statusMessages.push('Threefold repetition! Game is a draw.');
+            },
+            'fiftyMoveRule': () => {
+                statusMessages.push('Fifty move rule! Game is a draw.');
             },
             'check': () => {
                 statusMessages.push('Check!');

@@ -171,8 +171,14 @@ class Game {
             if(gameEnd === 'checkmate') {
                 this.state.gameStatus = 'checkmate';
                 this.state.winner = this.state.currentTurn;
-            } else{
-                this.state.gameStatus = 'draw';
+            } else if(gameEnd === 'stalemate') {
+                this.state.gameStatus = 'stalemate';
+            } else if(gameEnd === 'insufficientMaterial') {
+                this.state.gameStatus = 'insufficientMaterial';
+            } else if(gameEnd === 'threefoldRepetition') {
+                this.state.gameStatus = 'threefoldRepetition';
+            } else if(gameEnd === 'fiftyMoveRule') {
+                this.state.gameStatus = 'fiftyMoveRule';
             }
         }
 
