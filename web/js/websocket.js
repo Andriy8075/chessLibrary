@@ -91,20 +91,30 @@ function handleGameResponse(data) {
     if (data.success) {
         const statusMessages = [];
         
-        // Check for special game states
-        if (data.checkmate) {
-            statusMessages.push('Checkmate!');
-            if (data.state && data.state.winner) {
-                const winner = data.state.winner === getPlayerColor() ? 'You' : 'Opponent';
-                statusMessages.push(`${winner} win!`);
+        // Status handler functions
+        const statusHandlers = {
+            'checkmate': () => {
+                statusMessages.push('Checkmate!');
+                if (data.state && data.state.winner) {
+                    const winner = data.state.winner === getPlayerColor() ? 'You' : 'Opponent';
+                    statusMessages.push(`${winner} win!`);
+                }
+            },
+            'stalemate': () => {
+                statusMessages.push('Stalemate! Game is a draw.');
+            },
+            'draw': () => {
+                statusMessages.push('Game is a draw.');
+            },
+            'check': () => {
+                statusMessages.push('Check!');
             }
-        } else if (data.stalemate) {
-            statusMessages.push('Stalemate! Game is a draw.');
-        } else if (data.draw) {
-            statusMessages.push('Game is a draw.');
-        } else if (data.check) {
-            statusMessages.push('Check!');
-        } else {
+        };
+        
+        // Execute appropriate handler based on status
+        if (data.state.gameStatus && statusHandlers[data.state.gameStatus]) {
+            statusHandlers[data.state.gameStatus]();
+        } else {    
             statusMessages.push('Move successful');
         }
         

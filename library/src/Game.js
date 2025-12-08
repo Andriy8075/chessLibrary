@@ -176,6 +176,8 @@ class Game {
             }
         }
 
+        this.state.currentTurn = this.state.currentTurn === 'white' ? 'black' : 'white';
+
         return result;
     }
 

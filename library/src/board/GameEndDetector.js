@@ -162,10 +162,12 @@ class GameEndDetector {
     }
 
     static checkForGameEndAfterMove(gameState) {
-        const { board, currentTurn, moveHistory, positionHistory } = gameState;
+        const { board, moveHistory, positionHistory } = gameState;
+        const lastMove = moveHistory[moveHistory.length - 1];
+        const cellTo = lastMove.to;
         return this.checkForThreefoldRepetitionsAfterMove(positionHistory) ||
         this.checkForFiftyMoveRuleAfterMove(moveHistory) ||
-        this.checkForCheckmateOrStalemateAfterMove(currentTurn, board) ||
+        this.checkForCheckmateOrStalemateAfterMove(cellTo, board) ||
         this.isInsufficientMaterial(board) || null;
     }
 }
