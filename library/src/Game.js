@@ -17,7 +17,7 @@ class Game {
         };
         
         // Initialize position history with starting position
-        const initialPosition = GameEndDetector._getPositionSignature(this.state.board, this.state.currentTurn);
+        const initialPosition = GameEndDetector._getPositionMatrix(this.state.board);
         this.state.positionHistory.push(initialPosition);
     }
 
@@ -150,8 +150,8 @@ class Game {
             wasPawnMove: wasPawnMove
         });
 
-        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
-        this.state.positionHistory.push(positionSignature);
+        const positionMatrix = GameEndDetector._getPositionMatrix(this.state.board);
+        this.state.positionHistory.push(positionMatrix);
 
         const result = {
             success: true,

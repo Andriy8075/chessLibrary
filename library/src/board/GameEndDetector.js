@@ -106,56 +106,50 @@ class GameEndDetector {
         return 'fiftyMoveRule';
     }
 
-    static _getPositionSignature(board, currentTurn) {
-        // Create a unique signature for the board position including:
-        // - Piece positions
-        // - Castling rights
-        // - En passant target
-        // - Current turn
-        
+    static _getPositionMatrix(board) {
         const arrangement = board.getSerializedState();
-        const extraInfo = board.extraInfo;
         
-        // Create position string
-        let positionStr = '';
-        
-        // Add piece positions in canonical order (row by row, col by col)
-        for (let row = 1; row <= 8; row++) {
-            for (let col = 1; col <= 8; col++) {
-                const piece = arrangement[row - 1][col - 1];
-                if (piece) {
-                    positionStr += `${piece.type}-${piece.color}-${row}-${col}|`;
+        // Create a deep copy of the 8x8 matrix
+        return arrangement.map(row => 
+            row.map(piece => {
+                if (!piece) return null;
+                return {
+                    type: piece.type,
+                    color: piece.color
+                };
+            })
+        );
+    }
+
+    static _arePositionsEqual(position1, position2) {
+        // Compare two 8x8 matrices element by element
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece1 = position1[row][col];
+                const piece2 = position2[row][col];
+                
+                // Both null - positions match
+                if (!piece1 && !piece2) continue;
+                
+                // One is null, other is not - positions don't match
+                if (!piece1 || !piece2) return false;
+                
+                // Both have pieces - compare type and color
+                if (piece1.type !== piece2.type || piece1.color !== piece2.color) {
+                    return false;
                 }
             }
         }
         
-        // Add castling rights (store actual state of piecesMadeMoves for unique position signature)
-        const castlingRights = extraInfo.piecesMadeMoves;
-        positionStr += `castling:${castlingRights.whiteKing ? '1' : '0'}${castlingRights.blackKing ? '1' : '0'}`;
-        positionStr += `${castlingRights.whiteKingsideRook ? '1' : '0'}${castlingRights.whiteQueensideRook ? '1' : '0'}`;
-        positionStr += `${castlingRights.blackKingsideRook ? '1' : '0'}${castlingRights.blackQueensideRook ? '1' : '0'}|`;
-        
-        // Add en passant target
-        const enPassantTarget = extraInfo.enPassantTarget;
-        if (enPassantTarget) {
-            positionStr += `ep:${enPassantTarget.row}-${enPassantTarget.col}|`;
-        } else {
-            positionStr += 'ep:null|';
-        }
-        
-        // Add current turn
-        positionStr += `turn:${currentTurn}`;
-        
-        return positionStr;
+        return true;
     }
 
-    static checkForThreefoldRepetitionAfterMove(positionHistory) {
-        
-        const currentPositionSignature = positionHistory[positionHistory.length - 1];
+    static checkForThreefoldRepetitionsAfterMove(positionHistory) {
+        const currentPosition = positionHistory[positionHistory.length - 1];
         
         let occurrenceCount = 0;
         for (let i = 0; i < positionHistory.length; i++) {
-            if (positionHistory[i] === currentPositionSignature) {
+            if (this._arePositionsEqual(positionHistory[i], currentPosition)) {
                 occurrenceCount++;
             }
         }
@@ -169,7 +163,7 @@ class GameEndDetector {
 
     static checkForGameEndAfterMove(gameState) {
         const { board, currentTurn, moveHistory, positionHistory } = gameState;
-        return this.checkForThreefoldRepetitionAfterMove(positionHistory) ||
+        return this.checkForThreefoldRepetitionsAfterMove(positionHistory) ||
         this.checkForFiftyMoveRuleAfterMove(moveHistory) ||
         this.checkForCheckmateOrStalemateAfterMove(currentTurn, board) ||
         this.isInsufficientMaterial(board) || null;
