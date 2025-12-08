@@ -56,6 +56,11 @@ class MoveValidator {
 
         return inCheck;
     }
+
+    static requiresPromotion(cellTo, cellFrom, board) {
+        return (cellTo.row === 8 || cellTo.row === 1) && 
+        board.getPieceOnCell(cellFrom).constructor.name.toLowerCase() === 'pawn';
+    }
 }
 
 module.exports = MoveValidator;

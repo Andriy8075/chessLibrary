@@ -143,7 +143,7 @@ class Board {
         return CheckDetector.isSquareAttacked(cell, attackingColor, this);
     }
 
-    tryToMove(cellFrom, cellTo, promotionPiece = 'queen') {
+    tryToMove(cellFrom, cellTo, promotionPiece) {
         const piece = this.getPieceOnCell(cellFrom);
         if (!piece) return false;
 
@@ -162,6 +162,10 @@ class Board {
 
         const validation = MoveValidator.validateMove(cellFrom, cellTo, this);
         if (!validation.valid) return false;
+
+        if (MoveValidator.requiresPromotion(cellTo, cellFrom, this) && !promotionPiece) {
+            return false;
+        }
 
         this._executeMove(cellFrom, cellTo);
 
