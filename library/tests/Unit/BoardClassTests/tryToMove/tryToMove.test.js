@@ -121,13 +121,15 @@ test('board cases', () => {
         let result
         if (testCase.promotionPiece) {
             result = testCase.board.tryToMove(testCase.cellFrom, testCase.cellTo, testCase.promotionPiece);
+            success = result.success;
         } else {
             result = testCase.board.tryToMove(testCase.cellFrom, testCase.cellTo);
+            success = result.success;
         }
 
-        expect(result).toBe(testCase.expectedResult);
+        expect(success).toBe(testCase.expectedResult);
 
-        if (result) {
+        if (success) {
             // Compare board we got to piecesAfter with extraInfoAfter
             const actualPieces = boardToPiecesArray(testCase.board);
             const expectedPieces = testCase.piecesAfter;

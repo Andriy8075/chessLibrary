@@ -122,9 +122,9 @@ class Game {
         
         const wasCapture = !!capturedPiece || isEnPassantMove;
         
-        const moveSuccess = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
+        const moveResult = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
 
-        if (!moveSuccess) {
+        if (!moveResult.success) {
             return {
                 success: false,
                 error: 'Invalid move',

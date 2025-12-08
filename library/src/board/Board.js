@@ -145,26 +145,44 @@ class Board {
 
     tryToMove(cellFrom, cellTo, promotionPiece) {
         const piece = this.getPieceOnCell(cellFrom);
-        if (!piece) return false;
+        if (!piece) return {
+            success: false,
+            error: 'No piece at source cell'
+        };
 
         if (King.isValidCastlingMove(cellFrom, cellTo, this)) {
             this._executeCastling(cellFrom, cellTo);
             this._updateEnPassantTarget(piece, cellFrom, cellTo);
-            return true;
+            return {
+                success: true,
+                error: null
+            };
         }
 
         if (Pawn.isValidEnPassantMove(cellFrom, cellTo, this)) {
-            if(MoveValidator.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, this)) return false;
+            if(MoveValidator.wouldEnPassantMoveCauseCheck(cellFrom, cellTo, this)) return {
+                success: false,
+                error: 'En passant move would leave king in check'
+            };
             this._executeEnPassant(cellFrom, cellTo);
             this._updateEnPassantTarget(piece, cellFrom, cellTo);
-            return true;
+            return {
+                success: true,
+                error: null
+            };
         }
 
         const validation = MoveValidator.validateMove(cellFrom, cellTo, this);
-        if (!validation.valid) return false;
+        if (!validation.valid) return {
+            success: false,
+            error: validation.error
+        };
 
         if (MoveValidator.requiresPromotion(cellTo, cellFrom, this) && !promotionPiece) {
-            return false;
+            return {
+                success: false,
+                error: 'Promotion is required'
+            };
         }
 
         this._executeMove(cellFrom, cellTo);
@@ -173,7 +191,10 @@ class Board {
 
         this._updateEnPassantTarget(piece, cellFrom, cellTo);
 
-        return true;
+        return {
+            success: true,
+            error: null
+        };
     }
 
     _executeMove(cellFrom, cellTo) {
