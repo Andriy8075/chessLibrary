@@ -154,7 +154,7 @@ class GameEndDetector {
             }
         }
         
-        if (occurrenceCount >= 2) {
+        if (occurrenceCount > 2) {
             return 'threefoldRepetition';
         }
         
