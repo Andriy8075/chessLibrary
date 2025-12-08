@@ -229,7 +229,7 @@ class Game {
             };
         }
 
-        this.state.gameStatus = 'draw';
+        this.state.gameStatus = 'drawByAgreement';
         this.state.drawProposed = null;
 
         return {

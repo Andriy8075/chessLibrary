@@ -92,7 +92,7 @@ function handleGameResponse(data) {
         const statusMessages = [];
         
         // Status handler functions
-        const statusHandlers = {
+        const gameEndsStatusHandlers = {
             'checkmate': () => {
                 statusMessages.push('Checkmate!');
                 if (data.state && data.state.winner) {
@@ -114,31 +114,25 @@ function handleGameResponse(data) {
             },
             'check': () => {
                 statusMessages.push('Check!');
+            },
+            'resigned': () => {
+                statusMessages.push('Game ended by resignation');
+            },
+            'drawByAgreement': () => {
+                statusMessages.push('Draw by agreement!');
             }
         };
         
-        // Execute appropriate handler based on status
-        if (data.state.gameStatus && statusHandlers[data.state.gameStatus]) {
-            statusHandlers[data.state.gameStatus]();
-        } else {    
+        const gameEndFunction = gameEndsStatusHandlers[data.state.gameStatus];
+        if (gameEndFunction) {
+            gameEndFunction();
+        } else {
             statusMessages.push('Move successful');
         }
         
-        // Show whose turn it is
-        if (data.state && data.state.currentTurn) {
+        if (data.state.gameStatus === 'active') {
             const currentPlayer = data.state.currentTurn === getPlayerColor() ? 'Your' : 'Opponent\'s';
             statusMessages.push(`${currentPlayer} turn`);
-        }
-        
-        // Show game status if game has ended
-        if (data.state && data.state.gameStatus && data.state.gameStatus !== 'active') {
-            if (data.state.gameStatus === 'checkmate') {
-                // Already handled above
-            } else if (data.state.gameStatus === 'draw') {
-                // Already handled above
-            } else if (data.state.gameStatus === 'resigned') {
-                statusMessages.push('Game ended by resignation');
-            }
         }
         
         updateStatus(statusMessages.join(' - '));
