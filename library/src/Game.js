@@ -150,6 +150,9 @@ class Game {
             wasPawnMove: wasPawnMove
         });
 
+        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
+        this.state.positionHistory.push(positionSignature);
+
         const result = {
             success: true,
             state: this.state
@@ -162,9 +165,6 @@ class Game {
             result.check = true;
         }
 
-        const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
-        this.state.positionHistory.push(positionSignature);
-
         const gameEnd = GameEndDetector.checkForGameEndAfterMove(this.state);
         if(gameEnd) {
             result.gameEnd = gameEnd;
@@ -175,40 +175,6 @@ class Game {
                 this.state.gameStatus = 'draw';
             }
         }
-
-
-        // const gameEnd = this.state.board.checkForGameEndAfterMove(cellTo);
-        // const isCheckmate = gameEnd === 'checkmate';
-        // const isStalemate = gameEnd === 'stalemate';
-        // const isInsufficientMaterial = gameEnd === 'insufficientMaterial';
-
-        // if (isCheckmate) {
-        //     this.state.gameStatus = 'checkmate';
-        //     this.state.winner = this.state.currentTurn;
-        // } else if (isStalemate) {
-        //     this.state.gameStatus = 'draw';
-        // } else if (isInsufficientMaterial) {
-        //     this.state.gameStatus = 'draw';
-        // }
-        
-        // const positionSignature = GameEndDetector._getPositionSignature(this.state.board, opponentColor);
-        // this.state.positionHistory.push(positionSignature);
-
-        // if (this.state.gameStatus === 'active') {
-        //     this.state.currentTurn = opponentColor;
-        // }
-
-        // if (isCheckmate) {
-        //     result.checkmate = true;
-        // }
-
-        // if (isStalemate) {
-        //     result.stalemate = true;
-        // }
-
-        // if (isInsufficientMaterial) {
-        //     result.insufficientMaterial = true;
-        // }
 
         return result;
     }
