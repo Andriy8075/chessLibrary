@@ -6,7 +6,7 @@ import BoardTypeSwitcher from './components/BoardTypeSwitcher';
 import FindAllPossibleMoves from './routes/FindAllPossibleMoves';
 import EnPassant from './routes/EnPassant';
 import SimpleBoard from './routes/SimpleBoard';
-import EnoughPieces from './routes/EnoughPieces';
+import IsInsufficientMaterial from './routes/IsInsufficientMaterial';
 import IsSquareAttacked from './routes/IsSquareAttacked';
 import IsKingInCheck from './routes/IsKingInCheck';
 import WouldMoveCauseCheck from './routes/WouldMoveCauseCheck';
@@ -145,7 +145,7 @@ function App() {
                 <Route path="/findAllPossibleMoves" element={<FindAllPossibleMoves editor={editor} />} />
                 <Route path="/enPassant" element={<EnPassant editor={editor} />} />
                 <Route path="/simpleBoard" element={<SimpleBoard editor={editor} />} />
-                <Route path="/enoughPieces" element={<EnoughPieces editor={editor} />} />
+                <Route path="/isInsufficientMaterial" element={<IsInsufficientMaterial editor={editor} />} />
                 <Route path="/isSquareAttacked" element={<IsSquareAttacked editor={editor} />} />
                 <Route path="/isKingInCheck" element={<IsKingInCheck editor={editor} />} />
                 <Route path="/wouldMoveCauseCheck" element={<WouldMoveCauseCheck editor={editor} />} />

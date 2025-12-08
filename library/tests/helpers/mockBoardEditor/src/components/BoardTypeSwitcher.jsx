@@ -6,7 +6,7 @@ const BOARD_TYPES = [
   { id: 'findAllPossibleMoves', label: 'Find All Possible Moves' },
   { id: 'enPassant', label: 'En Passant' },
   { id: 'simpleBoard', label: 'Simple Board' },
-  { id: 'enoughPieces', label: 'Enough Pieces' },
+  { id: 'isInsufficientMaterial', label: 'Is Insufficient Material' },
   { id: 'isSquareAttacked', label: 'Is Square Attacked' },
   { id: 'isKingInCheck', label: 'Is King In Check' },
   { id: 'wouldMoveCauseCheck', label: 'Would Move Cause Check' },

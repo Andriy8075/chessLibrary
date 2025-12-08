@@ -172,7 +172,7 @@ class GameEndDetector {
         return this.checkForThreefoldRepetitionAfterMove(positionHistory) ||
         this.checkForFiftyMoveRuleAfterMove(moveHistory) ||
         this.checkForCheckmateOrStalemateAfterMove(currentTurn, board) ||
-        this.enoughPiecesAfterMoveToContinueGame(board) || null;
+        this.isInsufficientMaterial(board) || null;
     }
 }
 

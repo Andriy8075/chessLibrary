@@ -22,7 +22,7 @@ export function useBoardEditor() {
   const [hasLegalMovesColor, setHasLegalMovesColor] = useState(null);
   const [hasLegalMovesResult, setHasLegalMovesResult] = useState(null);
   const [checkForCheckmateOrStalemateAfterMoveResult, setCheckForCheckmateOrStalemateAfterMoveResult] = useState(null);
-  const [enoughPiecesResult, setEnoughPiecesResult] = useState(null);
+  const [isInsufficientMaterialResult, setIsInsufficientMaterialResult] = useState(null);
   const [extraInfo, setExtraInfo] = useState({
     enPassantTarget: null,
     piecesMadeMoves: {
@@ -53,7 +53,7 @@ export function useBoardEditor() {
     setHasLegalMovesColor(null);
     setHasLegalMovesResult(null);
     setCheckForCheckmateOrStalemateAfterMoveResult(null);
-    setEnoughPiecesResult(null);
+    setIsInsufficientMaterialResult(null);
     setExtraInfo({
       enPassantTarget: null,
       piecesMadeMoves: {
@@ -84,7 +84,7 @@ export function useBoardEditor() {
     setHasLegalMovesColor(null);
     setHasLegalMovesResult(null);
     setCheckForCheckmateOrStalemateAfterMoveResult(null);
-    setEnoughPiecesResult(null);
+    setIsInsufficientMaterialResult(null);
     setExtraInfo({
       enPassantTarget: null,
       piecesMadeMoves: {
@@ -259,9 +259,9 @@ export function useBoardEditor() {
         // expectedResult can be null, 'checkmate', or 'stalemate'
         setCheckForCheckmateOrStalemateAfterMoveResult(schema.expectedResult || null);
       }
-    } else if (schema.boardType === 'enoughPieces') {
+    } else if (schema.boardType === 'isInsufficientMaterial') {
       if (schema.expectedResult !== undefined) {
-        setEnoughPiecesResult(schema.expectedResult === true);
+        setIsInsufficientMaterialResult(schema.expectedResult === true);
       }
     } else if (schema.boardType !== 'simpleBoard') {
       // For findAllPossibleMoves and enPassant
@@ -394,9 +394,9 @@ export function useBoardEditor() {
         // expectedResult can be null, 'checkmate', or 'stalemate'
         schema.expectedResult = checkForCheckmateOrStalemateAfterMoveResult;
       }
-    } else if (boardType === 'enoughPieces') {
-      if (enoughPiecesResult !== null && enoughPiecesResult !== undefined) {
-        schema.expectedResult = enoughPiecesResult === true;
+    } else if (boardType === 'isInsufficientMaterial') {
+      if (isInsufficientMaterialResult !== null && isInsufficientMaterialResult !== undefined) {
+        schema.expectedResult = isInsufficientMaterialResult === true;
       }
     } else if (boardType !== 'simpleBoard') {
       if (mainPiece && mainPiece.position) {
@@ -435,7 +435,7 @@ export function useBoardEditor() {
     }
 
     return schema;
-  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, tryMoveResult, tryMovePromotionPiece, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, enoughPiecesResult, mainPiece, validMoves, extraInfo]);
+  }, [currentBoardType, board, getPieces, targetSquare, expectedResult, attackingColor, kingColor, kingCheckResult, cellFrom, cellTo, wouldMoveCauseCheckResult, tryMoveResult, tryMovePromotionPiece, hasLegalMovesColor, hasLegalMovesResult, checkForCheckmateOrStalemateAfterMoveResult, isInsufficientMaterialResult, mainPiece, validMoves, extraInfo]);
 
   return {
     board,
@@ -476,8 +476,8 @@ export function useBoardEditor() {
     setHasLegalMovesResult,
     checkForCheckmateOrStalemateAfterMoveResult,
     setCheckForCheckmateOrStalemateAfterMoveResult,
-    enoughPiecesResult,
-    setEnoughPiecesResult,
+    isInsufficientMaterialResult,
+    setIsInsufficientMaterialResult,
     setExtraInfo,
     setCurrentBoardType,
     resetBoardState,

@@ -1,5 +1,5 @@
 {
-    "boardType": "enoughPieces",
+    "boardType": "isInsufficientMaterial",
     "pieces": [
         {
             "type": "king",
@@ -18,5 +18,5 @@
             }
         }
     ],
-    "expectedResult": false
+    "expectedResult": true
 }

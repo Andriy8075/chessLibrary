@@ -285,18 +285,6 @@ class Board {
         }
     }
 
-    checkForGameEndAfterMove(cellTo) {
-
-        const enoughPieces = GameEndDetector.enoughPiecesAfterMoveToContinueGame(this);
-        if (!enoughPieces) return 'insufficientMaterial';
-
-        const checkmateOrStalemate = GameEndDetector.checkForCheckmateOrStalemateAfterMove(cellTo, this);
-        if (checkmateOrStalemate) return checkmateOrStalemate;
-
-        return null;
-
-    }
-
     _movePiece(cellFrom, cellTo) {
         const piece = this.arrangement[cellFrom.row - 1][cellFrom.col - 1];
         this.arrangement[cellFrom.row - 1][cellFrom.col - 1] = null;

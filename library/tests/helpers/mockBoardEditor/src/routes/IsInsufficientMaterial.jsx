@@ -5,7 +5,7 @@ import ChessBoard from '../components/ChessBoard';
 import ExpectedResult from '../components/ExpectedResult';
 import squareClickFunctions from '../hooks/squareClickFunctions';
 
-function EnoughPieces({ editor }) {
+function IsInsufficientMaterial({ editor }) {
   const handleSquareClick = (row, col) => {
     const cell = { row, col };
 
@@ -35,14 +35,14 @@ function EnoughPieces({ editor }) {
         mode={editor.mode}
         onSquareClick={handleSquareClick}
       />
-      <div className="enough-pieces-panel">
-        <h3>Enough Pieces</h3>
-        <div className="enough-pieces-controls">
+      <div className="is-insufficient-material-panel">
+        <h3>Is Insufficient Material</h3>
+        <div className="is-insufficient-material-controls">
           <ExpectedResult
-            value={editor.enoughPiecesResult}
-            onChange={editor.setEnoughPiecesResult}
-            trueId="enoughPiecesResultTrue"
-            falseId="enoughPiecesResultFalse"
+            value={editor.isInsufficientMaterialResult}
+            onChange={editor.setIsInsufficientMaterialResult}
+            trueId="isInsufficientMaterialResultTrue"
+            falseId="isInsufficientMaterialResultFalse"
           />
         </div>
       </div>
@@ -50,5 +50,5 @@ function EnoughPieces({ editor }) {
   );
 }
 
-export default EnoughPieces;
+export default IsInsufficientMaterial;
 
