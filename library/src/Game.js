@@ -13,7 +13,8 @@ class Game {
             winner: null,
             drawProposed: null,
             moveHistory: [],
-            positionHistory: []
+            positionHistory: [],
+            promotionRequired: false
         };
         
         // Initialize position history with starting position
@@ -33,7 +34,8 @@ class Game {
             gameStatus: this.state.gameStatus,
             winner: this.state.winner,
             drawProposed: this.state.drawProposed,
-            moveHistory: this.state.moveHistory
+            moveHistory: this.state.moveHistory,
+            promotionRequired: this.state.promotionRequired
         };
     }
 
@@ -125,6 +127,15 @@ class Game {
         const moveResult = this.state.board.tryToMove(cellFrom, cellTo, promotionPiece);
 
         if (!moveResult.success) {
+            if (moveResult.error === 'Promotion is required') {
+                this.state.promotionRequired = true;
+                console.log('promotion required');
+                return {
+                    success: false,
+                    error: 'Promotion is required',
+                    state: this.state
+                };
+            }
             return {
                 success: false,
                 error: 'Invalid move',
@@ -183,6 +194,7 @@ class Game {
         }
 
         this.state.currentTurn = this.state.currentTurn === 'white' ? 'black' : 'white';
+        this.state.promotionRequired = false;
 
         return result;
     }

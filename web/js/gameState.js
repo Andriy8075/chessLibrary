@@ -3,6 +3,7 @@ let gameState = null;
 let playerColor = null;
 let selectedSquare = null;
 let selectedPiecePosition = null;
+let pendingPromotionMove = null; // Stores { from, to } when promotion is required
 
 function getGameState() {
     return gameState;
@@ -49,6 +50,18 @@ function resetSelection() {
     selectedPiecePosition = null;
 }
 
+function getPendingPromotionMove() {
+    return pendingPromotionMove;
+}
+
+function setPendingPromotionMove(move) {
+    pendingPromotionMove = move;
+}
+
+function clearPendingPromotionMove() {
+    pendingPromotionMove = null;
+}
+
 export {
     getGameState,
     setGameState,
@@ -59,6 +72,9 @@ export {
     clearSelection,
     getSelectedPiecePosition,
     setSelectedPiecePosition,
-    resetSelection
+    resetSelection,
+    getPendingPromotionMove,
+    setPendingPromotionMove,
+    clearPendingPromotionMove
 };
 

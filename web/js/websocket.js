@@ -1,6 +1,7 @@
-import { setGameState, setPlayerColor, resetSelection, getPlayerColor } from './gameState.js';
+import { setGameState, setPlayerColor, resetSelection, getPlayerColor, setPendingPromotionMove, getPendingPromotionMove, clearPendingPromotionMove } from './gameState.js';
 import { createBoard } from './board.js';
 import { updateStatus } from './uiHelpers.js';
+import { sendMoveRequest } from './moveHandler.js';
 
 let socket = null;
 
@@ -48,6 +49,8 @@ function handleServerMessage(message) {
             setPlayerColor(message.data.color);
             updateStatus(`Game found! You are playing as ${message.data.color}`);
             createBoard(message.data.gameState);
+            hidePromotionButtons();
+            clearPendingPromotionMove();
             break;
         case 'gameResponse':
             handleGameResponse(message.data);
@@ -85,6 +88,21 @@ function handleGameResponse(data) {
         
         setGameState(gameState);
         createBoard(gameState);
+        // Handle promotion required state
+        if (gameState.promotionRequired === true) {
+            console.log('Promotion required');
+            // Store the pending move if we don't already have it
+            if (!getPendingPromotionMove()) {
+                setPendingPromotionMove('not_pending');
+                // We need to get the last move that was attempted
+                // This should be stored when sending the move
+                // For now, we'll handle it in the move sending logic
+            }
+            showPromotionButtons();
+        } else {
+            hidePromotionButtons();
+            clearPendingPromotionMove();
+        }
     }
     
     // Handle response status
@@ -136,11 +154,48 @@ function handleGameResponse(data) {
         }
         
         updateStatus(statusMessages.join(' - '));
+    }
+    else if (data.state.promotionRequired) {
+        showPromotionButtons();
     } else if (data.error) {
         updateStatus(`Move failed: ${data.error}`);
     } else {
         updateStatus('Received game response');
     }
+}
+
+function showPromotionButtons() {
+    const promotionContainer = document.getElementById('promotionContainer');
+    if (promotionContainer) {
+        promotionContainer.classList.add('visible');
+    }
+}
+
+function hidePromotionButtons() {
+    const promotionContainer = document.getElementById('promotionContainer');
+    if (promotionContainer) {
+        promotionContainer.classList.remove('visible');
+    }
+}
+
+function setupPromotionButtons() {
+    const promotionContainer = document.getElementById('promotionContainer');
+    if (!promotionContainer) return;
+    
+    const buttons = promotionContainer.querySelectorAll('.promotion-button');
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            const piece = this.dataset.piece;
+            const pendingMove = getPendingPromotionMove();
+            
+            if (pendingMove) {
+                // Send the move with the selected promotion piece
+                sendMoveRequest(pendingMove.from, pendingMove.to, piece);
+                hidePromotionButtons();
+                clearPendingPromotionMove();
+            }
+        });
+    });
 }
 
 function getSocket() {
@@ -152,4 +207,11 @@ export {
     sendMessage,
     getSocket
 };
+
+// Initialize promotion buttons when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupPromotionButtons);
+} else {
+    setupPromotionButtons();
+}
 
