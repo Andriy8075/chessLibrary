@@ -137,8 +137,6 @@ test('board cases', () => {
             
             const actualExtraInfo = testCase.board.extraInfo;
             const expectedExtraInfo = testCase.extraInfoAfter;
-            console.log('actualExtraInfo', actualExtraInfo);
-            console.log('expectedExtraInfo', expectedExtraInfo);
             expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
         } else {
             // Compare board we got to pieces with extraInfo

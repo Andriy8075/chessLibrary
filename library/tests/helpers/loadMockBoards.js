@@ -11,10 +11,6 @@ function loadMockBoards(folderPath) {
         const boardSchema = require(path.join(testPath, folderPath, file));
         const extraInfo = boardSchema.extraInfo || {};
         const board = new MockBoard(boardSchema.pieces, extraInfo);
-        if (boardSchema.boardType === 'tryMove') {
-            console.log('boardSchema', boardSchema);
-            console.log('pieces', boardSchema.pieces);
-        }
         boards.push({
             board: board,
             ...Object.fromEntries(
