@@ -4,7 +4,7 @@ npm install
 cd ../library/tests/helpers/mockBoardEditor
 npm install
 npm run build
-cd /app/library/tests/singlePlayerWeb
+cd /app/library/tests/helpers/singlePlayerWeb
 npm install
 node server.js &
 cd /app

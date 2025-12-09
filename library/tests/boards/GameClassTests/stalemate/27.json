@@ -1,0 +1,156 @@
+{
+  "cellTo": {
+    "row": 6,
+    "col": 6
+  },
+  "cellFrom": {
+    "row": 6,
+    "col": 5
+  },
+  "promotionPiece": null,
+  "color": "black",
+  "type": "move",
+  "position": [
+    [
+      {
+        "type": "rook",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "king",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "rook",
+        "color": "white"
+      }
+    ],
+    [
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      }
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      {
+        "type": "king",
+        "color": "black"
+      },
+      null,
+      null
+    ],
+    [
+      {
+        "type": "queen",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "gameStatus": "active"
+}

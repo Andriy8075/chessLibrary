@@ -1,0 +1,189 @@
+{
+  "cellTo": {
+    "row": 6,
+    "col": 3
+  },
+  "cellFrom": {
+    "row": 7,
+    "col": 4
+  },
+  "promotionPiece": null,
+  "color": "black",
+  "type": "move",
+  "position": [
+    [
+      {
+        "type": "rook",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "king",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "rook",
+        "color": "white"
+      }
+    ],
+    [
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      }
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      {
+        "type": "king",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "queen",
+        "color": "white"
+      }
+    ],
+    [
+      {
+        "type": "rook",
+        "color": "black"
+      },
+      {
+        "type": "knight",
+        "color": "black"
+      },
+      {
+        "type": "bishop",
+        "color": "black"
+      },
+      {
+        "type": "queen",
+        "color": "black"
+      },
+      null,
+      {
+        "type": "bishop",
+        "color": "black"
+      },
+      {
+        "type": "knight",
+        "color": "black"
+      },
+      {
+        "type": "rook",
+        "color": "black"
+      }
+    ]
+  ],
+  "gameStatus": "active"
+}

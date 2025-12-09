@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const Game = require('../../src/Game');
 const GameEndDetector = require('../../src/board/GameEndDetector');
-const { arePositionsEqual } = require('./helpers');
+const { arePositionsEqual } = require('../endToEnd/helpers');
 
-const testCasesDir = path.join(__dirname, 'testCases');
+const testCasesDir = path.join(__dirname, '../boards/GameClassTests');
 
 const testCaseFolders = fs.readdirSync(testCasesDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())

@@ -1,0 +1,159 @@
+{
+  "cellTo": {
+    "row": 8,
+    "col": 1
+  },
+  "cellFrom": {
+    "row": 8,
+    "col": 2
+  },
+  "promotionPiece": null,
+  "color": "white",
+  "type": "move",
+  "position": [
+    [
+      {
+        "type": "rook",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "king",
+        "color": "white"
+      },
+      {
+        "type": "bishop",
+        "color": "white"
+      },
+      {
+        "type": "knight",
+        "color": "white"
+      },
+      {
+        "type": "rook",
+        "color": "white"
+      }
+    ],
+    [
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      {
+        "type": "pawn",
+        "color": "white"
+      }
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      {
+        "type": "pawn",
+        "color": "white"
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      {
+        "type": "king",
+        "color": "black"
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      {
+        "type": "pawn",
+        "color": "black"
+      },
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "type": "queen",
+        "color": "white"
+      },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "gameStatus": "active"
+}

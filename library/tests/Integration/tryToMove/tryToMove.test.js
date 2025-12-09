@@ -1,4 +1,4 @@
-const loadMockBoards = require('../../../helpers/loadMockBoards');
+const loadMockBoards = require('../../helpers/loadMockBoards');
 
 function boardToPiecesArray(board) {
     const pieces = [];

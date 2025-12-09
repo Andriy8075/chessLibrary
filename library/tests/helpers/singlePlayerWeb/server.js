@@ -2,8 +2,8 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-const Game = require('../../src/Game');
-const GameEndDetector = require('../../src/board/GameEndDetector');
+const Game = require('../../../src/Game');
+const GameEndDetector = require('../../../src/board/GameEndDetector');
 
 const app = express();
 const port = 3001;
@@ -83,7 +83,7 @@ app.post('/api/save-game', (req, res) => {
     }
     
     const sanitizedName = testCaseName.trim();
-    const testCasesDir = path.join(__dirname, '../endToEnd/testCases');
+    const testCasesDir = path.join(__dirname, '../../boards/GameClassTests');
     const testCaseDir = path.join(testCasesDir, sanitizedName);
     
     // Check if folder already exists

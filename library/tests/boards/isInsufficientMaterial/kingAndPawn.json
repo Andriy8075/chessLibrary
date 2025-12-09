@@ -1,0 +1,30 @@
+{
+    "boardType": "isInsufficientMaterial",
+    "pieces": [
+        {
+            "type": "pawn",
+            "color": "white",
+            "position": {
+                "row": 2,
+                "col": 2
+            }
+        },
+        {
+            "type": "king",
+            "color": "white",
+            "position": {
+                "row": 8,
+                "col": 1
+            }
+        },
+        {
+            "type": "king",
+            "color": "black",
+            "position": {
+                "row": 8,
+                "col": 3
+            }
+        }
+    ],
+    "expectedResult": false
+}

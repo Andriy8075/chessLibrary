@@ -107,7 +107,7 @@ class ChessClient {
     }
 }
 
-const testCasesDir = path.join(__dirname, 'testCases');
+const testCasesDir = path.join(__dirname, '../boards/GameClassTests');
 
 const testCaseFolders = fs.readdirSync(testCasesDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
