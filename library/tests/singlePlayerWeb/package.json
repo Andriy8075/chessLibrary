@@ -1,0 +1,13 @@
+{
+  "name": "single-player-chess",
+  "version": "1.0.0",
+  "description": "Single player chess web app for testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
