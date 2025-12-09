@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@chess-library/core": "file:../library",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "ws": "^8.18.3",

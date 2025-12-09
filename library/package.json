@@ -1,5 +1,5 @@
 {
-  "name": "chess",
+  "name": "@chess-library/core",
   "version": "1.0.0",
   "description": "chess library",
   "keywords": [

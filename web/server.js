@@ -3,7 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const Game = require('../library/src/Game');
+const Game = require('@chess-library/core');
 require('dotenv').config();
 
 const app = express();
