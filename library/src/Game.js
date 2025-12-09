@@ -11,7 +11,6 @@ class Game {
             lastMove: null,
             gameStatus: 'active',
             winner: null,
-            drawProposed: null,
             moveHistory: [],
             positionHistory: [],
             promotionRequired: false
@@ -32,7 +31,6 @@ class Game {
             lastMove: this.state.lastMove,
             gameStatus: this.state.gameStatus,
             winner: this.state.winner,
-            drawProposed: this.state.drawProposed,
             moveHistory: this.state.moveHistory,
             promotionRequired: this.state.promotionRequired
         };
@@ -50,12 +48,6 @@ class Game {
         switch (request.type) {
             case 'move':
                 return this._processMove(request);
-            case 'proposeDraw':
-                return this._processProposeDraw();
-            case 'acceptDraw':
-                return this._processAcceptDraw();
-            case 'resign':
-                return this._processResign();
             default:
                 return {
                     success: false,
@@ -194,76 +186,6 @@ class Game {
         this.state.promotionRequired = false;
 
         return result;
-    }
-
-    _processProposeDraw() {
-        if (this.state.gameStatus !== 'active') {
-            return {
-                success: false,
-                error: `Game is not active. Status: ${this.state.gameStatus}`,
-                state: this.state
-            };
-        }
-
-        this.state.drawProposed = this.state.currentTurn;
-
-        return {
-            success: true,
-            state: this.state
-        };
-    }
-
-    _processAcceptDraw() {
-        if (this.state.gameStatus !== 'active') {
-            return {
-                success: false,
-                error: `Game is not active. Status: ${this.state.gameStatus}`,
-                state: this.state
-            };
-        }
-
-        if (!this.state.drawProposed) {
-            return {
-                success: false,
-                error: 'No draw proposal to accept',
-                state: this.state
-            };
-        }
-
-        if (this.state.drawProposed === this.state.currentTurn) {
-            return {
-                success: false,
-                error: 'Cannot accept your own draw proposal',
-                state: this.state
-            };
-        }
-
-        this.state.gameStatus = 'drawByAgreement';
-        this.state.drawProposed = null;
-
-        return {
-            success: true,
-            draw: true,
-            state: this.state
-        };
-    }
-
-    _processResign() {
-        if (this.state.gameStatus !== 'active') {
-            return {
-                success: false,
-                error: `Game is not active. Status: ${this.state.gameStatus}`,
-                state: this.state
-            };
-        }
-
-        this.state.gameStatus = 'resigned';
-        this.state.winner = this.state.currentTurn === 'white' ? 'black' : 'white';
-
-        return {
-            success: true,
-            state: this.state
-        };
     }
 }
 

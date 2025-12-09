@@ -120,12 +120,6 @@ function handleGameResponse(data) {
             },
             'check': () => {
                 statusMessages.push('Check!');
-            },
-            'resigned': () => {
-                statusMessages.push('Game ended by resignation');
-            },
-            'drawByAgreement': () => {
-                statusMessages.push('Draw by agreement!');
             }
         };
         
