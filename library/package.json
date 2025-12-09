@@ -22,7 +22,8 @@
   ],
   "scripts": {
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "benchmark": "node tests/benchmark/benchmark.js"
   },
   "devDependencies": {
     "jest": "^29.0.0",
