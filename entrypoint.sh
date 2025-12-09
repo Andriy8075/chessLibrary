@@ -6,6 +6,8 @@ npm install
 npm run build
 cd /app/library/tests/helpers/singlePlayerWeb
 npm install
+cd /app/library
+npm install
 node server.js &
 cd /app
 npm install
