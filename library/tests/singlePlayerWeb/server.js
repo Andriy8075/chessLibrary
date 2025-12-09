@@ -38,6 +38,9 @@ app.post('/api/move', (req, res) => {
     
     const result = game.processRequest(request);
     
+    // Check if promotion is required - if so, we need to send state back
+    const isPromotionRequired = result.state && result.state.promotionRequired === true;
+    
     // If move was successful, save move data
     if (result.success && result.state) {
         const state = game.getState();
@@ -57,8 +60,11 @@ app.post('/api/move', (req, res) => {
         
         // Serialize state for response
         result.state = game.getSerializedState();
+    } else if (isPromotionRequired) {
+        // Promotion required - send state so client can show promotion UI
+        result.state = game.getSerializedState();
     } else {
-        // Don't send state for failed moves - client should keep current state
+        // Don't send state for other failed moves - client should keep current state
         delete result.state;
     }
     

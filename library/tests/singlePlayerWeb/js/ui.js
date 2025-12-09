@@ -29,6 +29,21 @@ function handleGameResponse(data) {
         return;
     }
     
+    // Check if promotion is required (can happen even if success is false)
+    const isPromotionRequired = data.state && data.state.promotionRequired === true;
+    
+    if (isPromotionRequired) {
+        // Promotion required - update board and show promotion buttons
+        if (data.state) {
+            setGameState(data.state);
+            createBoard(data.state);
+        }
+        // Don't clear pending move - we need it for the promotion
+        showPromotionButtons();
+        updateStatus('Promotion required - choose a piece');
+        return;
+    }
+    
     // Handle response status
     if (data.success) {
         // Only update game state if move was successful
@@ -36,18 +51,8 @@ function handleGameResponse(data) {
             setGameState(data.state);
             createBoard(data.state);
             
-            // Handle promotion required state
-            if (data.state.promotionRequired === true) {
-                console.log('Promotion required');
-                // Store the pending move if we don't already have it
-                if (!getPendingPromotionMove()) {
-                    setPendingPromotionMove('not_pending');
-                }
-                showPromotionButtons();
-            } else {
-                hidePromotionButtons();
-                clearPendingPromotionMove();
-            }
+            hidePromotionButtons();
+            clearPendingPromotionMove();
         }
         const statusMessages = [];
         
