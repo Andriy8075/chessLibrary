@@ -57,6 +57,9 @@ app.post('/api/move', (req, res) => {
         
         // Serialize state for response
         result.state = game.getSerializedState();
+    } else {
+        // Don't send state for failed moves - client should keep current state
+        delete result.state;
     }
     
     res.json(result);

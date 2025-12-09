@@ -29,27 +29,26 @@ function handleGameResponse(data) {
         return;
     }
     
-    // Update game state if provided
-    if (data.state) {
-        setGameState(data.state);
-        createBoard(data.state);
-        
-        // Handle promotion required state
-        if (data.state.promotionRequired === true) {
-            console.log('Promotion required');
-            // Store the pending move if we don't already have it
-            if (!getPendingPromotionMove()) {
-                setPendingPromotionMove('not_pending');
-            }
-            showPromotionButtons();
-        } else {
-            hidePromotionButtons();
-            clearPendingPromotionMove();
-        }
-    }
-    
     // Handle response status
     if (data.success) {
+        // Only update game state if move was successful
+        if (data.state) {
+            setGameState(data.state);
+            createBoard(data.state);
+            
+            // Handle promotion required state
+            if (data.state.promotionRequired === true) {
+                console.log('Promotion required');
+                // Store the pending move if we don't already have it
+                if (!getPendingPromotionMove()) {
+                    setPendingPromotionMove('not_pending');
+                }
+                showPromotionButtons();
+            } else {
+                hidePromotionButtons();
+                clearPendingPromotionMove();
+            }
+        }
         const statusMessages = [];
         
         // Status handler functions
@@ -96,12 +95,16 @@ function handleGameResponse(data) {
         
         updateStatus(statusMessages.join(' - '));
     }
-    else if (data.state && data.state.promotionRequired) {
-        showPromotionButtons();
-    } else if (data.error) {
-        updateStatus(`Move failed: ${data.error}`);
-    } else {
-        updateStatus('Received game response');
+    else {
+        // Move failed - clear pending promotion move and show error
+        if (data.error) {
+            updateStatus(`Move failed: ${data.error}`);
+        } else {
+            updateStatus('Move failed: Unknown error');
+        }
+        // Clear pending promotion move on failure
+        clearPendingPromotionMove();
+        hidePromotionButtons();
     }
 }
 
