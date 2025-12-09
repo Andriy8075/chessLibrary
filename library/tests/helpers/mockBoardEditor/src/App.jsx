@@ -28,18 +28,16 @@ function App() {
 
   const handleFileOpen = (filePath, schema) => {
     setCurrentFilePath(filePath);
-    setSaveMessage(null); // Clear save message when opening a new file
+    setSaveMessage(null);
     
     if (schema && schema.boardType) {
       if (schema.boardType === 'tryMove') {
-        // Handle tryMove with dual board structure
         setCurrentFileIsBoardJson(true);
         editor.setCurrentBoardType('tryMove');
         setTryMoveSchema(schema);
         navigate('/tryMove');
         setAwaitingBoardType(false);
       } else if (Array.isArray(schema.pieces)) {
-        // Handle other board types with single board structure
         setCurrentFileIsBoardJson(true);
         editor.setCurrentBoardType(schema.boardType);
         editor.loadFromSchema(schema);
@@ -68,7 +66,6 @@ function App() {
   };
 
   const handleBoardTypeSwitch = (boardType) => {
-    // Preserve pieces when switching board types
     editor.switchBoardType(boardType);
     setAwaitingBoardType(false);
     navigate(`/${boardType}`);
@@ -79,10 +76,8 @@ function App() {
     
     let schema;
     if (editor.currentBoardType === 'tryMove' && tryMoveRef.current) {
-      // Get schema from TryMove component
       schema = tryMoveRef.current.getCurrentSchema();
     } else {
-      // Get schema from regular editor
       schema = editor.getCurrentSchema();
     }
     
@@ -101,19 +96,15 @@ function App() {
       setSaveMessage({ type: 'success', text: 'File saved successfully' });
     }
 
-    // Clear message after 3 seconds
     setTimeout(() => {
       setSaveMessage(null);
     }, 3000);
   };
 
-  // Redirect to root if no file is opened and user tries to access a specific route
   const location = useLocation();
   useEffect(() => {
-    // Main routes that are allowed without a file being opened
     const mainRoutes = ['/', '/findAllPossibleMoves'];
     
-    // If no board file is opened and user is on a non-main route, redirect to root
     if (!currentFileIsBoardJson && !mainRoutes.includes(location.pathname)) {
       navigate('/', { replace: true });
     }

@@ -9,11 +9,9 @@ function sendMoveRequest(cellFrom, cellTo, promotion = null) {
         return;
     }
     
-    // If no promotion is specified, store the move in case promotion is required
     if (!promotion) {
         setPendingPromotionMove({ from: cellFrom, to: cellTo });
     } else {
-        // Clear pending move when sending a promotion
         clearPendingPromotionMove();
     }
     

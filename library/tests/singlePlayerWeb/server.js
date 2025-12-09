@@ -139,7 +139,6 @@ app.post('/api/save-game', (req, res) => {
     }
 });
 
-// Endpoint to reset game
 app.post('/api/reset-game', (req, res) => {
     initializeGame();
     const serializedState = game.getSerializedState();

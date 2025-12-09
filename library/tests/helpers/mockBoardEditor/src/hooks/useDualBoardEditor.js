@@ -129,14 +129,12 @@ export function useDualBoardEditor() {
     const sourceBoard = from === 'before' ? boardBefore : boardAfter;
     const sourceExtraInfo = from === 'before' ? extraInfoBefore : extraInfoAfter;
 
-    // Deep copy board
     const newBoard = sourceBoard.map(row => 
       row.map(cell => 
         cell ? { ...cell, position: { ...cell.position } } : null
       )
     );
 
-    // Deep copy extraInfo
     const newExtraInfo = {
       enPassantTarget: sourceExtraInfo.enPassantTarget 
         ? { ...sourceExtraInfo.enPassantTarget } 
@@ -160,7 +158,6 @@ export function useDualBoardEditor() {
 
     resetBoardState();
 
-    // Load boardBefore from root level pieces
     if (Array.isArray(schema.pieces)) {
       const newBoardBefore = Array(8).fill(null).map(() => Array(8).fill(null));
       schema.pieces.forEach(p => {
@@ -177,7 +174,6 @@ export function useDualBoardEditor() {
       setBoardBefore(newBoardBefore);
     }
 
-    // Load extraInfo from root level
     if (schema.extraInfo) {
       const newExtraInfoBefore = {
         enPassantTarget: schema.extraInfo.enPassantTarget
@@ -196,7 +192,6 @@ export function useDualBoardEditor() {
       setExtraInfoBefore(newExtraInfoBefore);
     }
 
-    // Load boardAfter from root level piecesAfter
     if (Array.isArray(schema.piecesAfter)) {
       const newBoardAfter = Array(8).fill(null).map(() => Array(8).fill(null));
       schema.piecesAfter.forEach(p => {
@@ -213,7 +208,6 @@ export function useDualBoardEditor() {
       setBoardAfter(newBoardAfter);
     }
 
-    // Load extraInfoAfter from root level
     if (schema.extraInfoAfter) {
       const newExtraInfoAfter = {
         enPassantTarget: schema.extraInfoAfter.enPassantTarget
@@ -232,7 +226,6 @@ export function useDualBoardEditor() {
       setExtraInfoAfter(newExtraInfoAfter);
     }
 
-    // Load shared state
     if (schema.cellFrom) {
       setCellFrom({
         row: schema.cellFrom.row,
@@ -261,7 +254,6 @@ export function useDualBoardEditor() {
       pieces: piecesBefore
     };
 
-    // Always add extraInfo at root with all fields
     schema.extraInfo = {};
     if (extraInfoBefore.enPassantTarget !== null) {
       schema.extraInfo.enPassantTarget = {
@@ -272,7 +264,6 @@ export function useDualBoardEditor() {
       schema.extraInfo.enPassantTarget = null;
     }
 
-    // Always include piecesMadeMoves with all standard keys
     const standardKeys = [
       'whiteKing',
       'blackKing',
@@ -286,12 +277,10 @@ export function useDualBoardEditor() {
       schema.extraInfo.piecesMadeMoves[key] = extraInfoBefore.piecesMadeMoves?.[key] || false;
     });
 
-    // Only include piecesAfter and extraInfoAfter if result is true (move succeeded)
     if (tryMoveResult === true) {
       const piecesAfter = getPieces('after');
       schema.piecesAfter = piecesAfter;
 
-      // Always add extraInfoAfter with all fields
       schema.extraInfoAfter = {};
       if (extraInfoAfter.enPassantTarget !== null) {
         schema.extraInfoAfter.enPassantTarget = {
@@ -302,7 +291,6 @@ export function useDualBoardEditor() {
         schema.extraInfoAfter.enPassantTarget = null;
       }
 
-      // Always include piecesMadeMoves with all standard keys
       const standardKeys = [
         'whiteKing',
         'blackKing',
@@ -317,7 +305,6 @@ export function useDualBoardEditor() {
       });
     }
 
-    // Add shared state
     if (cellFrom) {
       schema.cellFrom = {
         row: cellFrom.row,

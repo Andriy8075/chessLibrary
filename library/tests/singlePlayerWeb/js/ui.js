@@ -5,7 +5,6 @@ import { sendMoveRequest } from './moveHandler.js';
 
 const API_BASE_URL = 'http://localhost:3001';
 
-// Load initial game state
 async function loadGameState() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/game-state`);
@@ -29,24 +28,19 @@ function handleGameResponse(data) {
         return;
     }
     
-    // Check if promotion is required (can happen even if success is false)
     const isPromotionRequired = data.state && data.state.promotionRequired === true;
     
     if (isPromotionRequired) {
-        // Promotion required - update board and show promotion buttons
         if (data.state) {
             setGameState(data.state);
             createBoard(data.state);
         }
-        // Don't clear pending move - we need it for the promotion
         showPromotionButtons();
         updateStatus('Promotion required - choose a piece');
         return;
     }
     
-    // Handle response status
     if (data.success) {
-        // Only update game state if move was successful
         if (data.state) {
             setGameState(data.state);
             createBoard(data.state);
@@ -56,7 +50,6 @@ function handleGameResponse(data) {
         }
         const statusMessages = [];
         
-        // Status handler functions
         const gameEndsStatusHandlers = {
             'checkmate': () => {
                 statusMessages.push('Checkmate!');
@@ -101,13 +94,11 @@ function handleGameResponse(data) {
         updateStatus(statusMessages.join(' - '));
     }
     else {
-        // Move failed - clear pending promotion move and show error
         if (data.error) {
             updateStatus(`Move failed: ${data.error}`);
         } else {
             updateStatus('Move failed: Unknown error');
         }
-        // Clear pending promotion move on failure
         clearPendingPromotionMove();
         hidePromotionButtons();
     }
@@ -138,7 +129,6 @@ function setupPromotionButtons() {
             const pendingMove = getPendingPromotionMove();
             
             if (pendingMove && pendingMove !== 'not_pending') {
-                // Send the move with the selected promotion piece
                 await sendMoveRequest(pendingMove.from, pendingMove.to, piece);
                 hidePromotionButtons();
                 clearPendingPromotionMove();
@@ -214,7 +204,6 @@ function setupSaveGameButton() {
         resetGameBtn.addEventListener('click', resetGame);
     }
     
-    // Allow Enter key to save
     const testCaseNameInput = document.getElementById('testCaseNameInput');
     if (testCaseNameInput) {
         testCaseNameInput.addEventListener('keypress', function(e) {
@@ -225,6 +214,5 @@ function setupSaveGameButton() {
     }
 }
 
-// Export for use in app.js
 export { loadGameState, handleGameResponse, setupSaveGameButton, setupPromotionButtons };
 

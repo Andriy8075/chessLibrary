@@ -74,29 +74,19 @@ function handleGameResponse(data) {
         return;
     }
     
-    // Update game state if provided
     if (data.state) {
-        // The state should already be serialized from the server
-        // But we need to ensure the board is properly serialized
         let gameState = data.state;
         
-        // If board is not an array (not serialized), we can't handle it
-        // The server should serialize it before sending
         if (!Array.isArray(gameState.board)) {
             console.warn('Board state is not serialized properly');
         }
         
         setGameState(gameState);
         createBoard(gameState);
-        // Handle promotion required state
         if (gameState.promotionRequired === true) {
             console.log('Promotion required');
-            // Store the pending move if we don't already have it
             if (!getPendingPromotionMove()) {
                 setPendingPromotionMove('not_pending');
-                // We need to get the last move that was attempted
-                // This should be stored when sending the move
-                // For now, we'll handle it in the move sending logic
             }
             showPromotionButtons();
         } else {
@@ -105,11 +95,9 @@ function handleGameResponse(data) {
         }
     }
     
-    // Handle response status
     if (data.success) {
         const statusMessages = [];
         
-        // Status handler functions
         const gameEndsStatusHandlers = {
             'checkmate': () => {
                 statusMessages.push('Checkmate!');
@@ -189,7 +177,6 @@ function setupPromotionButtons() {
             const pendingMove = getPendingPromotionMove();
             
             if (pendingMove) {
-                // Send the move with the selected promotion piece
                 sendMoveRequest(pendingMove.from, pendingMove.to, piece);
                 hidePromotionButtons();
                 clearPendingPromotionMove();
@@ -208,7 +195,6 @@ export {
     getSocket
 };
 
-// Initialize promotion buttons when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupPromotionButtons);
 } else {

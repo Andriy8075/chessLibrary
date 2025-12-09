@@ -88,7 +88,6 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave, saveMessage }) {
     const name = window.prompt('File name:');
     if (!name) return;
 
-    // Add .json extension if not specified (check if it ends with a file extension pattern)
     const hasExtension = /\.\w+$/.test(name);
     const fileName = hasExtension ? name : `${name}.json`;
 
@@ -160,7 +159,6 @@ function FileExplorer({ onFileOpen, currentFilePath, onSave, saveMessage }) {
   const renderTree = (node) => {
     if (!node) return null;
 
-    // Use the path from the API response, which is already relative to boardsRoot
     const nodePath = node.path || '';
     const isExpanded = expandedPaths.has(nodePath);
     const isSelected = selectedPath === nodePath || selectedFolderPath === nodePath;

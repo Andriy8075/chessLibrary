@@ -12,13 +12,11 @@ import './TryMove.css';
 const TryMove = forwardRef(({ initialSchema }, ref) => {
   const editor = useDualBoardEditor();
 
-  // Expose getCurrentSchema via ref
   useImperativeHandle(ref, () => ({
     getCurrentSchema: () => editor.getCurrentSchema(),
     loadFromSchema: (schema) => editor.loadFromSchema(schema)
   }));
 
-  // Load schema when initialSchema changes
   useEffect(() => {
     if (initialSchema && initialSchema.boardType === 'tryMove') {
       editor.loadFromSchema(initialSchema);
@@ -39,7 +37,6 @@ const TryMove = forwardRef(({ initialSchema }, ref) => {
     } else if (editor.mode === 'cellTo') {
       editor.setCellTo(cell);
     } else if (editor.mode === 'enPassantTarget') {
-      // Set en passant target for the clicked board
       if (boardType === 'before') {
         editor.setExtraInfoBefore(prev => ({ ...prev, enPassantTarget: cell }));
       } else {

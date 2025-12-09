@@ -68,7 +68,6 @@ export function useBoardEditor() {
   }, []);
 
   const switchBoardType = useCallback((newBoardType) => {
-    // Preserve pieces when switching board types - only reset board-type-specific state
     setMainPiece(null);
     setValidMoves([]);
     setTargetSquare(null);
@@ -170,7 +169,6 @@ export function useBoardEditor() {
 
     setCurrentBoardType(schema.boardType || 'findAllPossibleMoves');
 
-    // Place pieces
     const newBoard = Array(8).fill(null).map(() => Array(8).fill(null));
     (schema.pieces || []).forEach(p => {
       if (!p.position) return;
@@ -185,7 +183,6 @@ export function useBoardEditor() {
     });
     setBoard(newBoard);
 
-    // Load board type specific data
     if (schema.boardType === 'isSquareAttacked') {
       if (schema.targetSquare) {
         setTargetSquare({
@@ -256,7 +253,6 @@ export function useBoardEditor() {
         });
       }
       if (schema.expectedResult !== undefined) {
-        // expectedResult can be null, 'checkmate', or 'stalemate'
         setCheckForCheckmateOrStalemateAfterMoveResult(schema.expectedResult || null);
       }
     } else if (schema.boardType === 'isInsufficientMaterial') {
@@ -264,7 +260,6 @@ export function useBoardEditor() {
         setIsInsufficientMaterialResult(schema.expectedResult === true);
       }
     } else if (schema.boardType !== 'simpleBoard') {
-      // For findAllPossibleMoves and enPassant
       if (schema.mainPiecePosition) {
         const cell = {
           row: schema.mainPiecePosition.row,
@@ -283,7 +278,6 @@ export function useBoardEditor() {
       }
     }
 
-    // Extra info
     if (schema.extraInfo) {
       const newExtraInfo = { ...extraInfo };
       
@@ -391,7 +385,6 @@ export function useBoardEditor() {
         };
       }
       if (checkForCheckmateOrStalemateAfterMoveResult !== null && checkForCheckmateOrStalemateAfterMoveResult !== undefined) {
-        // expectedResult can be null, 'checkmate', or 'stalemate'
         schema.expectedResult = checkForCheckmateOrStalemateAfterMoveResult;
       }
     } else if (boardType === 'isInsufficientMaterial') {

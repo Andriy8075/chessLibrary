@@ -1,5 +1,5 @@
 import React from 'react';
-import './ExpectedResult.css'; // Reusing styles
+import './ExpectedResult.css';
 
 const PROMOTION_PIECES = [
   { value: null, label: 'None' },

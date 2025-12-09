@@ -5,11 +5,9 @@ import { handleGameResponse } from './ui.js';
 const API_BASE_URL = 'http://localhost:3001';
 
 async function sendMoveRequest(cellFrom, cellTo, promotion = null) {
-    // If no promotion is specified, store the move in case promotion is required
     if (!promotion) {
         setPendingPromotionMove({ from: cellFrom, to: cellTo });
     } else {
-        // Clear pending move when sending a promotion
         clearPendingPromotionMove();
     }
     
@@ -35,7 +33,6 @@ async function sendMoveRequest(cellFrom, cellTo, promotion = null) {
         
         const result = await response.json();
         
-        // Handle the response
         handleGameResponse(result);
         
         return result;

@@ -14,17 +14,15 @@ function createBoard(state) {
     
     const arrangement = Array.isArray(state.board) ? state.board : [];
     
-    // Always display board from white's perspective (top to bottom)
     for (let displayRow = 0; displayRow < 8; displayRow++) {
         for (let displayCol = 0; displayCol < 8; displayCol++) {
-            const boardRow = 7 - displayRow; // Flip rows for white perspective
+            const boardRow = 7 - displayRow;
             const boardCol = displayCol;
             
             const square = document.createElement('div');
             const isLight = (displayRow + displayCol) % 2 === 0;
             square.className = `square ${isLight ? 'light' : 'dark'}`;
             
-            // Store board coordinates as data attributes for click handling
             square.dataset.boardRow = boardRow;
             square.dataset.boardCol = boardCol;
             
@@ -40,7 +38,6 @@ function createBoard(state) {
                 square.appendChild(img);
             }
             
-            // Add click handler
             square.addEventListener('click', function() {
                 handleSquareClick(square, boardRow, boardCol, arrangement);
             });

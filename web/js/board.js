@@ -25,7 +25,6 @@ function createBoard(state) {
             const isLight = (displayRow + displayCol) % 2 === 0;
             square.className = `square ${isLight ? 'light' : 'dark'}`;
             
-            // Store board coordinates as data attributes for click handling
             square.dataset.boardRow = boardRow;
             square.dataset.boardCol = boardCol;
             
@@ -41,7 +40,6 @@ function createBoard(state) {
                 square.appendChild(img);
             }
             
-            // Add click handler
             square.addEventListener('click', function() {
                 handleSquareClick(square, boardRow, boardCol, arrangement);
             });

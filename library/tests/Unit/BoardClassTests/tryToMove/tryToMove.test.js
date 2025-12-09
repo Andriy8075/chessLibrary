@@ -1,10 +1,5 @@
 const loadMockBoards = require('../../../helpers/loadMockBoards');
 
-/**
- * Converts a board's arrangement to a pieces array format (like in JSON schemas)
- * @param {Board} board - The board instance to convert
- * @returns {Array} Array of pieces with {type, color, position}
- */
 function boardToPiecesArray(board) {
     const pieces = [];
     const arrangement = board.getArrangement();
@@ -25,18 +20,11 @@ function boardToPiecesArray(board) {
     return pieces;
 }
 
-/**
- * Compares two piece arrays for equality
- * @param {Array} actualPieces - Pieces from the actual board
- * @param {Array} expectedPieces - Pieces from the expected board state
- * @returns {boolean} True if arrays are equal (same pieces in same positions)
- */
 function compareBoardArrangements(actualPieces, expectedPieces) {
     if (actualPieces.length !== expectedPieces.length) {
         return false;
     }
     
-    // Create maps for easier comparison: position -> piece
     const actualMap = new Map();
     const expectedMap = new Map();
     
@@ -50,7 +38,6 @@ function compareBoardArrangements(actualPieces, expectedPieces) {
         expectedMap.set(key, piece);
     });
     
-    // Check all positions match
     for (const [key, expectedPiece] of expectedMap) {
         const actualPiece = actualMap.get(key);
         if (!actualPiece) {
@@ -61,7 +48,6 @@ function compareBoardArrangements(actualPieces, expectedPieces) {
         }
     }
     
-    // Check no extra pieces in actual
     for (const key of actualMap.keys()) {
         if (!expectedMap.has(key)) {
             return false;
@@ -71,31 +57,21 @@ function compareBoardArrangements(actualPieces, expectedPieces) {
     return true;
 }
 
-/**
- * Compares two extraInfo objects for equality
- * @param {Object} actualExtraInfo - ExtraInfo from the actual board
- * @param {Object} expectedExtraInfo - ExtraInfo from the expected board state
- * @returns {boolean} True if extraInfo objects are equal
- */
 function compareExtraInfo(actualExtraInfo, expectedExtraInfo) {
     
-    // Compare enPassantTarget
     const actualEnPassant = actualExtraInfo.enPassantTarget;
     const expectedEnPassant = expectedExtraInfo.enPassantTarget;
     
-    // Treat undefined as null for comparison
     const actualIsNull = actualEnPassant === null || actualEnPassant === undefined;
     const expectedIsNull = expectedEnPassant === null || expectedEnPassant === undefined;
     
     if (actualIsNull && expectedIsNull) {
-        // Both null/undefined, continue
     } else if (actualIsNull || expectedIsNull) {
         return false;
     } else if (actualEnPassant.row !== expectedEnPassant.row || actualEnPassant.col !== expectedEnPassant.col) {
         return false;
     }
     
-    // Compare piecesMadeMoves
     const actualPiecesMoved = actualExtraInfo.piecesMadeMoves || {};
     const expectedPiecesMoved = expectedExtraInfo.piecesMadeMoves || {};
     
@@ -130,7 +106,6 @@ test('board cases', () => {
         expect(success).toBe(testCase.expectedResult);
 
         if (success) {
-            // Compare board we got to piecesAfter with extraInfoAfter
             const actualPieces = boardToPiecesArray(testCase.board);
             const expectedPieces = testCase.piecesAfter;
             expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);
@@ -139,7 +114,6 @@ test('board cases', () => {
             const expectedExtraInfo = testCase.extraInfoAfter;
             expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
         } else {
-            // Compare board we got to pieces with extraInfo
             const actualPieces = boardToPiecesArray(testCase.board);
             const expectedPieces = testCase.pieces;
             expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);

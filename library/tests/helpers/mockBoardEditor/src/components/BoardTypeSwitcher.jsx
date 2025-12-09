@@ -22,12 +22,10 @@ function BoardTypeSwitcher({ currentBoardType, onBoardTypeChange }) {
   const handleSwitch = (boardType) => {
     if (boardType === currentBoardType) return;
     
-    // Preserve pieces when switching - call the handler which will preserve pieces
     onBoardTypeChange(boardType);
     navigate(`/${boardType}`);
   };
 
-  // Get current route to highlight active board type
   const currentRoute = location.pathname.slice(1) || 'findAllPossibleMoves';
 
   return (

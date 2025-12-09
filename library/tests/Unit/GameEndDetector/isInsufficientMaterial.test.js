@@ -5,8 +5,6 @@ test('board cases', () => {
     const testCases = loadMockBoards('isInsufficientMaterial');
     for (const testCase of testCases) {
         const isInsufficientMaterial = GameEndDetector.isInsufficientMaterial(testCase.board);
-        // expectedResult: true means enough pieces (not insufficient), false means insufficient material
-        // isInsufficientMaterial === 'insufficientMaterial': true means insufficient, false/null means enough
         expect(isInsufficientMaterial === 'insufficientMaterial').toBe(testCase.expectedResult);
     }
 });

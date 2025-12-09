@@ -7,10 +7,8 @@ class MockBoard extends Board {
     constructor(additionalPieces = [], extraInfo = {}) {
         super();
         
-        // Clear the default board arrangement
         this.arrangement = Array(8).fill(null).map(() => Array(8).fill(null));
         
-        // Merge extraInfo with defaults (allowing partial overrides)
         this.extraInfo = {
             piecesMadeMoves: {
                 whiteKing: false,

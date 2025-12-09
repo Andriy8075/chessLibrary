@@ -1,8 +1,7 @@
-// Game state management
 let gameState = null;
 let selectedSquare = null;
 let selectedPiecePosition = null;
-let pendingPromotionMove = null; // Stores { from, to } when promotion is required
+let pendingPromotionMove = null;
 
 function getGameState() {
     return gameState;

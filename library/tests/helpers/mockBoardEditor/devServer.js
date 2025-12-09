@@ -13,10 +13,8 @@ const boardsRoot = mockBoardsFolder;
 const rootDir = __dirname;
 const port = process.env.MOCK_EDITOR_PORT ? parseInt(process.env.MOCK_EDITOR_PORT, 10) : 3002;
 
-// Production build directory - required
 const distDir = path.join(rootDir, 'dist');
 
-// Check if production build exists
 if (!fs.existsSync(distDir)) {
     console.error('ERROR: Production build not found. Please run "npm run build" first.');
     console.error(`Expected build directory: ${distDir}`);
@@ -238,7 +236,6 @@ async function handleBoardsApi(req, res, pathname, parsedUrl) {
             const newPath = parentPath ? `${parentPath}/${newName}` : newName;
             const newTargetPath = safeBoardsPath(newPath);
 
-            // Verify source exists
             try {
                 await fs.promises.stat(targetPath);
             } catch (e) {
@@ -249,31 +246,24 @@ async function handleBoardsApi(req, res, pathname, parsedUrl) {
                 throw e;
             }
 
-            // Check if target already exists
             try {
                 await fs.promises.stat(newTargetPath);
                 sendError(res, 409, 'A file or folder with that name already exists');
                 return;
             } catch (e) {
-                // Target doesn't exist, which is what we want
             }
 
-            // Rename the file or folder (this moves/renames atomically, not copies)
             await fs.promises.rename(targetPath, newTargetPath);
 
-            // Verify the rename succeeded - old file should not exist, new file should exist
             try {
                 await fs.promises.stat(targetPath);
-                // Old file still exists - this shouldn't happen with rename
                 sendError(res, 500, 'Rename operation failed - old file still exists');
                 return;
             } catch (e) {
-                // Old file doesn't exist - good, rename succeeded
             }
 
             try {
                 await fs.promises.stat(newTargetPath);
-                // New file exists - rename succeeded
             } catch (e) {
                 sendError(res, 500, 'Rename operation failed - new file does not exist');
                 return;
@@ -303,8 +293,6 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // Serve static files from production build directory
-    // For SPA routing: if file doesn't exist, serve index.html
     let filePath;
     if (pathname === '/') {
         pathname = '/index.html';
@@ -316,9 +304,7 @@ const server = http.createServer((req, res) => {
     filePath = path.join(distDir, safePath);
 
     fs.stat(filePath, (err, stats) => {
-        // If file doesn't exist and it's not an API route, serve index.html for SPA routing
         if ((err || !stats.isFile()) && !pathname.startsWith('/api/')) {
-            // Try to serve index.html for client-side routing
             const indexPath = path.join(distDir, 'index.html');
             fs.stat(indexPath, (indexErr, indexStats) => {
                 if (indexErr || !indexStats.isFile()) {

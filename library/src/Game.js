@@ -17,7 +17,6 @@ class Game {
             promotionRequired: false
         };
         
-        // Initialize position history with starting position
         const initialPosition = GameEndDetector._getPositionMatrix(this.state.board);
         this.state.positionHistory.push(initialPosition);
     }
@@ -115,7 +114,6 @@ class Game {
 
         const promotionPiece = request.promotion;
         
-        // Check for capture before move is executed
         const capturedPiece = this.state.board.getPieceOnCell(cellTo);
         const pieceAtFrom = this.state.board.getPieceOnCell(cellFrom);
         const wasPawnMove = pieceAtFrom && pieceAtFrom.constructor.name === 'Pawn';
@@ -129,7 +127,6 @@ class Game {
         if (!moveResult.success) {
             if (moveResult.error === 'Promotion is required') {
                 this.state.promotionRequired = true;
-                console.log('promotion required');
                 return {
                     success: false,
                     error: 'Promotion is required',

@@ -34,7 +34,6 @@ class King extends Piece {
         if (this.board.hasPieceMoved(this.color, isKingside ? 'kingsideRook' : 'queensideRook')) return false;
         if (this.board.hasPieceMoved(this.color, 'king')) return false;
 
-        // check for pieces between king and rook
         const pathStartCol = isKingside ? 6 : 3;
         const pathEndCol = isKingside ? 7 : 4;
         for (let col = pathStartCol; col <= pathEndCol; col++) {
@@ -42,7 +41,6 @@ class King extends Piece {
             if (this.board.getPieceOnCell(pathCell)) return false;
         }
 
-        // check for checks for king, rook and pieces
         const startCol = isKingside ? 5 : 1;
         const endCol = isKingside ? 8 : 5;
 
