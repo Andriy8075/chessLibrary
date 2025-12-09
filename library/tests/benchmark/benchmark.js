@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Game = require('../../src/Game');
 
-const concurrentGames = 1000;
+const concurrentGames = 20000;
 
 function loadGameMoves(testCaseDir) {
     const files = fs.readdirSync(testCaseDir)
@@ -61,12 +61,10 @@ async function runBenchmark() {
     
     const startTime = Date.now();
     
-    // Create promises, each playing the game simultaneously
-    // Since JavaScript is single-threaded, they'll execute sequentially but as fast as possible
-    const gamePromises = Array.from({ length: concurrentGames }, () => Promise.resolve(playGame(moves)));
-    
-    // Wait for all games to complete
-    await Promise.all(gamePromises);
+    // Run games sequentially, one after another
+    for (let i = 0; i < concurrentGames; i++) {
+        playGame(moves);
+    }
     
     const endTime = Date.now();
     const duration = endTime - startTime;
