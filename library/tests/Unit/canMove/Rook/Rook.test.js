@@ -1,5 +1,5 @@
 const loadMockBoards = require('../../../helpers/loadMockBoards');
-const MockBoard = require('../../../helpers/MockBoard');
+const MockBoard = require('../../../helpers/../../src/board/Board');
 const { cellsEqual } = require('../../../../src/utils/Cell');
 
 const rookProvider = (cell) => {

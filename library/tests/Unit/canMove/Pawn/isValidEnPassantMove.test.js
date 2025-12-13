@@ -1,5 +1,5 @@
 const Pawn = require('../../../../src/pieces/Pawn');
-const MockBoard = require('../../../helpers/MockBoard');
+const MockBoard = require('../../../helpers/../../src/board/Board');
 
 test('returns true for only one valid move', () => {
     const board = new MockBoard([

@@ -1,9 +1,9 @@
-const King = require('../../src/pieces/King');
-const Queen = require('../../src/pieces/Queen');
-const Rook = require('../../src/pieces/Rook');
-const Bishop = require('../../src/pieces/Bishop');
-const Knight = require('../../src/pieces/Knight');
-const Pawn = require('../../src/pieces/Pawn');
+const King = require('../pieces/King');
+const Queen = require('../pieces/Queen');
+const Rook = require('../pieces/Rook');
+const Bishop = require('../pieces/Bishop');
+const Knight = require('../pieces/Knight');
+const Pawn = require('../pieces/Pawn');
 
 function pieceClassProvider(pieceName) {
     pieceName = pieceName.toLowerCase();

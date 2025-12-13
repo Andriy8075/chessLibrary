@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/MockBoard');
+const MockBoard = require('../../helpers/../../src/board/Board');
 
 describe('Board._executeMove', () => {
     it('should move a piece from one cell to another', () => {

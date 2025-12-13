@@ -1,4 +1,4 @@
-const MockBoard = require('../../../helpers/MockBoard');
+const MockBoard = require('../../../helpers/../../src/board/Board');
 
 const queenProvider = (cell) => {
     const board = new MockBoard([{type: 'queen', color: 'black', position: cell}]);

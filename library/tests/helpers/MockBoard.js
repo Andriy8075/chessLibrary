@@ -1,6 +1,4 @@
-const { isValidCell } = require('../../src/utils/Cell');
-const pieceClassProvider = require('./pieceClassProvider');
-const CheckDetector = require('../../src/board/CheckDetector');
+const pieceClassProvider = require('../../src/utils/pieceClassProvider');
 const Board = require('../../src/board/Board');
 
 class MockBoard extends Board {

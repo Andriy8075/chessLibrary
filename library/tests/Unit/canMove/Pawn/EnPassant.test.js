@@ -1,4 +1,4 @@
-const mockBoard = require('../../../helpers/MockBoard');
+const mockBoard = require('../../../helpers/../../src/board/Board');
 
 test('white pawn can en passant', () => {
     const board = new mockBoard([

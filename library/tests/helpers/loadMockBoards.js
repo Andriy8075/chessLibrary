@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const MockBoard = require('./MockBoard');
+const MockBoard = require('./../../src/board/Board');
 const mockBoardsFolder = require('./mockBoardsFolder');
 function loadMockBoards(folderPath) {
     const boards = [];

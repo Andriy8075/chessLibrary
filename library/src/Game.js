@@ -1,15 +1,14 @@
-const Board = require('./board/Board');
 const validateMoveRequest = require('./validators/moveRequestValidator');
 const validateResignRequest = require('./validators/resignRequestValidator');
 const validateProposeDrawRequest = require('./validators/proposeDrawRequestValidator');
 const validateAcceptDrawRequest = require('./validators/acceptDrawRequestValidator');
-const GameEnd = require('./utils/GameEnd');
 const GameEndDetector = require('./board/GameEndDetector');
+const loadDefaultBoard = require('./utils/loadDefaultBoars');
 
 class Game {
     constructor() {
         this.state = {
-            board: new Board(),
+            board: loadDefaultBoard(),
             currentTurn: 'white',
             lastMove: null,
             gameStatus: 'active',

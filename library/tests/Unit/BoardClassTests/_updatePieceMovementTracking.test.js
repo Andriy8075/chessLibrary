@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/MockBoard');
+const MockBoard = require('../../helpers/../../src/board/Board');
 
 describe('Board._updatePieceMovementTracking', () => {
     it('should update the piece movement tracking for white king', () => {

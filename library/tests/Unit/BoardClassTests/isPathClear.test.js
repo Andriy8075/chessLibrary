@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/MockBoard');
+const MockBoard = require('../../helpers/../../src/board/Board');
 
 describe('Board.isPathClear', () => {
     it('should return true if the path is clear. The same row', () => {
