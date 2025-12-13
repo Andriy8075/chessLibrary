@@ -19,7 +19,11 @@ test('board cases', () => {
             
             const { sortedPossibleMoves, sortedExpectedMoves } = sortMoves(possibleMoves, testCase.moves);
             
-            expect(sortedPossibleMoves).toEqual(sortedExpectedMoves);
+            try {
+                expect(sortedPossibleMoves).toEqual(sortedExpectedMoves);
+            } catch (error) {
+                throw new Error(`Piece at ${JSON.stringify(testCase.mainPiecePosition)} in folder "${folderName}" should have expected moves. ${error.message}`);
+            }
         });
     });
 });

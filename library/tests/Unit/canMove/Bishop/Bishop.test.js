@@ -1,4 +1,4 @@
-const MockBoard = require('../../../../src/board/Board');
+const MockBoard = require('../../../helpers/../../src/board/Board');
 const loadMockBoards = require('../../../helpers/loadMockBoards');
 const { cellsEqual } = require('../../../../src/utils/Cell');
 

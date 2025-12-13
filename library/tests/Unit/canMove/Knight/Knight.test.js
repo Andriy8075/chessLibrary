@@ -57,10 +57,20 @@ test('test positions with all valid moves', () => {
                         break;
                     }
                 }
-                if (result !== expected) {
-                    console.log(`Knight at ${position.position} can move to ${cellTo} but should not`, {depth: 5});
+                try {
+                    expect(result).toBe(expected);
+                } catch (error) {
+                    const message = `Knight at ${JSON.stringify(position.position)} should ${expected ? '' : 'not '}be able to move to ${JSON.stringify(cellTo)}. Got ${result}, expected ${expected}.`;
+                    console.error('Knight move details:', JSON.stringify({
+                        piece: 'Knight',
+                        from: position.position,
+                        to: cellTo,
+                        expectedResult: expected,
+                        actualResult: result,
+                        validMoves: position.moves
+                    }, null, 2));
+                    throw new Error(message);
                 }
-                expect(result).toBe(expected);
             }
         }
     }

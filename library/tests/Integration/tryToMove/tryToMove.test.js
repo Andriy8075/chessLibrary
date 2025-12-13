@@ -103,24 +103,83 @@ test('board cases', () => {
             success = result.success;
         }
 
-        expect(success).toBe(testCase.expectedResult);
+        try {
+            expect(success).toBe(testCase.expectedResult);
+        } catch (error) {
+            const moveDetails = {
+                cellFrom: testCase.cellFrom,
+                cellTo: testCase.cellTo,
+                promotionPiece: testCase.promotionPiece || null,
+                expectedResult: testCase.expectedResult,
+                actualResult: success,
+                error: result.error || null
+            };
+            console.error('Move details:', JSON.stringify(moveDetails, null, 2));
+            console.error('Board pieces before move:', JSON.stringify(testCase.pieces, null, 2));
+            throw new Error(
+                `Move from ${JSON.stringify(testCase.cellFrom)} to ${JSON.stringify(testCase.cellTo)} ` +
+                `should ${testCase.expectedResult ? 'succeed' : 'fail'}. Got ${success}, expected ${testCase.expectedResult}. ` +
+                `${testCase.promotionPiece ? `Promotion piece: ${testCase.promotionPiece}. ` : ''}` +
+                `${result.error ? `Error: ${result.error}. ` : ''}${error.message}`
+            );
+        }
 
         if (success) {
             const actualPieces = boardToPiecesArray(testCase.board);
             const expectedPieces = testCase.piecesAfter;
-            expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);
+            try {
+                expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);
+            } catch (error) {
+                console.error(`Move from ${JSON.stringify(testCase.cellFrom)} to ${JSON.stringify(testCase.cellTo)}`);
+                console.error('Expected pieces after move:', JSON.stringify(expectedPieces, null, 2));
+                console.error('Actual pieces after move:', JSON.stringify(actualPieces, null, 2));
+                throw new Error(
+                    `Board arrangement after successful move from ${JSON.stringify(testCase.cellFrom)} ` +
+                    `to ${JSON.stringify(testCase.cellTo)} should match expected. ${error.message}`
+                );
+            }
             
             const actualExtraInfo = testCase.board.extraInfo;
             const expectedExtraInfo = testCase.extraInfoAfter;
-            expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
+            try {
+                expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
+            } catch (error) {
+                console.error(`Move from ${JSON.stringify(testCase.cellFrom)} to ${JSON.stringify(testCase.cellTo)}`);
+                console.error('Expected extraInfo:', JSON.stringify(expectedExtraInfo, null, 2));
+                console.error('Actual extraInfo:', JSON.stringify(actualExtraInfo, null, 2));
+                throw new Error(
+                    `Extra info (enPassantTarget, piecesMadeMoves) after successful move from ${JSON.stringify(testCase.cellFrom)} ` +
+                    `to ${JSON.stringify(testCase.cellTo)} should match expected. ${error.message}`
+                );
+            }
         } else {
             const actualPieces = boardToPiecesArray(testCase.board);
             const expectedPieces = testCase.pieces;
-            expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);
+            try {
+                expect(compareBoardArrangements(actualPieces, expectedPieces)).toBe(true);
+            } catch (error) {
+                console.error(`Failed move from ${JSON.stringify(testCase.cellFrom)} to ${JSON.stringify(testCase.cellTo)}`);
+                console.error('Expected pieces (should be unchanged):', JSON.stringify(expectedPieces, null, 2));
+                console.error('Actual pieces:', JSON.stringify(actualPieces, null, 2));
+                throw new Error(
+                    `Board arrangement should remain unchanged after failed move from ${JSON.stringify(testCase.cellFrom)} ` +
+                    `to ${JSON.stringify(testCase.cellTo)}. ${error.message}`
+                );
+            }
             
             const actualExtraInfo = testCase.board.extraInfo;
             const expectedExtraInfo = testCase.extraInfo;
-            expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
+            try {
+                expect(compareExtraInfo(actualExtraInfo, expectedExtraInfo)).toBe(true);
+            } catch (error) {
+                console.error(`Failed move from ${JSON.stringify(testCase.cellFrom)} to ${JSON.stringify(testCase.cellTo)}`);
+                console.error('Expected extraInfo (should be unchanged):', JSON.stringify(expectedExtraInfo, null, 2));
+                console.error('Actual extraInfo:', JSON.stringify(actualExtraInfo, null, 2));
+                throw new Error(
+                    `Extra info should remain unchanged after failed move from ${JSON.stringify(testCase.cellFrom)} ` +
+                    `to ${JSON.stringify(testCase.cellTo)}. ${error.message}`
+                );
+            }
         }
     }
 });

@@ -50,8 +50,12 @@ test('from and to cells must be different', () => {
 function launchTests(testCases, expected) {
     testCases.forEach(testCase => {
         const { valid, error } = validateMoveRequest(testCase);
-        logTestCaseIfFailed(testCase, valid, error, expected);
-        expect(valid).toBe(expected);
+        try {
+            expect(valid).toBe(expected);
+        } catch (e) {
+            logTestCaseIfFailed(testCase, valid, error, expected);
+            throw new Error(`Move request from ${JSON.stringify(testCase.from)} to ${JSON.stringify(testCase.to)} should be ${expected ? 'valid' : 'invalid'}. Got ${valid}, expected ${expected}. Error: ${error || 'none'}. ${e.message}`);
+        }
     });
 }
 

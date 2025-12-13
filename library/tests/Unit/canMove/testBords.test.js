@@ -26,10 +26,28 @@ test('board cases', () => {
                             break;
                         }
                     }
-                    if (result !== expected) {
-                        console.log(`Bishop at ${board.mainPiecePosition} can move to ${cellTo} but should not`, {depth: 5});
+                    try {
+                        expect(result).toBe(expected);
+                    } catch (error) {
+                        const piece = board.board.getPieceOnCell(board.mainPiecePosition);
+                        const pieceInfo = piece ? {
+                            type: piece.constructor.name,
+                            color: piece.color,
+                            position: board.mainPiecePosition
+                        } : 'N/A';
+                        console.error('Move attempt details:', JSON.stringify({
+                            piece: pieceInfo,
+                            from: board.mainPiecePosition,
+                            to: cellTo,
+                            expectedResult: expected,
+                            actualResult: result,
+                            folder: folderName
+                        }, null, 2));
+                        throw new Error(
+                            `Piece at ${JSON.stringify(board.mainPiecePosition)} should ${expected ? '' : 'not '}be able to move to ${JSON.stringify(cellTo)} in folder ${folderName}. ` +
+                            `Got ${result}, expected ${expected}. ${error.message}`
+                        );
                     }
-                    expect(result).toBe(expected);
     
                 }
             }

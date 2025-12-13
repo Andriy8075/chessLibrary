@@ -8,7 +8,11 @@ const queenProvider = (cell) => {
 test('can move to cells outside of the board', () => {
     const queen = queenProvider({ row: 4, col: 3 });
     result = queen.canMove({ row: 4, col: 9 });
-    expect(result).toBe(false);
+    try {
+        expect(result).toBe(false);
+    } catch (error) {
+        throw new Error(`Queen should not be able to move to cells outside the board (row: 4, col: 9). Got ${result}, expected false. ${error.message}`);
+    }
 });
 
 test('can not move to the same cell', () => {

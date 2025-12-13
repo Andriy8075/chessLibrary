@@ -55,6 +55,10 @@ testCaseFolders.forEach(testCaseName => {
         const actualResult = GameEndDetector.checkForThreefoldRepetitionsAfterMove(positionHistory);
         
         // Assert that the result matches the expected result
-        expect(actualResult).toBe(expectedResult);
+        try {
+            expect(actualResult).toBe(expectedResult);
+        } catch (error) {
+            throw new Error(`Test case "${testCaseName}": Expected threefold repetition result to be ${expectedResult}, but got ${actualResult}. ${error.message}`);
+        }
     });
 });

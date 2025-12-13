@@ -147,18 +147,34 @@ test('can castle only if king is moving to specific cell', () => {
         for (let j = 1; j <= 8; j++) {
             const cell = { row: i, col: j };
             const canCastle = king.canCastle(cell);
-            if (canCastle !== (i === 1 && j === 7)) {
-                console.log(`canCastle: ${canCastle}, expected: ${i === 1 && j === 7}`);
-                console.log(`cell: ${cell.row}, ${cell.col}`);
+            const expectedCastle = i === 1 && j === 7;
+            const kingFrom = { row: 1, col: 5 };
+            try {
+                expect(canCastle).toBe(expectedCastle);
+            } catch (error) {
+                console.error('Castling validation details:', JSON.stringify({
+                    kingFrom: kingFrom,
+                    targetCell: cell,
+                    canCastleResult: canCastle,
+                    expectedResult: expectedCastle
+                }, null, 2));
+                const message = `King canCastle(${JSON.stringify(cell)}) should be ${expectedCastle}. Got ${canCastle}, expected ${expectedCastle}.`;
+                throw new Error(message);
             }
-            expect(canCastle).toBe(i === 1 && j === 7);
 
-            const isValidCastlingMove = King.isValidCastlingMove({ row: 1, col: 5 }, cell, board);
-            if (isValidCastlingMove !== (i === 1 && j === 7)) {
-                console.log(`isValidCastlingMove: ${isValidCastlingMove}, expected: ${i === 1 && j === 7}`);
-                console.log(`cell: ${cell.row}, ${cell.col}`);
+            const isValidCastlingMove = King.isValidCastlingMove(kingFrom, cell, board);
+            try {
+                expect(isValidCastlingMove).toBe(expectedCastle);
+            } catch (error) {
+                console.error('Castling move validation details:', JSON.stringify({
+                    kingFrom: kingFrom,
+                    targetCell: cell,
+                    isValidCastlingMoveResult: isValidCastlingMove,
+                    expectedResult: expectedCastle
+                }, null, 2));
+                const message = `King isValidCastlingMove from ${JSON.stringify(kingFrom)} to ${JSON.stringify(cell)} should be ${expectedCastle}. Got ${isValidCastlingMove}, expected ${expectedCastle}.`;
+                throw new Error(message);
             }
-            expect(isValidCastlingMove).toBe(i === 1 && j === 7);
         }
     }
 })

@@ -14,6 +14,10 @@ describe('Board.getKing', () => {
         ]);
         const king1 = board.getKing('white');
         const king2 = board.getPieceOnCell({ row: 6, col: 4 })
-        expect(king1).toBe(king2);
+        try {
+            expect(king1).toBe(king2);
+        } catch (error) {
+            throw new Error(`getKing('white') should return the king at {row: 6, col: 4}. ${error.message}`);
+        }
     });
 });
