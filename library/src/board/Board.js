@@ -34,31 +34,6 @@ class Board {
             const pieceClass = pieceClassProvider(piece.type);
             this.arrangement[piece.position.row - 1][piece.position.col - 1] = new pieceClass(piece.color, piece.position, this);
         }
-        // for (let col = 1; col <= 8; col++) {
-        //     this._placePiece(new Pawn('white', { row: 2, col }, this), { row: 2, col });
-        //     this._placePiece(new Pawn('black', { row: 7, col }, this), { row: 7, col });
-        // }
-
-        // this._placePiece(new Rook('white', { row: 1, col: 1 }, this), { row: 1, col: 1 });
-        // this._placePiece(new Rook('white', { row: 1, col: 8 }, this), { row: 1, col: 8 });
-        // this._placePiece(new Rook('black', { row: 8, col: 1 }, this), { row: 8, col: 1 });
-        // this._placePiece(new Rook('black', { row: 8, col: 8 }, this), { row: 8, col: 8 });
-
-        // this._placePiece(new Knight('white', { row: 1, col: 2 }, this), { row: 1, col: 2 });
-        // this._placePiece(new Knight('white', { row: 1, col: 7 }, this), { row: 1, col: 7 });
-        // this._placePiece(new Knight('black', { row: 8, col: 2 }, this), { row: 8, col: 2 });
-        // this._placePiece(new Knight('black', { row: 8, col: 7 }, this), { row: 8, col: 7 });
-
-        // this._placePiece(new Bishop('white', { row: 1, col: 3 }, this), { row: 1, col: 3 });
-        // this._placePiece(new Bishop('white', { row: 1, col: 6 }, this), { row: 1, col: 6 });
-        // this._placePiece(new Bishop('black', { row: 8, col: 3 }, this), { row: 8, col: 3 });
-        // this._placePiece(new Bishop('black', { row: 8, col: 6 }, this), { row: 8, col: 6 });
-
-        // this._placePiece(new King('white', { row: 1, col: 5 }, this), { row: 1, col: 5 });
-        // this._placePiece(new King('black', { row: 8, col: 5 }, this), { row: 8, col: 5 });
-
-        // this._placePiece(new Queen('white', { row: 1, col: 4 }, this), { row: 1, col: 4 });
-        // this._placePiece(new Queen('black', { row: 8, col: 4 }, this), { row: 8, col: 4 });
     }
 
     getArrangement() {
