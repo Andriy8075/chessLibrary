@@ -94,12 +94,53 @@
         #resignBtn:active {
             background-color: #bd2130;
         }
+        #proposeDrawBtn, #acceptDrawBtn {
+            display: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        #proposeDrawBtn {
+            background-color: #007bff;
+            color: white;
+        }
+        #proposeDrawBtn:hover {
+            background-color: #0056b3;
+        }
+        #proposeDrawBtn:active {
+            background-color: #004085;
+        }
+        #acceptDrawBtn {
+            background-color: #28a745;
+            color: white;
+        }
+        #acceptDrawBtn:hover {
+            background-color: #218838;
+        }
+        #acceptDrawBtn:active {
+            background-color: #1e7e34;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 <body>
     <h1>Chess</h1>
     <button id="findGameBtn">Find Game</button>
-    <button id="resignBtn">Resign</button>
+    <div class="button-container">
+        <button id="resignBtn">Resign</button>
+        <button id="proposeDrawBtn">Propose Draw</button>
+        <button id="acceptDrawBtn">Accept Draw</button>
+    </div>
     <div id="status"></div>
     <div id="chessBoard"></div>
     <div id="promotionContainer">

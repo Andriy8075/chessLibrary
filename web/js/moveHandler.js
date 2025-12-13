@@ -54,5 +54,45 @@ function sendResignRequest() {
     updateStatus('Sending resign request...');
 }
 
-export { sendMoveRequest, sendResignRequest };
+function sendProposeDrawRequest() {
+    const socket = getSocket();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        updateStatus('Not connected to server');
+        return;
+    }
+    
+    const gameRequest = {
+        type: 'proposeDraw'
+    };
+    
+    const message = {
+        type: 'gameRequest',
+        gameRequest: gameRequest
+    };
+    
+    socket.send(JSON.stringify(message));
+    updateStatus('Sending draw proposal...');
+}
+
+function sendAcceptDrawRequest() {
+    const socket = getSocket();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        updateStatus('Not connected to server');
+        return;
+    }
+    
+    const gameRequest = {
+        type: 'acceptDraw'
+    };
+    
+    const message = {
+        type: 'gameRequest',
+        gameRequest: gameRequest
+    };
+    
+    socket.send(JSON.stringify(message));
+    updateStatus('Accepting draw proposal...');
+}
+
+export { sendMoveRequest, sendResignRequest, sendProposeDrawRequest, sendAcceptDrawRequest };
 

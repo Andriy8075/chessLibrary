@@ -52,6 +52,7 @@ function handleServerMessage(message) {
             hidePromotionButtons();
             clearPendingPromotionMove();
             showResignButton();
+            updateDrawButtons(message.data.gameState);
             break;
         case 'gameResponse':
             handleGameResponse(message.data);
@@ -94,10 +95,23 @@ function handleGameResponse(data) {
             hidePromotionButtons();
             clearPendingPromotionMove();
         }
+        
+        updateDrawButtons(gameState);
     }
     
-    if (data.success) {
+        if (data.success) {
         const statusMessages = [];
+        
+        // Handle draw proposal success (only show if game is still active and proposal exists)
+        if (data.state && data.state.gameStatus === 'active' && data.state.pendingDrawProposal) {
+            const proposingColor = data.state.pendingDrawProposal;
+            const playerColor = getPlayerColor();
+            if (proposingColor === playerColor) {
+                statusMessages.push('Draw proposal sent to opponent');
+            } else {
+                statusMessages.push('Opponent proposed a draw');
+            }
+        }
         
         const gameEndsStatusHandlers = {
             'checkmate': () => {
@@ -128,6 +142,9 @@ function handleGameResponse(data) {
                 const capitalizedLoser = loser.charAt(0).toUpperCase() + loser.slice(1);
                 const capitalizedWinner = winner.charAt(0).toUpperCase() + winner.slice(1);
                 statusMessages.push(`${capitalizedLoser} resigned. ${capitalizedWinner} wins!`);
+            },
+            'drawByAgreement': () => {
+                statusMessages.push('Draw by agreement!');
             }
         };
         
@@ -135,8 +152,12 @@ function handleGameResponse(data) {
         if (gameEndFunction) {
             gameEndFunction();
             hideResignButton();
+            hideDrawButtons();
         } else {
-            statusMessages.push('Move successful');
+            // Only show "Move successful" if it's not a draw proposal/acceptance
+            if (data.state.gameStatus === 'active' && !data.state.pendingDrawProposal) {
+                statusMessages.push('Move successful');
+            }
         }
         
         if (data.state.gameStatus === 'active') {
@@ -145,6 +166,7 @@ function handleGameResponse(data) {
         } else {
             // Game ended for other reasons (checkmate, stalemate, etc.)
             hideResignButton();
+            hideDrawButtons();
         }
         
         updateStatus(statusMessages.join(' - '));
@@ -202,6 +224,63 @@ function hideResignButton() {
     const resignBtn = document.getElementById('resignBtn');
     if (resignBtn) {
         resignBtn.style.display = 'none';
+    }
+}
+
+function showProposeDrawButton() {
+    const proposeDrawBtn = document.getElementById('proposeDrawBtn');
+    if (proposeDrawBtn) {
+        proposeDrawBtn.style.display = 'inline-block';
+    }
+}
+
+function hideProposeDrawButton() {
+    const proposeDrawBtn = document.getElementById('proposeDrawBtn');
+    if (proposeDrawBtn) {
+        proposeDrawBtn.style.display = 'none';
+    }
+}
+
+function showAcceptDrawButton() {
+    const acceptDrawBtn = document.getElementById('acceptDrawBtn');
+    if (acceptDrawBtn) {
+        acceptDrawBtn.style.display = 'inline-block';
+    }
+}
+
+function hideAcceptDrawButton() {
+    const acceptDrawBtn = document.getElementById('acceptDrawBtn');
+    if (acceptDrawBtn) {
+        acceptDrawBtn.style.display = 'none';
+    }
+}
+
+function hideDrawButtons() {
+    hideProposeDrawButton();
+    hideAcceptDrawButton();
+}
+
+function updateDrawButtons(gameState) {
+    if (!gameState || gameState.gameStatus !== 'active') {
+        hideDrawButtons();
+        return;
+    }
+    
+    const playerColor = getPlayerColor();
+    const pendingDrawProposal = gameState.pendingDrawProposal;
+    
+    if (pendingDrawProposal === null) {
+        // No pending proposal - show propose button, hide accept button
+        showProposeDrawButton();
+        hideAcceptDrawButton();
+    } else if (pendingDrawProposal === playerColor) {
+        // Player proposed draw - hide both buttons (waiting for opponent)
+        hideProposeDrawButton();
+        hideAcceptDrawButton();
+    } else {
+        // Opponent proposed draw - hide propose button, show accept button
+        hideProposeDrawButton();
+        showAcceptDrawButton();
     }
 }
 

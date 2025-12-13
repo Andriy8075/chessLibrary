@@ -1,6 +1,8 @@
 const Board = require('./board/Board');
 const validateMoveRequest = require('./validators/moveRequestValidator');
 const validateResignRequest = require('./validators/resignRequestValidator');
+const validateProposeDrawRequest = require('./validators/proposeDrawRequestValidator');
+const validateAcceptDrawRequest = require('./validators/acceptDrawRequestValidator');
 const GameEnd = require('./utils/GameEnd');
 const GameEndDetector = require('./board/GameEndDetector');
 
@@ -14,7 +16,8 @@ class Game {
             winner: null,
             moveHistory: [],
             positionHistory: [],
-            promotionRequired: false
+            promotionRequired: false,
+            pendingDrawProposal: null
         };
         
         const initialPosition = GameEndDetector._getPositionMatrix(this.state.board);
@@ -33,7 +36,8 @@ class Game {
             gameStatus: this.state.gameStatus,
             winner: this.state.winner,
             moveHistory: this.state.moveHistory,
-            promotionRequired: this.state.promotionRequired
+            promotionRequired: this.state.promotionRequired,
+            pendingDrawProposal: this.state.pendingDrawProposal
         };
     }
 
@@ -52,6 +56,12 @@ class Game {
                 break;
             case 'resign':
                 return this._processResign(request);
+                break;
+            case 'proposeDraw':
+                return this._processProposeDraw(request);
+                break;
+            case 'acceptDraw':
+                return this._processAcceptDraw(request);
                 break;
             default:
                 return {
@@ -189,6 +199,7 @@ class Game {
 
         this.state.currentTurn = this.state.currentTurn === 'white' ? 'black' : 'white';
         this.state.promotionRequired = false;
+        this.state.pendingDrawProposal = null;
 
         return result;
     }
@@ -212,6 +223,76 @@ class Game {
         const { color } = request;
         this.state.gameStatus = 'resigned';
         this.state.winner = color === 'white' ? 'black' : 'white';
+        return {
+            success: true,
+            state: this.state
+        };
+    }
+
+    _processProposeDraw(request) {
+        const { valid, error } = validateProposeDrawRequest(request);
+        if (!valid) {
+            return {
+                success: false,
+                error,
+                state: this.state
+            };
+        }
+        if (this.state.gameStatus !== 'active') {
+            return {
+                success: false,
+                error: `Game is not active. Status: ${this.state.gameStatus}`,
+                state: this.state
+            };
+        }
+        const { color } = request;
+        if (this.state.pendingDrawProposal !== null) {
+            return {
+                success: false,
+                error: 'There is already a pending draw proposal',
+                state: this.state
+            };
+        }
+        this.state.pendingDrawProposal = color;
+        return {
+            success: true,
+            state: this.state
+        };
+    }
+
+    _processAcceptDraw(request) {
+        const { valid, error } = validateAcceptDrawRequest(request);
+        if (!valid) {
+            return {
+                success: false,
+                error,
+                state: this.state
+            };
+        }
+        if (this.state.gameStatus !== 'active') {
+            return {
+                success: false,
+                error: `Game is not active. Status: ${this.state.gameStatus}`,
+                state: this.state
+            };
+        }
+        const { color } = request;
+        if (this.state.pendingDrawProposal === null) {
+            return {
+                success: false,
+                error: 'No pending draw proposal to accept',
+                state: this.state
+            };
+        }
+        if (this.state.pendingDrawProposal === color) {
+            return {
+                success: false,
+                error: 'Cannot accept your own draw proposal',
+                state: this.state
+            };
+        }
+        this.state.gameStatus = 'drawByAgreement';
+        this.state.pendingDrawProposal = null;
         return {
             success: true,
             state: this.state
