@@ -51,6 +51,7 @@ function handleServerMessage(message) {
             createBoard(message.data.gameState);
             hidePromotionButtons();
             clearPendingPromotionMove();
+            showResignButton();
             break;
         case 'gameResponse':
             handleGameResponse(message.data);
@@ -120,12 +121,20 @@ function handleGameResponse(data) {
             },
             'check': () => {
                 statusMessages.push('Check!');
+            },
+            'resigned': () => {
+                const { winner } = data.state;
+                const loser = winner === 'white' ? 'black' : 'white';
+                const capitalizedLoser = loser.charAt(0).toUpperCase() + loser.slice(1);
+                const capitalizedWinner = winner.charAt(0).toUpperCase() + winner.slice(1);
+                statusMessages.push(`${capitalizedLoser} resigned. ${capitalizedWinner} wins!`);
             }
         };
         
         const gameEndFunction = gameEndsStatusHandlers[data.state.gameStatus];
         if (gameEndFunction) {
             gameEndFunction();
+            hideResignButton();
         } else {
             statusMessages.push('Move successful');
         }
@@ -133,6 +142,9 @@ function handleGameResponse(data) {
         if (data.state.gameStatus === 'active') {
             const currentPlayer = data.state.currentTurn === getPlayerColor() ? 'Your' : 'Opponent\'s';
             statusMessages.push(`${currentPlayer} turn`);
+        } else {
+            // Game ended for other reasons (checkmate, stalemate, etc.)
+            hideResignButton();
         }
         
         updateStatus(statusMessages.join(' - '));
@@ -177,6 +189,20 @@ function setupPromotionButtons() {
             }
         });
     });
+}
+
+function showResignButton() {
+    const resignBtn = document.getElementById('resignBtn');
+    if (resignBtn) {
+        resignBtn.style.display = 'inline-block';
+    }
+}
+
+function hideResignButton() {
+    const resignBtn = document.getElementById('resignBtn');
+    if (resignBtn) {
+        resignBtn.style.display = 'none';
+    }
 }
 
 function getSocket() {

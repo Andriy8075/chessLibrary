@@ -34,5 +34,25 @@ function sendMoveRequest(cellFrom, cellTo, promotion = null) {
     updateStatus('Sending move...');
 }
 
-export { sendMoveRequest };
+function sendResignRequest() {
+    const socket = getSocket();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        updateStatus('Not connected to server');
+        return;
+    }
+    
+    const gameRequest = {
+        type: 'resign'
+    };
+    
+    const message = {
+        type: 'gameRequest',
+        gameRequest: gameRequest
+    };
+    
+    socket.send(JSON.stringify(message));
+    updateStatus('Sending resign request...');
+}
+
+export { sendMoveRequest, sendResignRequest };
 

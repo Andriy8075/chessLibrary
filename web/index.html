@@ -76,11 +76,30 @@
         .promotion-button:hover {
             background-color: #f0f0f0;
         }
+        #resignBtn {
+            display: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 20px;
+            cursor: pointer;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        #resignBtn:hover {
+            background-color: #c82333;
+        }
+        #resignBtn:active {
+            background-color: #bd2130;
+        }
     </style>
 </head>
 <body>
     <h1>Chess</h1>
     <button id="findGameBtn">Find Game</button>
+    <button id="resignBtn">Resign</button>
     <div id="status"></div>
     <div id="chessBoard"></div>
     <div id="promotionContainer">

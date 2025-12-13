@@ -1,5 +1,6 @@
 const Board = require('./board/Board');
 const validateMoveRequest = require('./validators/moveRequestValidator');
+const validateResignRequest = require('./validators/resignRequestValidator');
 const GameEnd = require('./utils/GameEnd');
 const GameEndDetector = require('./board/GameEndDetector');
 
@@ -48,6 +49,10 @@ class Game {
         switch (request.type) {
             case 'move':
                 return this._processMove(request);
+                break;
+            case 'resign':
+                return this._processResign(request);
+                break;
             default:
                 return {
                     success: false,
@@ -186,6 +191,31 @@ class Game {
         this.state.promotionRequired = false;
 
         return result;
+    }
+
+    _processResign(request) {
+        const { valid, error } = validateResignRequest(request);
+        if (!valid) {
+            return {
+                success: false,
+                error,
+                state: this.state
+            };
+        }
+        if (this.state.gameStatus !== 'active') {
+            return {
+                success: false,
+                error: `Game is not active. Status: ${this.state.gameStatus}`,
+                state: this.state
+            };
+        }
+        const { color } = request;
+        this.state.gameStatus = 'resigned';
+        this.state.winner = color === 'white' ? 'black' : 'white';
+        return {
+            success: true,
+            state: this.state
+        };
     }
 }
 

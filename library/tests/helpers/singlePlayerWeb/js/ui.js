@@ -73,7 +73,9 @@ function handleGameResponse(data) {
                 statusMessages.push('Check!');
             },
             'resigned': () => {
-                statusMessages.push('Game ended by resignation');
+                const { winner } = data.state;
+                const loser = winner === 'white' ? 'black' : 'white';
+                statusMessages.push(`${loser} resigned. ${winner} wins!`);
             },
             'drawByAgreement': () => {
                 statusMessages.push('Draw by agreement!');
