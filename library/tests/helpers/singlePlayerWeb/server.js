@@ -26,6 +26,17 @@ app.get('/api/game-state', (req, res) => {
     res.json({ success: true, state: serializedState });
 });
 
+// Helper function to check if a move is a pawn to promotion row
+function isPawnMoveToPromotionRow(cellFrom, cellTo, board) {
+    const piece = board.getPieceOnCell(cellFrom);
+    if (!piece || piece.constructor.name !== 'Pawn') {
+        return false;
+    }
+    // Promotion row is row 8 for white, row 1 for black
+    return (piece.color === 'white' && cellTo.row === 8) || 
+           (piece.color === 'black' && cellTo.row === 1);
+}
+
 // Endpoint to process move
 app.post('/api/move', (req, res) => {
     const request = req.body;
@@ -40,23 +51,43 @@ app.post('/api/move', (req, res) => {
     // Check if promotion is required - if so, we need to send state back
     const isPromotionRequired = result.state && result.state.promotionRequired === true;
     
-    // If move was successful, save move data
+    // Save ALL requests (successful and failed) to moveHistory
+    const state = game.getState();
+    const positionMatrix = GameEndDetector._getPositionMatrix(state.board);
+    
+    const moveData = {
+        color: request.color,
+        type: request.type,
+        position: positionMatrix,
+        gameStatus: state.gameStatus,
+        success: result.success
+    };
+    
+    // Add move-specific fields if it's a move request
+    if (request.type === 'move') {
+        moveData.cellTo = request.to;
+        moveData.cellFrom = request.from;
+        moveData.promotionPiece = request.promotion || null;
+    }
+    
+    // Add error message if request failed
+    if (!result.success && result.error) {
+        moveData.error = result.error;
+    }
+    
+    // Add additional fields based on request type and result
+    if (request.type === 'resign' && state.winner) {
+        moveData.winner = state.winner;
+    }
+    
+    if (request.type === 'proposeDraw' && state.pendingDrawProposal !== undefined) {
+        moveData.pendingDrawProposal = state.pendingDrawProposal;
+    }
+    
+    moveHistory.push(moveData);
+    
+    // Handle state for response
     if (result.success && result.state) {
-        const state = game.getState();
-        const positionMatrix = GameEndDetector._getPositionMatrix(state.board);
-        
-        const moveData = {
-            cellTo: request.to,
-            cellFrom: request.from,
-            promotionPiece: request.promotion || null,
-            color: request.color,
-            type: request.type,
-            position: positionMatrix,
-            gameStatus: state.gameStatus
-        };
-        
-        moveHistory.push(moveData);
-        
         // Serialize state for response
         result.state = game.getSerializedState();
     } else if (isPromotionRequired) {
@@ -136,6 +167,125 @@ app.post('/api/save-game', (req, res) => {
             error: `Failed to save files: ${error.message}` 
         });
     }
+});
+
+// Endpoint to process resign
+app.post('/api/resign', (req, res) => {
+    const request = req.body;
+    request.type = 'resign';
+    
+    // Add color from currentTurn if not provided
+    if (!request.color) {
+        request.color = game.getState().currentTurn;
+    }
+    
+    const result = game.processRequest(request);
+    
+    // Save ALL resign requests (successful and failed)
+    const state = game.getState();
+    const positionMatrix = GameEndDetector._getPositionMatrix(state.board);
+    
+    const moveData = {
+        color: request.color,
+        type: request.type,
+        position: positionMatrix,
+        gameStatus: state.gameStatus,
+        success: result.success
+    };
+    
+    if (state.winner) {
+        moveData.winner = state.winner;
+    }
+    
+    if (!result.success && result.error) {
+        moveData.error = result.error;
+    }
+    
+    moveHistory.push(moveData);
+    
+    if (result.state) {
+        result.state = game.getSerializedState();
+    }
+    
+    res.json(result);
+});
+
+// Endpoint to process propose draw
+app.post('/api/propose-draw', (req, res) => {
+    const request = req.body;
+    request.type = 'proposeDraw';
+    
+    // Add color from currentTurn if not provided
+    if (!request.color) {
+        request.color = game.getState().currentTurn;
+    }
+    
+    const result = game.processRequest(request);
+    
+    // Save ALL propose draw requests (successful and failed)
+    const state = game.getState();
+    const positionMatrix = GameEndDetector._getPositionMatrix(state.board);
+    
+    const moveData = {
+        color: request.color,
+        type: request.type,
+        position: positionMatrix,
+        gameStatus: state.gameStatus,
+        success: result.success
+    };
+    
+    if (state.pendingDrawProposal !== undefined) {
+        moveData.pendingDrawProposal = state.pendingDrawProposal;
+    }
+    
+    if (!result.success && result.error) {
+        moveData.error = result.error;
+    }
+    
+    moveHistory.push(moveData);
+    
+    if (result.state) {
+        result.state = game.getSerializedState();
+    }
+    
+    res.json(result);
+});
+
+// Endpoint to process accept draw
+app.post('/api/accept-draw', (req, res) => {
+    const request = req.body;
+    request.type = 'acceptDraw';
+    
+    // Add color from currentTurn if not provided
+    if (!request.color) {
+        request.color = game.getState().currentTurn;
+    }
+    
+    const result = game.processRequest(request);
+    
+    // Save ALL accept draw requests (successful and failed)
+    const state = game.getState();
+    const positionMatrix = GameEndDetector._getPositionMatrix(state.board);
+    
+    const moveData = {
+        color: request.color,
+        type: request.type,
+        position: positionMatrix,
+        gameStatus: state.gameStatus,
+        success: result.success
+    };
+    
+    if (!result.success && result.error) {
+        moveData.error = result.error;
+    }
+    
+    moveHistory.push(moveData);
+    
+    if (result.state) {
+        result.state = game.getSerializedState();
+    }
+    
+    res.json(result);
 });
 
 app.post('/api/reset-game', (req, res) => {

@@ -137,5 +137,6 @@
       null
     ]
   ],
-  "gameStatus": "checkmate"
+  "gameStatus": "checkmate",
+  "success": true
 }

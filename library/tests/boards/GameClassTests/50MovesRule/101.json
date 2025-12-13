@@ -188,5 +188,6 @@
       }
     ]
   ],
-  "gameStatus": "fiftyMoveRule"
+  "gameStatus": "fiftyMoveRule",
+  "success": true
 }

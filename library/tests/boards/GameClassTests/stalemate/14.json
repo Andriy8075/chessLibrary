@@ -170,5 +170,6 @@
       null
     ]
   ],
-  "gameStatus": "active"
+  "gameStatus": "active",
+  "success": true
 }

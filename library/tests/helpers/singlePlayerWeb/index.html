@@ -107,6 +107,36 @@
         #resetGameBtn:hover {
             background-color: #da190b;
         }
+        .action-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .resign-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .resign-btn:hover {
+            background-color: #c82333;
+        }
+        .propose-draw-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .propose-draw-btn:hover {
+            background-color: #0056b3;
+        }
+        .accept-draw-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .accept-draw-btn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -124,6 +154,20 @@
         <input type="text" id="testCaseNameInput" placeholder="Enter test case name">
         <button id="saveGameBtn">Save Game</button>
         <button id="resetGameBtn">Reset Game</button>
+    </div>
+    <div id="gameActionsContainer" style="margin-top: 20px; text-align: center;">
+        <div id="whiteActionsContainer" style="margin-bottom: 15px;">
+            <h3 style="margin: 10px;">White Actions</h3>
+            <button id="whiteResignBtn" class="action-btn resign-btn">Resign (White)</button>
+            <button id="whiteProposeDrawBtn" class="action-btn propose-draw-btn">Propose Draw (White)</button>
+            <button id="whiteAcceptDrawBtn" class="action-btn accept-draw-btn" style="display: none;">Accept Draw (White)</button>
+        </div>
+        <div id="blackActionsContainer" style="margin-bottom: 15px;">
+            <h3 style="margin: 10px;">Black Actions</h3>
+            <button id="blackResignBtn" class="action-btn resign-btn">Resign (Black)</button>
+            <button id="blackProposeDrawBtn" class="action-btn propose-draw-btn">Propose Draw (Black)</button>
+            <button id="blackAcceptDrawBtn" class="action-btn accept-draw-btn" style="display: none;">Accept Draw (Black)</button>
+        </div>
     </div>
     <script type="module" src="app.js"></script>
 </body>

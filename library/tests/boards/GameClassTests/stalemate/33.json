@@ -143,5 +143,6 @@
       }
     ]
   ],
-  "gameStatus": "active"
+  "gameStatus": "active",
+  "success": true
 }

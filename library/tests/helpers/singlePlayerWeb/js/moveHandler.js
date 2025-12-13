@@ -42,5 +42,80 @@ async function sendMoveRequest(cellFrom, cellTo, promotion = null) {
     }
 }
 
-export { sendMoveRequest };
+async function sendResignRequest(color) {
+    const gameRequest = {
+        type: 'resign',
+        color: color
+    };
+    
+    try {
+        updateStatus(`Sending resign request for ${color}...`);
+        const response = await fetch(`${API_BASE_URL}/api/resign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gameRequest)
+        });
+        
+        const result = await response.json();
+        handleGameResponse(result);
+        return result;
+    } catch (error) {
+        updateStatus(`Network error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+}
+
+async function sendProposeDrawRequest(color) {
+    const gameRequest = {
+        type: 'proposeDraw',
+        color: color
+    };
+    
+    try {
+        updateStatus(`Sending draw proposal for ${color}...`);
+        const response = await fetch(`${API_BASE_URL}/api/propose-draw`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gameRequest)
+        });
+        
+        const result = await response.json();
+        handleGameResponse(result);
+        return result;
+    } catch (error) {
+        updateStatus(`Network error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+}
+
+async function sendAcceptDrawRequest(color) {
+    const gameRequest = {
+        type: 'acceptDraw',
+        color: color
+    };
+    
+    try {
+        updateStatus(`Accepting draw proposal for ${color}...`);
+        const response = await fetch(`${API_BASE_URL}/api/accept-draw`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gameRequest)
+        });
+        
+        const result = await response.json();
+        handleGameResponse(result);
+        return result;
+    } catch (error) {
+        updateStatus(`Network error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+}
+
+export { sendMoveRequest, sendResignRequest, sendProposeDrawRequest, sendAcceptDrawRequest };
 

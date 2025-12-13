@@ -164,51 +164,94 @@ testCaseFolders.forEach(testCaseName => {
                 const moveData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
                 
                 const sendingClient = moveData.color === 'white' ? whiteClient : blackClient;
+                const opponentClient = moveData.color === 'white' ? blackClient : whiteClient;
                 
+                // Build gameRequest based on the type in moveData
                 const gameRequest = {
-                    type: 'move',
-                    from: moveData.cellFrom,
-                    to: moveData.cellTo
+                    type: moveData.type
                 };
                 
-                if (moveData.promotionPiece) {
-                    gameRequest.promotion = moveData.promotionPiece;
+                // Only add move-specific fields if it's a move request
+                if (moveData.type === 'move') {
+                    gameRequest.from = moveData.cellFrom;
+                    gameRequest.to = moveData.cellTo;
+                    if (moveData.promotionPiece) {
+                        gameRequest.promotion = moveData.promotionPiece;
+                    }
                 }
                 
+                // Clear messages for both clients
                 whiteClient.clearMessages('gameResponse');
+                blackClient.clearMessages('gameResponse');
+                
+                const expectedSuccess = moveData.success;
                 
                 sendingClient.send({
                     type: 'gameRequest',
                     gameRequest: gameRequest
                 });
                 
-                const gameResponse = await whiteClient.waitForMessage('gameResponse', 10000);
+                let gameResponse;
                 
-                expect(gameResponse.data.success).toBe(true);
-                
-                if (!gameResponse.data.success) {
-                    throw new Error(`Move ${number} failed: ${gameResponse.data.error || 'Unknown error'}`);
+                if (expectedSuccess) {
+                    // If move is expected to be successful, wait for responses on both clients
+                    // Both clients should receive the response for successful moves
+                    const [sendingResponse, opponentResponse] = await Promise.all([
+                        sendingClient.waitForMessage('gameResponse', 10000),
+                        opponentClient.waitForMessage('gameResponse', 10000)
+                    ]);
+                    
+                    // Use the sending client's response for validation
+                    gameResponse = sendingResponse;
+                    
+                    // Verify both responses have the same success status
+                    if (sendingResponse.data.success !== opponentResponse.data.success) {
+                        throw new Error(
+                            `Move ${number}: Response mismatch between clients. ` +
+                            `Sending client: ${sendingResponse.data.success}, ` +
+                            `Opponent client: ${opponentResponse.data.success}`
+                        );
+                    }
+                } else {
+                    // If move is expected to fail, only wait on sending client
+                    // Failed requests only send response to the requesting client
+                    gameResponse = await sendingClient.waitForMessage('gameResponse', 10000);
                 }
-                
-                const currentPosition = convertBoardToPositionMatrix(gameResponse.data.state.board);
-                const currentGameStatus = gameResponse.data.state.gameStatus;
-                
-                expect(arePositionsEqual(currentPosition, moveData.position)).toBe(true);
-                
-                if (!arePositionsEqual(currentPosition, moveData.position)) {
-                    console.error(`Position mismatch at move ${number}:`);
-                    console.error('Expected:', JSON.stringify(moveData.position, null, 2));
-                    console.error('Actual:', JSON.stringify(currentPosition, null, 2));
-                    throw new Error(`Position mismatch at move ${number}`);
+                if (gameResponse.data.success !== expectedSuccess) {
+                    console.error(`Move ${number} success mismatch: expected ${expectedSuccess}, got ${gameResponse.data.success}. ` +
+                        `Error: ${gameResponse.data.error || 'None'}`);
                 }
+                expect(gameResponse.data.success).toBe(expectedSuccess);
                 
-                expect(currentGameStatus).toBe(moveData.gameStatus);
-                
-                if (currentGameStatus !== moveData.gameStatus) {
+                if (gameResponse.data.success !== expectedSuccess) {
                     throw new Error(
-                        `Game status mismatch at move ${number}: ` +
-                        `expected "${moveData.gameStatus}", got "${currentGameStatus}"`
+                        `Move ${number} success mismatch: expected ${expectedSuccess}, got ${gameResponse.data.success}. ` +
+                        `Error: ${gameResponse.data.error || 'None'}`
                     );
+                }
+                
+                // Only check position and gameStatus if the move was successful
+                if (gameResponse.data.success && gameResponse.data.state) {
+                    const currentPosition = convertBoardToPositionMatrix(gameResponse.data.state.board);
+                    const currentGameStatus = gameResponse.data.state.gameStatus;
+                    
+                    expect(arePositionsEqual(currentPosition, moveData.position)).toBe(true);
+                    
+                    if (!arePositionsEqual(currentPosition, moveData.position)) {
+                        console.error(`Position mismatch at move ${number}:`);
+                        console.error('Expected:', JSON.stringify(moveData.position, null, 2));
+                        console.error('Actual:', JSON.stringify(currentPosition, null, 2));
+                        throw new Error(`Position mismatch at move ${number}`);
+                    }
+                    
+                    expect(currentGameStatus).toBe(moveData.gameStatus);
+                    
+                    if (currentGameStatus !== moveData.gameStatus) {
+                        throw new Error(
+                            `Game status mismatch at move ${number}: ` +
+                            `expected "${moveData.gameStatus}", got "${currentGameStatus}"`
+                        );
+                    }
                 }
             }
         } finally {

@@ -34,44 +34,56 @@ testCaseFolders.forEach(testCaseName => {
             const filePath = path.join(testCaseDir, file);
             const moveData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             
+            // Build request based on the type in moveData
             const request = {
                 type: moveData.type,
-                from: moveData.cellFrom,
-                to: moveData.cellTo,
                 color: moveData.color
             };
             
-            if (moveData.promotionPiece) {
-                request.promotion = moveData.promotionPiece;
+            // Only add move-specific fields if it's a move request
+            if (moveData.type === 'move') {
+                request.from = moveData.cellFrom;
+                request.to = moveData.cellTo;
+                if (moveData.promotionPiece) {
+                    request.promotion = moveData.promotionPiece;
+                }
             }
             
             const result = game.processRequest(request);
 
-            expect(result.success).toBe(true);
+            // Check if success field exists in moveData, if so, compare with expected value
+            const expectedSuccess = moveData.success;
+            expect(result.success).toBe(expectedSuccess);
             
-            if (!result.success) {
-                throw new Error(`Move ${number} failed: ${result.error || 'Unknown error'}`);
-            }
-            
-            const currentPosition = GameEndDetector._getPositionMatrix(game.state.board);
-            const currentGameStatus = game.state.gameStatus;
-            
-            expect(arePositionsEqual(currentPosition, moveData.position)).toBe(true);
-            
-            if (!arePositionsEqual(currentPosition, moveData.position)) {
-                console.error(`Position mismatch at move ${number}:`);
-                console.error('Expected:', JSON.stringify(moveData.position, null, 2));
-                console.error('Actual:', JSON.stringify(currentPosition, null, 2));
-                throw new Error(`Position mismatch at move ${number}`);
-            }
-            
-            expect(currentGameStatus).toBe(moveData.gameStatus);
-            
-            if (currentGameStatus !== moveData.gameStatus) {
+            if (result.success !== expectedSuccess) {
                 throw new Error(
-                    `Game status mismatch at move ${number}: ` +
-                    `expected "${moveData.gameStatus}", got "${currentGameStatus}"`
+                    `Move ${number} success mismatch: expected ${expectedSuccess}, got ${result.success}. ` +
+                    `Error: ${result.error || 'None'}`
                 );
+            }
+            
+            // Only check position and gameStatus if the move was successful
+            if (result.success) {
+                const currentPosition = GameEndDetector._getPositionMatrix(game.state.board);
+                const currentGameStatus = game.state.gameStatus;
+                
+                expect(arePositionsEqual(currentPosition, moveData.position)).toBe(true);
+                
+                if (!arePositionsEqual(currentPosition, moveData.position)) {
+                    console.error(`Position mismatch at move ${number}:`);
+                    console.error('Expected:', JSON.stringify(moveData.position, null, 2));
+                    console.error('Actual:', JSON.stringify(currentPosition, null, 2));
+                    throw new Error(`Position mismatch at move ${number}`);
+                }
+                
+                expect(currentGameStatus).toBe(moveData.gameStatus);
+                
+                if (currentGameStatus !== moveData.gameStatus) {
+                    throw new Error(
+                        `Game status mismatch at move ${number}: ` +
+                        `expected "${moveData.gameStatus}", got "${currentGameStatus}"`
+                    );
+                }
             }
         });
     });

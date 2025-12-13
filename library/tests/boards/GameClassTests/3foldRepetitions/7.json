@@ -188,5 +188,6 @@
       }
     ]
   ],
-  "gameStatus": "threefoldRepetition"
+  "gameStatus": "threefoldRepetition",
+  "success": true
 }
