@@ -1,4 +1,4 @@
-const mockBoard = require('../../../helpers/../../src/board/Board');
+const mockBoard = require('../../../../src/board/Board');
 
 test('white piece can move forward 1 square', () => {
     const board = new mockBoard([{type: 'pawn', color: 'white', position: { row: 4, col: 3 }}]);

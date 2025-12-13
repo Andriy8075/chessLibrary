@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/../../src/board/Board');
+const MockBoard = require('../../../src/board/Board');
 
 describe('Board._updateEnPassantTarget', () => {
     it('should update the en passant target for white pawn', () => {

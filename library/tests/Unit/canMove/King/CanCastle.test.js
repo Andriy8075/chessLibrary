@@ -1,4 +1,4 @@
-const MockBoard = require('../../../helpers/../../src/board/Board');
+const MockBoard = require('../../../../src/board/Board');
 const King = require('../../../../src/pieces/King');
 
 test('white king can castle kingside', () => {

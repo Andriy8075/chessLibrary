@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/../../src/board/Board');
+const MockBoard = require('../../../src/board/Board');
 
 describe('Board.getKing', () => {
     it('should return the king of the given color', () => {

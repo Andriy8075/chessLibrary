@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/../../src/board/Board');
+const MockBoard = require('../../../src/board/Board');
 
 describe('Board._executeCastling', () => {
     it('should execute kingside castling for white', () => {

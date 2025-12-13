@@ -1,4 +1,4 @@
-const MockBoard = require('../../helpers/../../src/board/Board');
+const MockBoard = require('../../../src/board/Board');
 const Rook = require('../../../src/pieces/Rook');
 const Knight = require('../../../src/pieces/Knight');
 const Pawn = require('../../../src/pieces/Pawn');
