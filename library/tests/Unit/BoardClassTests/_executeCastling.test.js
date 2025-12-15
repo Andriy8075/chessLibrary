@@ -1,4 +1,5 @@
 const MockBoard = require('../../../src/board/Board');
+const { assertCastlingMove } = require('../../helpers/testAssertions');
 
 describe('Board._executeCastling', () => {
     it('should execute kingside castling for white', () => {
@@ -13,30 +14,7 @@ describe('Board._executeCastling', () => {
         const king = board.getPieceOnCell(kingFrom);
         const rook = board.getPieceOnCell(rookFrom);
         board._executeCastling(kingFrom, kingTo);
-        try {
-            expect(board.getPieceOnCell(kingTo)).toBe(king);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom, kingTo, rookFrom, rookTo, side: 'kingside', color: 'white' }, null, 2));
-            throw new Error(`King should be at ${JSON.stringify(kingTo)} after kingside castling from ${JSON.stringify(kingFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom }, null, 2));
-            throw new Error(`Rook source cell ${JSON.stringify(rookFrom)} should be empty after castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookTo)).toBe(rook);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom, rookTo }, null, 2));
-            throw new Error(`Rook should be at ${JSON.stringify(rookTo)} after castling from ${JSON.stringify(rookFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(kingFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom }, null, 2));
-            throw new Error(`King source cell ${JSON.stringify(kingFrom)} should be empty after castling. ${error.message}`);
-        }
+        assertCastlingMove(board, kingFrom, kingTo, rookFrom, rookTo, king, rook, 'kingside', 'white');
     });
 
     it('should execute kingside castling for black', () => {
@@ -51,30 +29,7 @@ describe('Board._executeCastling', () => {
         const king = board.getPieceOnCell(kingFrom);
         const rook = board.getPieceOnCell(rookFrom);
         board._executeCastling(kingFrom, kingTo);
-        try {
-            expect(board.getPieceOnCell(kingTo)).toBe(king);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom, kingTo, rookFrom, rookTo, side: 'kingside', color: 'black' }, null, 2));
-            throw new Error(`King should be at ${JSON.stringify(kingTo)} after kingside castling from ${JSON.stringify(kingFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom }, null, 2));
-            throw new Error(`Rook source cell ${JSON.stringify(rookFrom)} should be empty after castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookTo)).toBe(rook);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom, rookTo }, null, 2));
-            throw new Error(`Rook should be at ${JSON.stringify(rookTo)} after castling from ${JSON.stringify(rookFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(kingFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom }, null, 2));
-            throw new Error(`King source cell ${JSON.stringify(kingFrom)} should be empty after castling. ${error.message}`);
-        }
+        assertCastlingMove(board, kingFrom, kingTo, rookFrom, rookTo, king, rook, 'kingside', 'black');
     });
 
     it('should execute queenside castling for white', () => {
@@ -89,36 +44,7 @@ describe('Board._executeCastling', () => {
         const king = board.getPieceOnCell(kingFrom);
         const rook = board.getPieceOnCell(rookFrom);
         board._executeCastling(kingFrom, kingTo);
-        try {
-            expect(board.getPieceOnCell(kingTo)).toBe(king);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom, kingTo, rookFrom, rookTo, side: 'queenside', color: 'white' }, null, 2));
-            throw new Error(`King should be at ${JSON.stringify(kingTo)} after queenside castling from ${JSON.stringify(kingFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom }, null, 2));
-            throw new Error(`Rook source cell ${JSON.stringify(rookFrom)} should be empty after castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell({ row: 1, col: 2 })).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ intermediateCell: { row: 1, col: 2 } }, null, 2));
-            throw new Error(`Intermediate cell {row: 1, col: 2} should be empty after queenside castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookTo)).toBe(rook);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom, rookTo }, null, 2));
-            throw new Error(`Rook should be at ${JSON.stringify(rookTo)} after castling from ${JSON.stringify(rookFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(kingFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom }, null, 2));
-            throw new Error(`King source cell ${JSON.stringify(kingFrom)} should be empty after castling. ${error.message}`);
-        }
+        assertCastlingMove(board, kingFrom, kingTo, rookFrom, rookTo, king, rook, 'queenside', 'white', [{ row: 1, col: 2 }]);
     });
 
     it('should execute queenside castling for black', () => {
@@ -133,35 +59,6 @@ describe('Board._executeCastling', () => {
         const king = board.getPieceOnCell(kingFrom);
         const rook = board.getPieceOnCell(rookFrom);
         board._executeCastling(kingFrom, kingTo);
-        try {
-            expect(board.getPieceOnCell(kingTo)).toBe(king);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom, kingTo, rookFrom, rookTo, side: 'queenside', color: 'black' }, null, 2));
-            throw new Error(`King should be at ${JSON.stringify(kingTo)} after queenside castling from ${JSON.stringify(kingFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom }, null, 2));
-            throw new Error(`Rook source cell ${JSON.stringify(rookFrom)} should be empty after castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell({ row: 8, col: 2 })).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ intermediateCell: { row: 8, col: 2 } }, null, 2));
-            throw new Error(`Intermediate cell {row: 8, col: 2} should be empty after queenside castling. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(rookTo)).toBe(rook);
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ rookFrom, rookTo }, null, 2));
-            throw new Error(`Rook should be at ${JSON.stringify(rookTo)} after castling from ${JSON.stringify(rookFrom)}. ${error.message}`);
-        }
-        try {
-            expect(board.getPieceOnCell(kingFrom)).toBeNull();
-        } catch (error) {
-            console.error('Castling details:', JSON.stringify({ kingFrom }, null, 2));
-            throw new Error(`King source cell ${JSON.stringify(kingFrom)} should be empty after castling. ${error.message}`);
-        }
+        assertCastlingMove(board, kingFrom, kingTo, rookFrom, rookTo, king, rook, 'queenside', 'black', [{ row: 8, col: 2 }]);
     });
 });

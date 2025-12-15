@@ -3,6 +3,7 @@ const path = require('path');
 const Game = require('../../src/Game');
 const GameEndDetector = require('../../src/board/GameEndDetector');
 const { arePositionsEqual } = require('../endToEnd/helpers');
+const { assertSuccessWithRequest, assertPositionWithMove, assertGameStatusWithMove } = require('../helpers/testAssertions');
 
 const testCasesDir = path.join(__dirname, '../boards/GameClassTests');
 
@@ -51,54 +52,31 @@ testCaseFolders.forEach(testCaseName => {
             
             const result = game.processRequest(request);
 
-            // Check if success field exists in moveData, if so, compare with expected value
             const expectedSuccess = moveData.success;
-            try {
-                expect(result.success).toBe(expectedSuccess);
-            } catch (error) {
-                throw new Error(
-                    `Move ${number} in test case "${testCaseName}": expected success to be ${expectedSuccess}, got ${result.success}. ` +
-                    `Error: ${result.error || 'None'}. ${error.message}\n` +
-                    `Request: ${JSON.stringify(request, null, 2)}`
-                );
-            }
+            assertSuccessWithRequest(result.success, expectedSuccess, request, number, testCaseName, result.error);
             
-            // Only check position and gameStatus if the move was successful
             if (result.success) {
                 const currentPosition = GameEndDetector._getPositionMatrix(game.state.board);
                 const currentGameStatus = game.state.gameStatus;
                 
-                try {
-                    expect(arePositionsEqual(currentPosition, moveData.position)).toBe(true);
-                } catch (error) {
-                    console.error(`Position mismatch at move ${number} in test case "${testCaseName}":`);
-                    if (moveData.type === 'move') {
-                        console.error(`Move from: ${JSON.stringify(moveData.cellFrom)} to: ${JSON.stringify(moveData.cellTo)}`);
-                        if (moveData.promotionPiece) {
-                            console.error(`Promotion piece: ${moveData.promotionPiece}`);
-                        }
-                    }
-                    console.error('Request:', JSON.stringify(request, null, 2));
-                    console.error('Expected position:', JSON.stringify(moveData.position, null, 2));
-                    console.error('Actual position:', JSON.stringify(currentPosition, null, 2));
-                    throw new Error(
-                        `Position mismatch at move ${number} in test case "${testCaseName}". ` +
-                        `Move from ${JSON.stringify(moveData.cellFrom || 'N/A')} to ${JSON.stringify(moveData.cellTo || 'N/A')}. ${error.message}`
-                    );
-                }
+                assertPositionWithMove(
+                    arePositionsEqual(currentPosition, moveData.position),
+                    currentPosition,
+                    moveData.position,
+                    number,
+                    testCaseName,
+                    moveData,
+                    request
+                );
                 
-                try {
-                    expect(currentGameStatus).toBe(moveData.gameStatus);
-                } catch (error) {
-                    const moveInfo = moveData.type === 'move' 
-                        ? `Move from ${JSON.stringify(moveData.cellFrom)} to ${JSON.stringify(moveData.cellTo)}`
-                        : `Request type: ${moveData.type}`;
-                    throw new Error(
-                        `Game status mismatch at move ${number} in test case "${testCaseName}": ` +
-                        `expected "${moveData.gameStatus}", got "${currentGameStatus}". ` +
-                        `${moveInfo}. Request: ${JSON.stringify(request, null, 2)}. ${error.message}`
-                    );
-                }
+                assertGameStatusWithMove(
+                    currentGameStatus,
+                    moveData.gameStatus,
+                    number,
+                    testCaseName,
+                    moveData,
+                    request
+                );
             }
         });
     });
