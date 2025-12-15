@@ -20,7 +20,7 @@ This will:
 
 ### Playing the Game
 
-Once the container is running, open in 2 tabs this ulr (imit 2 players):
+Once the container is running, open in 2 tabs this URL (imit 2 players):
 
 **http://localhost:3000**
 
@@ -47,6 +47,8 @@ To run tests inside the Docker container:
    ```bash
    npm run test:coverage
    ```
+
+Note: the command "npm test" runs all tests including E2E tests that use server on port 3000. Tests will fail if this server does not run.
 
 ## Test Structure
 
